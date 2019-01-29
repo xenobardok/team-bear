@@ -1,0 +1,23 @@
+{
+  "name": "team-bear",
+  "version": "1.0.0",
+  "description": "Official CSCI 4060 group of team Bear.",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SunilJamkatel/team-bear.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SunilJamkatel/team-bear/issues"
+  },
+  "homepage": "https://github.com/SunilJamkatel/team-bear#readme"
+}
