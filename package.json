@@ -2,13 +2,24 @@
   "name": "team-bear",
   "version": "1.0.0",
   "description": "Official CSCI 4060 group of team Bear.",
-  "main": "app.js",
+  "main": "index.js",
   "dependencies": {
-    "express": "^4.16.4"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "nodemon": "^1.18.9"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "babel src --presets react,es2015 --out-dir static",
+    "watch": "babel src --presets react,es2015 --out-dir static -watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -w server.js server.js"
   },
   "repository": {
     "type": "git",
