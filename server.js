@@ -1,5 +1,10 @@
-const express = require('express');
+const 	express = require('express'),
+		mysql = require('mysql'),
+		keys = require('./config/keys');
 const app = express();
+
+const connection = mysql.createConnection(keys);
+connection.connect();
 const port = 9000;
 
 express.static('static');

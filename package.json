@@ -2,10 +2,11 @@
   "name": "team-bear",
   "version": "1.0.0",
   "description": "Official CSCI 4060 group of team Bear.",
-  "main": "index.js",
+  "main": "server.js",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "mysql": "^2.16.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0"
   },
