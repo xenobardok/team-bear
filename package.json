@@ -4,21 +4,24 @@
   "description": "Official CSCI 4060 group of team Bear.",
   "main": "server.js",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "braces": "^2.3.2",
     "express": "^4.16.4",
-    "jsonwebtoken": "^8.4.0",
+    "jsonwebtoken": "^8.5.0",
     "mysql": "^2.16.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "sshpk": "^1.16.1",
     "validator": "^10.11.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.10"
   },
   "scripts": {
     "compile": "babel src --presets react,es2015 --out-dir static",
@@ -30,7 +33,7 @@
     "type": "git",
     "url": "git+https://github.com/SunilJamkatel/team-bear.git"
   },
-  "author": "",
+  "author": "Shivam Kharga",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/SunilJamkatel/team-bear/issues"
