@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "create-react-app": "^2.1.5",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
     "mysql": "^2.16.0",
@@ -12,19 +13,26 @@
     "passport-jwt": "^4.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
     "validator": "^10.11.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "nodemon": "^1.18.9"
+    "concurrently": "^4.1.0",
+    "nodemon": "^1.18.10"
   },
   "scripts": {
+    "client-install": "npm install --prefix client",
     "compile": "babel src --presets react,es2015 --out-dir static",
     "watch": "babel src --presets react,es2015 --out-dir static -watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -w server.js server.js"
+    "start": "nodemon -w server.js server.js",
+    "client" :"npm start --prefix client",
+    "dev": "concurrently \"npm run start\" \"npm run client\""
   },
   "repository": {
     "type": "git",

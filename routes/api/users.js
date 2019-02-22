@@ -56,8 +56,8 @@ router.post('/register', (req, res)=>{
 })
 
 
-// @route   GET api/users/register
-// @desc    Register user
+// @route   GET api/users/login
+// @desc    Login user
 // @access  Public
 router.post('/login', (req,res) => {
     let email = db.escape(req.body.email);
