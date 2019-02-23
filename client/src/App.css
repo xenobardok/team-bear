@@ -1,0 +1,33 @@
+html{
+  height: 100%;
+}
+
+body{
+  font-family: 'Rubik', sans-serif;
+  height: 100%;
+}
+
+.main{
+  background: url('./img/landing.jpg'), #FF5F6D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)), url('./img/landing.jpg');  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)), url('./img/landing.jpg'); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 700px;
+}
+
+.main h1{
+  color: #840029;
+  text-align: center;
+  padding-top: 25vh;
+}
+
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark{
+  background-color: #7b344a!important;
+}
+
+.main .mainContext{
+  text-align: center;
+  font-size: 1.25em;
+}

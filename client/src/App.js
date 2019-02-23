@@ -8,6 +8,7 @@ import { faIgloo } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
 
 import NavBar from "./components/layouts/NavBar";
+import Landing from "./components/layouts/Landing";
 
 library.add(faIgloo);
 
@@ -16,7 +17,10 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-          <NavBar />
+          <div>
+            <NavBar />
+            <Landing />
+          </div>
         </Router>
       </Provider>
     );
