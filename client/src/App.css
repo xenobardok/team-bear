@@ -7,6 +7,10 @@ body{
   height: 100%;
 }
 
+#root{
+  height: 100%;
+}
+
 .main{
   background: url('./img/landing.jpg'), #FF5F6D;  /* fallback for old browsers */
   background: -webkit-linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)), url('./img/landing.jpg');  /* Chrome 10-25, Safari 5.1-6 */
@@ -30,4 +34,35 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark{
 .main .mainContext{
   text-align: center;
   font-size: 1.25em;
+}
+
+.background-gradient{
+  background: url('./img/landing.jpg'), #FF5F6D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5));  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.fullpage{
+  height: 100%;
+}
+
+@media (min-width: 768px){
+  form {
+    padding: 5em;
+    
+  }
+}
+
+form{
+  padding-top: 5em;
+}
+
+.btn-primary {
+  background-color: #7b344a;
+  border-color: #c36c87;
+}
+
+.btn-primary:hover{
+  background-color: #a04561;
+  border-color: #c36c87;
 }

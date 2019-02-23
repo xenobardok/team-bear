@@ -9,6 +9,8 @@ import "./App.css";
 
 import NavBar from "./components/layouts/NavBar";
 import Landing from "./components/layouts/Landing";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
 
 library.add(faIgloo);
 
@@ -19,7 +21,11 @@ class App extends Component {
         <Router>
           <div>
             <NavBar />
-            <Landing />
+            <Route exact path="/" component={Landing} />
+            <div className="form">
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/register" component={Register} />
+            </div>
           </div>
         </Router>
       </Provider>
