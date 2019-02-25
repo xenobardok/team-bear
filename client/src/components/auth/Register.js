@@ -41,7 +41,7 @@ class Register extends Component {
     axios
       .post("/api/users/register", newUser)
       .then(res => console.log(res.data))
-      .catch(err => console.log(err));
+      .catch(err => this.setState({ errors: err.response.data }));
   }
 
   render() {
@@ -61,7 +61,13 @@ class Register extends Component {
                   value={this.state.firstname}
                   name="firstname"
                   onChange={this.onChange}
+                  className={classnames("", {
+                    "is-invalid": this.state.errors.firstname
+                  })}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors.firstname}
+                </Form.Control.Feedback>
               </Col>
               <Col>
                 <Form.Label>Last name</Form.Label>
@@ -70,7 +76,13 @@ class Register extends Component {
                   value={this.state.lastname}
                   name="lastname"
                   onChange={this.onChange}
+                  className={classnames("", {
+                    "is-invalid": this.state.errors.lastname
+                  })}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors.lastname}
+                </Form.Control.Feedback>
               </Col>
             </Form.Row>
           </Form.Group>
@@ -82,7 +94,13 @@ class Register extends Component {
               value={this.state.email}
               name="email"
               onChange={this.onChange}
+              className={classnames("", {
+                "is-invalid": this.state.errors.email
+              })}
             />
+            <Form.Control.Feedback type="invalid">
+              {this.state.errors.email}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="formBasicPassword">
             <Form.Label>Enter a password</Form.Label>
@@ -92,7 +110,13 @@ class Register extends Component {
               value={this.state.password}
               name="password"
               onChange={this.onChange}
+              className={classnames("", {
+                "is-invalid": this.state.errors.password
+              })}
             />
+            <Form.Control.Feedback type="invalid">
+              {this.state.errors.password}
+            </Form.Control.Feedback>
           </Form.Group>
           <Form.Group controlId="formBasicPassword">
             <Form.Label>Enter your password again</Form.Label>
