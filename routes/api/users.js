@@ -25,41 +25,31 @@ router.post("/register", (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
 
   //Check for validation
+  console.log(isValid);
   if (!isValid) {
     return res.status(400).json(errors);
+  } else {
+    let email = db.escape(req.body.email);
+    let firstname = db.escape(req.body.firstname);
+    let lastname = db.escape(req.body.lastname);
+    let password = db.escape(req.body.password);
+    console.log(email, firstname, lastname, password);
+    sql =
+      "UPDATE Evaluators SET Fname =" +
+      firstname +
+      ", Lname = " +
+      lastname +
+      ", Password = PASSWORD(" +
+      password +
+      ")";
+    db.query(sql, function(err, result) {
+      if (result) {
+        res.status(200).json(result[0]);
+      } else if (err) {
+        console.log(err);
+      }
+    });
   }
-
-  let email = db.escape(req.body.email);
-  let firstname = db.escape(req.body.firstname);
-  let lastname = db.escape(req.body.lastname);
-  let password = db.escape(req.body.password);
-  console.log(email, firstname, lastname, password);
-  let sql = "Select * from users where email=" + email;
-  db.query(sql, function(err, result) {
-    console.log(result);
-    if (result.length > 0) {
-      errors.email = "User already exists";
-      return res.status(400).json(errors);
-    } else {
-      sql =
-        "Insert into users values (" +
-        firstname +
-        ", " +
-        lastname +
-        ", " +
-        email +
-        ", PASSWORD(" +
-        password +
-        "))";
-      db.query(sql, function(err, result) {
-        if (result) {
-          console.log(result);
-        } else if (err) {
-          console.log(err);
-        }
-      });
-    }
-  });
 });
 
 // @route   GET api/users/login
