@@ -25,15 +25,26 @@ router.post("/register", (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
 
   //Check for validation
-  console.log(isValid);
   if (!isValid) {
-    return res.status(400).json(errors);
+    return res.status(404).json(errors);
   } else {
     let email = db.escape(req.body.email);
+    let sql = "SELECT * FROM Evaluators WHERE email = " + email;
+
+    db.query(sql, (err, result, fields) => {
+      if (result.length > 0 && result[0].isActive === "true") {
+        errors.email = "User already exists, please login!";
+        return res.status(404).json(errors);
+      } else if (result.length > 0 && result[0].Fname !== null) {
+        errors.email =
+          "You have already registered, please verify by logging into your email";
+        return res.status(404).json(errors);
+      }
+    });
+
     let firstname = db.escape(req.body.firstname);
     let lastname = db.escape(req.body.lastname);
     let password = db.escape(req.body.password);
-    console.log(email, firstname, lastname, password);
     sql =
       "UPDATE Evaluators SET Fname =" +
       firstname +
@@ -44,9 +55,9 @@ router.post("/register", (req, res) => {
       ")";
     db.query(sql, function(err, result) {
       if (result) {
-        res.status(200).json(result[0]);
+        return res.status(200).json(result[0]);
       } else if (err) {
-        console.log(err);
+        return res.status(404).json(err);
       }
     });
   }
@@ -60,13 +71,25 @@ router.post("/login", (req, res) => {
 
   //Check for validation
   if (!isValid) {
-    return res.status(400).json(errors);
+    return res.status(404).json(errors);
   }
 
   let email = db.escape(req.body.email);
-  let password = db.escape(req.body.password);
 
-  let sql = "SELECT * from users where email = " + email;
+  let sql = "SELECT * FROM Evaluators WHERE email = " + email;
+  db.query(sql, function(err, result) {
+    if (result.length > 0 && result[0].isActive === "true") {
+      errors.email = "User already exists, please login!";
+      return res.status(404).json(errors);
+    } else if (result.length > 0 && result[0].Fname !== null) {
+      errors.email =
+        "You have already registered, please verify by logging into your email";
+      return res.status(404).json(errors);
+    }
+  });
+
+  let password = db.escape(req.body.password);
+  sql = "SELECT * from users where email = " + email;
   db.query(sql, (err, result) => {
     if (result.length < 1) {
       errors.email = "Email not found";

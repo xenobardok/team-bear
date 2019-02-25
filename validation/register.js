@@ -15,28 +15,10 @@ module.exports = function validateRegisterInput(data) {
   }
   if (!Validator.isLength(data.email, { min: 9, max: 30 })) {
     errors.email = "Email must be between 9 and 30 characters";
-  } else {
-    let setEmailErrors = () => {
-      return new Promise(function(resolve, reject) {
-        let email = db.escape(data.email);
-        let sql = "SELECT * FROM Evaluators WHERE email = " + email;
-        db.query(sql, function(err, result) {
-          if (result.length > 0 && result[0].isActive === "true") {
-            throw "User already exists, please login!";
-          } else if (result.length > 0 && result[0].Fname !== null) {
-            throw "You have already registered, please verify by logging into your email";
-          }
-        });
-      });
-    };
-
-    setEmailErrors().catch(err => {
-      console.log("errors caught");
-      errors.email = err;
-    });
   }
 
-  console.log(a);
+  let email = db.escape(data.email);
+
   if (!Validator.isLength(data.password, { min: 5, max: 20 })) {
     errors.password = "Password must be between 5 and 20 characters";
   }
