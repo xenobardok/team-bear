@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Container, Form, Button } from "react-bootstrap";
-import axios from "axios";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
 
 class Login extends Component {
   constructor() {
@@ -32,10 +33,6 @@ class Login extends Component {
     };
 
     // console.log(user);
-    axios
-      .post("/api/users/login", user)
-      .then(res => console.log(res.data))
-      .catch(err => this.setState({ errors: err.response.data }));
   }
   render() {
     const { errors } = this.state;
@@ -83,4 +80,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect()(Login);
