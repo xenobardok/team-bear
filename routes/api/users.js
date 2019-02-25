@@ -30,34 +30,40 @@ router.post("/register", (req, res) => {
   } else {
     let email = db.escape(req.body.email);
     let sql = "SELECT * FROM Evaluators WHERE email = " + email;
-
-    db.query(sql, (err, result, fields) => {
+    db.query(sql, (err, result) => {
       if (result.length > 0 && result[0].isActive === "true") {
         errors.email = "User already exists, please login!";
-        return res.status(404).json(errors);
+        return res.status(400).json(errors);
       } else if (result.length > 0 && result[0].Fname !== null) {
         errors.email =
           "You have already registered, please verify by logging into your email";
-        return res.status(404).json(errors);
-      }
-    });
-
-    let firstname = db.escape(req.body.firstname);
-    let lastname = db.escape(req.body.lastname);
-    let password = db.escape(req.body.password);
-    sql =
-      "UPDATE Evaluators SET Fname =" +
-      firstname +
-      ", Lname = " +
-      lastname +
-      ", Password = PASSWORD(" +
-      password +
-      ")";
-    db.query(sql, function(err, result) {
-      if (result) {
-        return res.status(200).json(result[0]);
-      } else if (err) {
-        return res.status(404).json(err);
+        return res.status(400).json(errors);
+      } else if (
+        result.length > 0 &&
+        result[0].isActive === "false" &&
+        result[0].Fname === null
+      ) {
+        let firstname = db.escape(req.body.firstname);
+        let lastname = db.escape(req.body.lastname);
+        let password = db.escape(req.body.password);
+        sql =
+          "UPDATE Evaluators SET Fname =" +
+          firstname +
+          ", Lname = " +
+          lastname +
+          ", Password = PASSWORD(" +
+          password +
+          ")";
+        db.query(sql, function(err, result) {
+          if (result) {
+            return res.status(200).json(result);
+          } else if (err) {
+            return res.status(404).json(err);
+          }
+        });
+      } else {
+        errors.email = "Email not found. Please contact your department head";
+        return res.status(400).json(errors);
       }
     });
   }
