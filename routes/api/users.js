@@ -115,7 +115,8 @@ router.post("/login", (req, res) => {
             firstname: result[0].Fname,
             lastname: result[0].Lname,
             email: result[0].Email,
-            type: level
+            type: level,
+            dept: result[0].Dept_ID
           };
           jwt.sign(
             payload,
