@@ -38,9 +38,14 @@ class Login extends Component {
   onSubmit(e) {
     e.preventDefault();
 
+    // const user = {
+    //   email: e.target.email.defaultValue,
+    //   password: e.target.password.defaultValue
+    // };
+
     const user = {
-      email: e.target.email.defaultValue,
-      password: e.target.password.defaultValue
+      email: this.state.email,
+      password: this.state.password
     };
 
     this.props.loginUser(user);
@@ -99,7 +104,7 @@ Login.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  error: state.errors
+  errors: state.errors
 });
 
 export default connect(
