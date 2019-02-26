@@ -89,20 +89,33 @@ router.post("/login", (req, res) => {
       res.status(404).json(errors);
     } else {
       sql =
-        "SELECT * from Evaluators where email=" +
+        "SELECT * from Evaluators E, Department D where E.email=" +
         email +
-        " and password = password(" +
+        " and E.password = password(" +
         password +
-        ")";
+        ") AND E.Dept_ID = D.Dept_ID";
       db.query(sql, (err, result) => {
         if (err) return res.send(err);
         else if (result.length > 0) {
           // User found
+          let level = "";
+          if (result[0].isActive != "true") {
+            errors.email = "Email is not verified. Please verify the email.";
+            res.status(404).json(errors);
+          } else {
+            if (result[0].email == result[0].Admin_Email) {
+              level = "Admin";
+            } else {
+              level = "Evaluator";
+            }
+          }
+
           // res.json({msg: "Successfully logged in"})
           const payload = {
             firstname: result[0].Fname,
             lastname: result[0].Lname,
-            email: result[0].Email
+            email: result[0].email,
+            type: level
           };
           jwt.sign(
             payload,
