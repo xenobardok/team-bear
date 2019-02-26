@@ -20,18 +20,18 @@ router.get(
         "')";
 
       db.query(sql, (err, result) => {
-        var Rubrics = {};
+        var Rubrics = [];
         if (err) return res.send(err);
         else if (result.length > 0) {
-          result.array.forEach(row => {
-            Rubrics = {
-              ...Rubrics,
+          result.forEach(row => {
+            aRubric = {
               Rubric_ID: row.Rubric_ID,
               Rubrics_Name: row.Rubric_Name,
               Rows_Num: row.Rows_Num,
-              Column_Num: row.Column.Num,
+              Column_Num: row.Column_Num,
               Scale: row.Scale
             };
+            Rubrics.push(aRubric);
           });
         }
         res.json(Rubrics);
@@ -121,6 +121,103 @@ router.post(
                 });
               });
               res.status(200).json({ message: "Successfully added" });
+            }
+          });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   GET api/rubrics/rubrics:handle
+// @desc    get the values of a Rubric
+// @access  Private route
+router.get(
+  "/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.Email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.Dept_ID);
+    const Rubric_ID = req.params.handle;
+    const Rubric = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM RUBRIC where Rubric_ID =" +
+        Rubric_ID +
+        " AND DEPT_ID = " +
+        dept;
+
+      db.query(sql, (err, result) => {
+        var Rubrics = {};
+        if (err) return res.status(400).json({ error: "Rubric Not Found" });
+        else {
+          Rubric.Rubric_ID = Rubric_ID;
+          Rubric.Rubric_Name = result[0].Rubric_Name;
+          Rubric.Rows_Num = result[0].Rows_Num;
+          Rubric.Column_Num = result[0].Column_Num;
+          Rubric.Scale = [];
+          Rubric.data = [];
+
+          sql =
+            "SELECT * FROM RUBRIC NATURAL JOIN RUBRIC_SCALE WHERE Rubric_ID =" +
+            Rubric_ID;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(404).json(err);
+            else {
+              result.forEach(grade => {
+                let aScale = {
+                  label: grade.Score_label,
+                  value: grade.Value
+                };
+                Rubric.Scale.push(aScale);
+              });
+              var newSql =
+                "SELECT * FROM RUBRIC_ROW NATURAL JOIN ROW_LABELS WHERE Rubric_ID =" +
+                Rubric_ID +
+                "ORDER BY Sort_Index";
+
+              db.query(newSql, (err, result) => {
+                if (err) return res.status(404).json(err);
+                else {
+                  result.forEach(row => {
+                    var Rubric_Row_ID = row.Rubric_Row_ID;
+                    var Row_ID = row.Row_ID;
+                    var Sort_Index = row.Sort_Index;
+                    var Measure_Factor = row.Measure_Factor;
+                    var Column_values = [];
+                    var newSql2 =
+                      "SELECT * FROM ROW_LABELS NATURAL JOIN COLUMNS WHERE Row_ID =" +
+                      Row_ID +
+                      "ORDER BY Column_No";
+
+                    db.query(newSql2, (err, result) => {
+                      if (err) return res.status(404).json(err);
+                      else {
+                        result.forEach(row => {
+                          var eachColumn = {
+                            Column_No: row.Column_No,
+                            value: row.Value
+                          };
+                          Column_values.push(eachColumn);
+                        });
+                        var eachRow = {
+                          Measure_Factor: Measure_Factor,
+                          Column_values: Column_values
+                        };
+                        Rubric.data.push(eachRow);
+                      }
+                    });
+                  });
+                }
+              });
+
+              return res.json(Rubric);
             }
           });
         }
