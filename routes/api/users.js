@@ -81,7 +81,6 @@ router.post("/login", (req, res) => {
   }
 
   let email = db.escape(req.body.email);
-
   let password = db.escape(req.body.password);
   sql = "SELECT * from Evaluators where email = " + email;
   db.query(sql, (err, result) => {

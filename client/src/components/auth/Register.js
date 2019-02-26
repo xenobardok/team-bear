@@ -113,12 +113,13 @@ class Register extends Component {
               className={classnames("", {
                 "is-invalid": this.state.errors.password
               })}
+              autoComplete="new-password"
             />
             <Form.Control.Feedback type="invalid">
               {this.state.errors.password}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group controlId="formBasicPassword">
+          <Form.Group controlId="formBasicPassword2">
             <Form.Label>Enter your password again</Form.Label>
             <Form.Control
               type="password"
@@ -129,6 +130,7 @@ class Register extends Component {
               className={classnames("", {
                 "is-invalid": this.state.password !== this.state.password2
               })}
+              autoComplete="new-password"
             />
             <Form.Control.Feedback type="invalid">
               Password do not match
