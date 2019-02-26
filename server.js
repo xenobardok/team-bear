@@ -7,11 +7,16 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(passport.initialize());
-require("./config/passport")(passport);
 
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
+const rubrics = require("./routes/api/rubrics");
+
+//passport middleware
+app.use(passport.initialize());
+
+//passport config
+require("./config/passport")(passport);
 
 const port = 9000;
 
@@ -23,6 +28,7 @@ app.get("/", function(req, res) {
 
 app.use("/api/users", users);
 app.use("/api/profile", profile);
+app.use("/api/rubrics", rubrics);
 
 app.listen(port, "0.0.0.0");
 console.log("listening to port: " + port);

@@ -104,7 +104,7 @@ router.post("/login", (req, res) => {
             errors.email = "Email is not verified. Please verify the email.";
             res.status(404).json(errors);
           } else {
-            if (result[0].email == result[0].Admin_Email) {
+            if (result[0].Email == result[0].Admin_Email) {
               level = "Admin";
             } else {
               level = "Evaluator";
@@ -115,7 +115,7 @@ router.post("/login", (req, res) => {
           const payload = {
             firstname: result[0].Fname,
             lastname: result[0].Lname,
-            email: result[0].email,
+            email: result[0].Email,
             type: level
           };
           jwt.sign(
