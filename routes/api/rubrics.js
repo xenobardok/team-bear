@@ -180,7 +180,7 @@ router.get(
               var newSql =
                 "SELECT * FROM RUBRIC_ROW NATURAL JOIN ROW_LABELS WHERE Rubric_ID =" +
                 Rubric_ID +
-                "ORDER BY Sort_Index";
+                " ORDER BY Sort_Index";
 
               db.query(newSql, (err, result) => {
                 if (err) return res.status(404).json(err);
@@ -194,8 +194,8 @@ router.get(
                     var newSql2 =
                       "SELECT * FROM ROW_LABELS NATURAL JOIN COLUMNS WHERE Row_ID =" +
                       Row_ID +
-                      "ORDER BY Column_No";
-
+                      " ORDER BY Column_No";
+                    console.log(newSql2);
                     db.query(newSql2, (err, result) => {
                       if (err) return res.status(404).json(err);
                       else {
@@ -206,7 +206,21 @@ router.get(
                           };
                           Column_values.push(eachColumn);
                         });
+
+                        //console.log(Rubric.Column_Num - result.length);
+                        for (
+                          j = 0;
+                          j < Rubric.Column_Num - result.length;
+                          j++
+                        ) {
+                          var eachColumn = {
+                            Column_No: null,
+                            value: null
+                          };
+                          Column_values.push(eachColumn);
+                        }
                         var eachRow = {
+                          Row_ID: Row_ID,
                           Measure_Factor: Measure_Factor,
                           Column_values: Column_values
                         };
@@ -214,10 +228,29 @@ router.get(
                       }
                     });
                   });
+                  console.log(Rubric.Rows_Num - result.length);
+                  for (i = 0; i < Rubric.Rows_Num - result.length; i++) {
+                    var Column_values = [];
+                    for (j = 0; j < Rubric.Column_Num; j++) {
+                      var eachColumn = {
+                        Column_No: null,
+                        value: null
+                      };
+                      Column_values.push(eachColumn);
+                    }
+                    var eachRow = {
+                      Row_ID: null,
+                      Measure_Factor: null,
+                      Column_values: Column_values
+                    };
+
+                    Rubric.data.push(eachRow);
+                    //console.log(Rubric);
+                  }
+                  console.log(Rubric);
+                  return res.json(Rubric);
                 }
               });
-
-              return res.json(Rubric);
             }
           });
         }
@@ -225,6 +258,17 @@ router.get(
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
+  }
+);
+
+// @route   POST api/rubrics/edit/rubrics:handle
+// @desc    update the changes in  a Rubric
+// @access  Private route
+router.post(
+  "/edit/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
   }
 );
 
