@@ -81,28 +81,15 @@ router.post("/login", (req, res) => {
   }
 
   let email = db.escape(req.body.email);
-
-  let sql = "SELECT * FROM Evaluators WHERE email = " + email;
-  db.query(sql, function(err, result) {
-    if (result.length > 0 && result[0].isActive === "true") {
-      errors.email = "User already exists, please login!";
-      return res.status(404).json(errors);
-    } else if (result.length > 0 && result[0].Fname !== null) {
-      errors.email =
-        "You have already registered, please verify by logging into your email";
-      return res.status(404).json(errors);
-    }
-  });
-
   let password = db.escape(req.body.password);
-  sql = "SELECT * from users where email = " + email;
+  sql = "SELECT * from Evaluators where email = " + email;
   db.query(sql, (err, result) => {
     if (result.length < 1) {
       errors.email = "Email not found";
       res.status(404).json(errors);
     } else {
       sql =
-        "SELECT * from users where email=" +
+        "SELECT * from Evaluators where email=" +
         email +
         " and password = password(" +
         password +
@@ -113,9 +100,9 @@ router.post("/login", (req, res) => {
           // User found
           // res.json({msg: "Successfully logged in"})
           const payload = {
-            firstname: result[0].firstname,
-            lastname: result[0].lastname,
-            email: result[0].email
+            firstname: result[0].Fname,
+            lastname: result[0].Lname,
+            email: result[0].Email
           };
           jwt.sign(
             payload,

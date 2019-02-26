@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 import classnames from "classnames";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 
@@ -18,6 +19,16 @@ class Login extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+
+    if (nextProps.errors) {
+      console.log(nextProps.errors);
+      this.setState({ errors: nextProps.errors });
+    }
+  }
   onChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -32,7 +43,7 @@ class Login extends Component {
       password: e.target.password.defaultValue
     };
 
-    // console.log(user);
+    this.props.loginUser(user);
   }
   render() {
     const { errors } = this.state;
@@ -80,4 +91,18 @@ class Login extends Component {
   }
 }
 
-export default connect()(Login);
+Login.propTypes = {
+  loginUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  error: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { loginUser }
+)(Login);

@@ -3,17 +3,21 @@ import setAuthToken from "../util/setAuthToken";
 import jwt_decode from "jwt-decode";
 import { SET_CURRENT_USER, GET_ERRORS } from "./types";
 
-// Login Get User token
+// Login - Get User token
 export const loginUser = userData => dispatch => {
   axios
     .post("/api/users/login", userData)
     .then(res => {
+      console.log("Saving data to local storage");
+      // Save to local storage
       const { token } = res.data;
+      // Set token to local storage
       localStorage.setItem("jwtToken", token);
+      // Set token to authorization header
       setAuthToken(token);
       //Decode user token
       const decoded = jwt_decode(token);
-      //Set current user
+      // Set current user
       dispatch(setCurrentUser(decoded));
     })
     .catch(err =>
