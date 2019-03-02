@@ -15,8 +15,9 @@ router.get(
     const email = req.user.Email;
     const type = req.user.type;
     if (type == "Admin") {
+      res.json(req.user);
     } else {
-      res.status(404).json({ error: "Not an Admin" });
+      res.json(req.user);
     }
   }
 );

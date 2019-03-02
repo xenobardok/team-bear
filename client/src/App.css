@@ -4,11 +4,11 @@ html{
 
 body{
   font-family: 'Rubik', sans-serif;
-  height: 100%;
+  /* height: 100%; */
 }
 
 #root{
-  height: 100%;
+  /* height: 100%; */
 }
 
 .main{
@@ -65,4 +65,114 @@ form{
 .btn-primary:hover{
   background-color: #a04561;
   border-color: #c36c87;
+}
+
+
+/* SIDEBAR CSS */
+/* Individual item */
+.bm-item {
+  display: inline-block;
+
+  /* Our sidebar item styling */
+  text-decoration: none;
+  /* margin: 10px; */
+  padding: 10px;
+  color: white;
+  transition: color 0.2s;
+}
+
+
+.label:hover{
+  background: none!important;
+}
+
+.label span{
+  color:#7b344a;
+  text-shadow:
+   -1px -1px 0 rgba(255, 255, 255, 0.596),  
+    1px -1px 0 rgba(255, 255, 255, 0.596),
+    -1px 1px 0 rgba(255, 255, 255, 0.596),
+     1px 1px 0 rgba(255, 255, 255, 0.596);
+}
+
+/* Change color on hover */
+.bm-item:hover {
+  color: white;
+  background-color: #7b344a;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+/* The rest copied directly from react-burger-menu docs */
+
+/* Position and sizing of burger button */
+.bm-burger-button {
+  position: fixed;
+  width: 36px;
+  height: 30px;
+  left: 36px;
+  top: 36px;
+}
+
+/* Color/shape of burger icon bars */
+.bm-burger-bars {
+  background: #373a47;
+}
+
+/* Position and sizing of clickable cross button */
+.bm-cross-button {
+  height: 24px;
+  width: 24px;
+}
+
+/* Color/shape of close button cross */
+.bm-cross {
+  /* background: #bdc3c7; */
+}
+
+/* General sidebar styles */
+.bm-menu {
+  background: #151b26;
+  padding: .5em 1.5em 0;
+  font-size: 1.15em;
+}
+
+/* Morph shape necessary with bubble or elastic */
+.bm-morph-shape {
+  fill: #373a47;
+}
+
+/* Wrapper for item list */
+.bm-item-list {
+  color: #b8b7ad;
+}
+
+/* Styling of overlay */
+.bm-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+
+
+/* New styles */
+
+.workspace{
+  background-color: #f6f8f9;
+}
+
+#page-wrap h2{
+  text-align: center;
+}
+
+.initial{
+  position: fixed;
+  /* width: 36px; */
+  cursor: pointer;
+  height: 30px;
+  right: 80px;
+  top: 36px;
+  font-size: 1.05em;
+}
+a.dropdown-item{
+  width: 50px!important;
 }

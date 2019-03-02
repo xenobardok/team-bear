@@ -5,18 +5,13 @@ import setAuthToken from "./util/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
-// import { library } from "@fortawesome/fontawesome-svg-core";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faIgloo } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
 
 import NavBar from "./components/layouts/NavBar";
 import Landing from "./components/layouts/Landing";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-// import Dashboard from "./components/dashboard/Dashboard";
-
-// library.add(faIgloo);
+import Dashboard from "./components/dashboard/Dashboard";
 
 // Code that checks for token
 if (localStorage.jwtToken) {
@@ -41,13 +36,14 @@ class App extends Component {
       <Provider store={store}>
         <Router>
           <div>
-            <NavBar />
+            <Route exact path="/" component={NavBar} />
+            <Route exact path="/login" component={NavBar} />
+            <Route exact path="/register" component={NavBar} />
+            <Route path="/dashboard" component={Dashboard} />
+            {/* <Route path="/rubrics" component={Rubrics} /> */}
             <Route exact path="/" component={Landing} />
-            <div className="form">
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-              {/* <Route exact path="/dashboard" component={Dashboard} /> */}
-            </div>
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
           </div>
         </Router>
       </Provider>
