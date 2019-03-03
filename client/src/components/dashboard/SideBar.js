@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Route, Link } from "react-router-dom";
 import { slide as Menu } from "react-burger-menu";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,25 +34,24 @@ class SideBar extends Component {
         <h2 className="label">
           <span>ULM</span> Evaluations
         </h2>
-        <a className="menu-item" href="/">
+        <Link className="menu-item" to="/dashboard">
           <FontAwesomeIcon icon="home" />
           &nbsp;&nbsp;Home
-        </a>
-        <a className="menu-item" href="/tasks">
+        </Link>
+        <Link className="menu-item" to="/tasks">
           <FontAwesomeIcon icon="tasks" />
-          &nbsp;&nbsp;My Tasks
-        </a>
-        <a className="menu-item" href="/inbox">
+          &nbsp;&nbsp;My Tasks [NW]
+        </Link>
+        <Link className="menu-item" to="/inbox">
           <FontAwesomeIcon icon="envelope" />
-          &nbsp;&nbsp;Inbox
-        </a>
-        <a className="menu-item" href="/reports">
+          &nbsp;&nbsp;Inbox [NW]
+        </Link>
+        <Link className="menu-item" to="/reports">
           <FontAwesomeIcon icon="file-alt" />
-          &nbsp;&nbsp;Reports
-        </a>
-        <br />
-        <br />
-        <br />
+          &nbsp;&nbsp;Reports [NW]
+        </Link>
+        <hr />
+        <Link to="/dashboard/rubrics">Rubrics</Link>
       </Menu>
     );
   }
