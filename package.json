@@ -4,6 +4,7 @@
   "description": "Official CSCI 4060 group of team Bear.",
   "main": "server.js",
   "dependencies": {
+    "async": "^2.6.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "braces": "^2.3.2",

@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../../config/connection");
 const passport = require("passport");
 const secret = require("../../config/secret");
+var async = require("async");
 
 // @route   GET api/rubrics
 // @desc    Gets the lists of all rubrics
@@ -51,7 +52,9 @@ router.post(
   (req, res) => {
     //Get Fields
     const rubricFields = {};
+    let done = false;
 
+    //console.log(req.body);
     const email = db.escape(req.user.Email);
     const type = req.user.type;
     const dept = db.escape(req.user.Dept_ID);
@@ -62,71 +65,142 @@ router.post(
     if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
     if (req.body.Scale) {
       rubricFields.Scale = req.body.Scale;
-      rubricFields.ScaleSize = req.body.Scale.length;
+      rubricFields.ScaleSize = db.escape(req.body.Scale.length);
     }
 
     if (type == "Admin") {
       let sql =
-        "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
-        rubricFields.name +
-        "," +
-        rubricFields.Rows_Num +
-        "," +
-        rubricFields.Column_Num +
-        "," +
-        rubricFields.ScaleSize +
-        "," +
+        "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
         dept +
-        ")";
+        "AND Rubric_Name=" +
+        rubricFields.name;
 
       db.query(sql, (err, result) => {
-        var Rubrics = {};
         if (err)
           return res
             .status(400)
-            .json({ error: "Rubric already exists with that name" });
+            .json({ message: "Rubric already exists with that name" });
         else {
           sql =
-            "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
+            "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
+            rubricFields.name +
+            "," +
+            rubricFields.Rows_Num +
+            "," +
+            rubricFields.Column_Num +
+            "," +
+            rubricFields.ScaleSize +
+            "," +
             dept +
-            "AND Rubric_Name=" +
-            rubricFields.name;
-
+            ")";
+          //console.log(sql);
           db.query(sql, (err, result) => {
             if (err)
-              return res.status(400)({
-                error: "Rubric not be added, Please try again later."
-              });
+              return res
+                .status(400)
+                .json({ error: "There was some problem adding it" });
             else {
-              const Rubric_ID = result[0].Rubric_ID;
+              let Rubric_ID = db.escape(result.insertId);
+              // rubricFields.Scale.forEach(grade => {
+              //   let label = db.escape(grade.label);
+              //   let value = grade.value;
+              //   let newSql =
+              //     "INSERT INTO RUBRIC_SCALE(Rubric_ID, Score_label, Value) VALUES(" +
+              //     Rubric_ID +
+              //     "," +
+              //     label +
+              //     "," +
+              //     value +
+              //     ")";
 
-              rubricFields.Scale.forEach(grade => {
-                var label = db.escape(grade.label);
-                var value = grade.value;
-                var newSql =
-                  "INSERT INTO RUBRIC_SCALE(Rubric_ID, Score_label, Value) VALUES(" +
+              //   db.query(newSql, (err, result) => {
+              //     if (err)
+              //       return res.status(400).json({
+              //         message:
+              //           "Scales could not be added, Please try again later."
+              //       });
+              //   });
+              // });
+
+              let empty_var = db.escape("");
+              console.log(empty_var);
+              console.log(rubricFields.Rows_Num);
+              let row = 1;
+
+              let sqls = [];
+
+              for (var i = 1; i <= rubricFields.Rows_Num; i++) {
+                sql =
+                  "INSERT INTO RUBRIC_ROW(Rubric_ID,Measure_Factor,Sort_Index) VALUES(" +
                   Rubric_ID +
                   "," +
-                  label +
+                  empty_var +
                   "," +
-                  value +
+                  i +
                   ")";
-
-                db.query(newSql, (err, result) => {
-                  if (err)
-                    return res.status(400)({
-                      error:
-                        "Scales could not be added, Please try again later."
-                    });
-                });
+                sqls.push(sql);
+              }
+              console.log(sqls);
+              sqls.forEach(sql => {
+                async.forEach(
+                  db.query(sql, (err, result) => {
+                    console.log(result);
+                    if (err)
+                      return res.status(400).json({
+                        message: "There was some error. Please try again later."
+                      });
+                  })
+                );
               });
-              res.status(200).json({ message: "Successfully added" });
+
+              // for (i = 1; i <= rubricFields.Rows_Num; i++) {
+              //   newsql =
+              //     "SELECT Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID =" +
+              //     Rubric_ID +
+              //     " AND Sort_Index=" +
+              //     i;
+              //   console.log(newsql);
+              //   db.query(newsql, (err, result) => {
+              //     if (err)
+              //       return res.status(400).json({
+              //         message:
+              //           "There was some error. Please try again later."
+              //       });
+              //     else {
+              //       let Rubric_Row_ID = db.escape(result[0].Rubric_Row_ID);
+              //       console.log(Rubric_Row_ID);
+              //       for (var j = 1; j <= rubricFields.Column_Num; j++) {
+              //         newSql =
+              //           "INSERT INTO COLUMNS(Rubric_Row_ID,Column_No,Value) VALUES(" +
+              //           Rubric_Row_ID +
+              //           "," +
+              //           j +
+              //           "," +
+              //           empty_var +
+              //           ")";
+              //         console.log(newSql);
+              //         db.query(newSql, (err, result) => {
+              //           if (err)
+              //             return res.status(400).json({
+              //               message:
+              //                 "There was some error. Please try again later."
+              //             });
+              //         });
+              //       }
+              //     }
+              //   });
+              // }
             }
           });
         }
       });
     } else {
       res.status(404).json({ error: "Not an Admin" });
+    }
+    if (done) {
+      return res.status(200).json({
+        message: "Successfully added"
+      });
     }
   }
 );
@@ -156,6 +230,9 @@ router.get(
         var Rubrics = {};
         if (err) return res.status(400).json({ error: "Rubric Not Found" });
         else {
+          if (result.length < 1) {
+            return res.status(400).json({ error: "Rubric Not Found" });
+          }
           Rubric.Rubric_ID = Rubric_ID;
           Rubric.Rubric_Name = result[0].Rubric_Name;
           Rubric.Rows_Num = result[0].Rows_Num;
