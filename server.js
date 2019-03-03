@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const rubrics = require("./routes/api/rubrics");
+const dashboard = require("./routes/api/dashboard");
 
 //passport middleware
 app.use(passport.initialize());
@@ -29,6 +30,7 @@ app.get("/", function(req, res) {
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/rubrics", rubrics);
+app.use("/api/dashboard", dashboard);
 
 app.listen(port, "0.0.0.0");
 console.log("listening to port: " + port);
