@@ -12,7 +12,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = req.user.Email;
+    const email = req.user.email;
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
@@ -54,11 +54,9 @@ router.post(
     const rubricFields = {};
     let done = false;
 
-    //console.log(req.body);
-    const email = db.escape(req.user.Email);
+    const email = db.escape(req.user.email);
     const type = req.user.type;
-    const dept = db.escape(req.user.Dept_ID);
-
+    const dept = db.escape(req.user.dept);
     if (req.body.Rubric_Name)
       rubricFields.name = db.escape(req.body.Rubric_Name);
     if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
@@ -77,9 +75,10 @@ router.post(
 
       db.query(sql, (err, result) => {
         if (err)
-          return res
-            .status(400)
-            .json({ message: "Rubric already exists with that name" });
+          // return res
+          //   .status(400)
+          //   .json({ message: "Rubric already exists with that name" });
+          return err;
         else {
           sql =
             "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
@@ -93,7 +92,9 @@ router.post(
             "," +
             dept +
             ")";
-          //console.log(sql);
+          // console.log(sql);
+
+          // CREATE RUBRIC_ROW TABLE WITH Rows_Num and Column_Num
           db.query(sql, (err, result) => {
             if (err)
               return res

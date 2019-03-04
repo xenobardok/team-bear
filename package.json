@@ -11,7 +11,7 @@
     "create-react-app": "^2.1.5",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.0",
-    "mysql": "^2.16.0",
+    "mysql2": "^1.6.5",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "react": "^16.7.0",

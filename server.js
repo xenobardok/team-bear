@@ -1,5 +1,4 @@
 const express = require("express"),
-  mysql = require("mysql"),
   db = require("./config/connection"),
   bodyParser = require("body-parser"),
   passport = require("passport");

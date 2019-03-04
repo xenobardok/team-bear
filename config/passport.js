@@ -15,13 +15,13 @@ module.exports = passport => {
         //console.log(result[0]);
         if (err) return err;
         else if (result.length > 0) {
-          data = result[0];
+          // data = result[0];
 
-          data = {
-            ...data,
-            type: jwt_payload.type
-          };
-          return done(null, data);
+          // data = {
+          //   ...data,
+          //   type: jwt_payload.type
+          // };
+          return done(null, jwt_payload);
         } else return done(null, false);
       });
     })

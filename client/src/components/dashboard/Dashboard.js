@@ -35,15 +35,16 @@ class Dashboard extends Component {
       <div id="outer-container">
         <SideBar />
         <main id="page-wrap">
+          <Route path={"/dashboard"} component={SimpleName} />
           <Container>
             {/* <h1>This is just a dashboard</h1>  */}
             <br />
             <br />
             <br />
             <br />
-            <Route path="/dashboard/rubrics" component={Rubrics} />
+            <Route exact path="/dashboard/rubrics" component={Rubrics} />
+            <Route exact path="/dashboard/rubrics/create" component={Rubrics} />
           </Container>
-          <Route path={"/dashboard"} component={SimpleName} />
         </main>
       </div>
     );

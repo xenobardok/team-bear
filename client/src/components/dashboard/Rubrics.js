@@ -36,7 +36,7 @@ class Rubrics extends Component {
     } else {
       // Check if logged in user has rubrics to view
       if (Object.keys(allRubrics).length > 0) {
-        rubricsList = <p>Rubrics coming up</p>;
+        rubricsList = "Rubrics coming up";
       } else {
         rubricsList = (
           <div>
@@ -56,7 +56,15 @@ class Rubrics extends Component {
     return (
       <Card className="text-center">
         <Card.Header>List of Available Rubrics</Card.Header>
-        {rubricsList}
+        <Card.Body>
+          <ListGroup.Item action href="#link1">
+            {rubricsList}
+          </ListGroup.Item>
+          <br />
+          <Button variant="primary" href="dashboard/rubrics/create">
+            Create a new rubric
+          </Button>
+        </Card.Body>
         {/* {rubrics.map(item => (
           <DisplayRubric name={item.Rubrics_Name} />
         ))} */}
