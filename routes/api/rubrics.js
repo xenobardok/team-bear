@@ -5,6 +5,9 @@ const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
 
+// Loading Input Validation
+const validateRubricInput = require("../../validation/rubric");
+
 // @route   GET api/rubrics
 // @desc    Gets the lists of all rubrics
 // @access  Private
@@ -59,16 +62,20 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.Dept_ID);
 
-    if (req.body.Rubric_Name)
-      rubricFields.name = db.escape(req.body.Rubric_Name);
-    if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-    if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
-    if (req.body.Scale) {
-      rubricFields.Scale = req.body.Scale;
-      rubricFields.ScaleSize = db.escape(req.body.Scale.length);
-    }
-
     if (type == "Admin") {
+      const { errors, isValid } = validateRubricInput(req.body);
+
+      if (!isValid) {
+        return res.status(404).json(errors);
+      }
+      if (req.body.Rubric_Name)
+        rubricFields.name = db.escape(req.body.Rubric_Name);
+      if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
+      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
+      if (req.body.Scale) {
+        rubricFields.Scale = req.body.Scale;
+        rubricFields.ScaleSize = db.escape(req.body.Scale.length);
+      }
       let sql =
         "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
         dept +
@@ -76,11 +83,12 @@ router.post(
         rubricFields.name;
 
       db.query(sql, (err, result) => {
-        if (err)
-          return res
-            .status(400)
-            .json({ message: "Rubric already exists with that name" });
+        if (err) throw err;
         else {
+          if (result.length > 0) {
+            errors.Rubric_Name = "Rubric with that name already exists.";
+            return res.status(404).json(errors);
+          }
           sql =
             "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
             rubricFields.name +
@@ -140,7 +148,6 @@ router.post(
 
                 sqls.push(value);
               }
-              console.log(sqls);
               db.query(newSql1, [sqls], function(err, result) {
                 if (err) {
                   throw err;
@@ -167,7 +174,6 @@ router.post(
                           sqls.push(value);
                         }
                       });
-                      console.log(sqls);
                       db.query(newSql2, [sqls], function(err, result) {
                         if (err) {
                           throw err;
@@ -183,44 +189,6 @@ router.post(
               });
             }
           });
-
-          // for (i = 1; i <= rubricFields.Rows_Num; i++) {
-          //   newsql =
-          //     "SELECT Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID =" +
-          //     Rubric_ID +
-          //     " AND Sort_Index=" +
-          //     i;
-          //   console.log(newsql);
-          //   db.query(newsql, (err, result) => {
-          //     if (err)
-          //       return res.status(400).json({
-          //         message:
-          //           "There was some error. Please try again later."
-          //       });
-          //     else {
-          //       let Rubric_Row_ID = db.escape(result[0].Rubric_Row_ID);
-          //       console.log(Rubric_Row_ID);
-          //       for (var j = 1; j <= rubricFields.Column_Num; j++) {
-          //         newSql =
-          //           "INSERT INTO COLUMNS(Rubric_Row_ID,Column_No,Value) VALUES(" +
-          //           Rubric_Row_ID +
-          //           "," +
-          //           j +
-          //           "," +
-          //           empty_var +
-          //           ")";
-          //         console.log(newSql);
-          //         db.query(newSql, (err, result) => {
-          //           if (err)
-          //             return res.status(400).json({
-          //               message:
-          //                 "There was some error. Please try again later."
-          //             });
-          //         });
-          //       }
-          //     }
-          //   });
-          // }
         }
       });
     } else {
