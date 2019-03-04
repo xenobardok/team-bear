@@ -225,7 +225,7 @@ router.get(
 
       db.query(sql, (err, result) => {
         var Rubrics = {};
-        if (err) return res.status(400).json({ error: "Rubric Not Found" });
+        if (err) throw err;
         else {
           if (result.length < 1) {
             return res.status(400).json({ error: "Rubric Not Found" });
@@ -252,77 +252,57 @@ router.get(
                 Rubric.Scale.push(aScale);
               });
               var newSql =
-                "SELECT * FROM RUBRIC_ROW NATURAL JOIN ROW_LABELS WHERE Rubric_ID =" +
+                "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
                 Rubric_ID +
                 " ORDER BY Sort_Index";
 
               db.query(newSql, (err, result) => {
-                if (err) return res.status(404).json(err);
+                if (err) throw err;
                 else {
+                  let done = false;
+                  let rowIndex = 0;
+                  const totalRows = result.length;
                   result.forEach(row => {
                     var Rubric_Row_ID = row.Rubric_Row_ID;
-                    var Row_ID = row.Row_ID;
                     var Sort_Index = row.Sort_Index;
                     var Measure_Factor = row.Measure_Factor;
                     var Column_values = [];
                     var newSql2 =
-                      "SELECT * FROM ROW_LABELS NATURAL JOIN COLUMNS WHERE Row_ID =" +
-                      Row_ID +
+                      "SELECT * FROM COLUMNS WHERE Rubric_Row_ID =" +
+                      Rubric_Row_ID +
                       " ORDER BY Column_No";
-                    console.log(newSql2);
+
                     db.query(newSql2, (err, result) => {
                       if (err) return res.status(404).json(err);
                       else {
+                        let columnIndex = 0;
+                        const totalColumn = result.length;
                         result.forEach(row => {
                           var eachColumn = {
+                            Column_ID: row.Columns_ID,
                             Column_No: row.Column_No,
                             value: row.Value
                           };
+                          columnIndex++;
                           Column_values.push(eachColumn);
                         });
 
-                        //console.log(Rubric.Column_Num - result.length);
-                        for (
-                          j = 0;
-                          j < Rubric.Column_Num - result.length;
-                          j++
-                        ) {
-                          var eachColumn = {
-                            Column_No: null,
-                            value: null
-                          };
-                          Column_values.push(eachColumn);
-                        }
                         var eachRow = {
-                          Row_ID: Row_ID,
+                          Rubric_Row_ID: Rubric_Row_ID,
                           Measure_Factor: Measure_Factor,
                           Column_values: Column_values
                         };
                         Rubric.data.push(eachRow);
+                        rowIndex++;
+                        if (
+                          rowIndex == totalRows &&
+                          columnIndex == totalColumn
+                        ) {
+                          return res.json(Rubric);
+                        }
                       }
                     });
                   });
-                  console.log(Rubric.Rows_Num - result.length);
-                  for (i = 0; i < Rubric.Rows_Num - result.length; i++) {
-                    var Column_values = [];
-                    for (j = 0; j < Rubric.Column_Num; j++) {
-                      var eachColumn = {
-                        Column_No: null,
-                        value: null
-                      };
-                      Column_values.push(eachColumn);
-                    }
-                    var eachRow = {
-                      Row_ID: null,
-                      Measure_Factor: null,
-                      Column_values: Column_values
-                    };
-
-                    Rubric.data.push(eachRow);
-                    //console.log(Rubric);
-                  }
-                  console.log(Rubric);
-                  return res.json(Rubric);
                 }
               });
             }
