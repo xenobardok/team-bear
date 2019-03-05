@@ -32,17 +32,21 @@ export const setRubricsLoading = () => {
 
 export const createRubric = rubric => dispatch => {
   axios
-    .post("/api/rubrics/create")
-    .then(res =>
+    .post("/api/rubrics/create", rubric)
+    .then(res => {
+      console.log(
+        "Successfully created axios request. Dispatching result now!"
+      );
+      console.log(res.data);
       dispatch({
         type: CREATE_RUBRIC,
         payload: res.data
-      })
-    )
-    .catch(err =>
+      });
+    })
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
-        dispatch: err.response.data
-      })
-    );
+        payload: err.response.data
+      });
+    });
 };

@@ -15,7 +15,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = req.user.email;
+    const email = req.user.Email;
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
@@ -57,21 +57,10 @@ router.post(
     const rubricFields = {};
     let done = false;
 
-    const email = db.escape(req.user.email);
+    //console.log(req.body);
+    const email = db.escape(req.user.Email);
     const type = req.user.type;
-<<<<<<< HEAD
-    const dept = db.escape(req.user.dept);
-    if (req.body.Rubric_Name)
-      rubricFields.name = db.escape(req.body.Rubric_Name);
-    if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-    if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
-    if (req.body.Scale) {
-      rubricFields.Scale = req.body.Scale;
-      rubricFields.ScaleSize = db.escape(req.body.Scale.length);
-    }
-=======
     const dept = db.escape(req.user.Dept_ID);
->>>>>>> 0d54c340f8554400480c2bf5b99bc851f9e64248
 
     if (type == "Admin") {
       const { errors, isValid } = validateRubricInput(req.body);
@@ -82,7 +71,8 @@ router.post(
       if (req.body.Rubric_Name)
         rubricFields.name = db.escape(req.body.Rubric_Name);
       if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
+      if (req.body.Column_Num)
+        rubricFields.Column_Num = req.body.Column_Num - 1;
       if (req.body.Scale) {
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
@@ -90,19 +80,11 @@ router.post(
       let sql =
         "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
         dept +
-        "AND Rubric_Name=" +
+        " AND Rubric_Name=" +
         rubricFields.name;
 
       db.query(sql, (err, result) => {
-<<<<<<< HEAD
-        if (err)
-          // return res
-          //   .status(400)
-          //   .json({ message: "Rubric already exists with that name" });
-          return err;
-=======
         if (err) throw err;
->>>>>>> 0d54c340f8554400480c2bf5b99bc851f9e64248
         else {
           if (result.length > 0) {
             errors.Rubric_Name = "Rubric with that name already exists.";
@@ -120,9 +102,7 @@ router.post(
             "," +
             dept +
             ")";
-          // console.log(sql);
-
-          // CREATE RUBRIC_ROW TABLE WITH Rows_Num and Column_Num
+          //console.log(sql);
           db.query(sql, (err, result) => {
             if (err)
               return res
@@ -222,7 +202,6 @@ router.post(
     }
   }
 );
-
 // @route   GET api/rubrics/rubrics:handle
 // @desc    get the values of a Rubric
 // @access  Private route

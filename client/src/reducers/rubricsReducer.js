@@ -1,4 +1,4 @@
-import { GET_RUBRICS, RUBRICS_LOADING } from "../actions/types";
+import { GET_RUBRICS, RUBRICS_LOADING, CREATE_RUBRIC } from "../actions/types";
 
 const initialState = {
   allRubrics: null,
@@ -18,6 +18,11 @@ export default function(state = initialState, action) {
         ...state,
         allRubrics: action.payload,
         loading: false
+      };
+    case CREATE_RUBRIC:
+      return {
+        ...state,
+        rubric: action.payload
       };
     default:
       return state;
