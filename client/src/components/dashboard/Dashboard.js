@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container } from "react-bootstrap";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCurrentProfile } from "../../actions/profileActions";
@@ -10,6 +10,7 @@ import SimpleName from "./SimpleName";
 import "../../App.css";
 
 import Rubrics from "./Rubrics";
+import CreateRubric from "./CreateRubric";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -43,7 +44,11 @@ class Dashboard extends Component {
             <br />
             <br />
             <Route exact path="/dashboard/rubrics" component={Rubrics} />
-            <Route exact path="/dashboard/rubrics/create" component={Rubrics} />
+            <Route
+              exact
+              path="/dashboard/rubrics/create"
+              component={CreateRubric}
+            />
           </Container>
         </main>
       </div>
