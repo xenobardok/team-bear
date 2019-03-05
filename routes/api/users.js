@@ -153,8 +153,8 @@ router.get(
   }
 );
 
-// @route   GET api/users/current
-// @desc    Return current user
+// @route   GET api/users/members
+// @desc    Return list of all the members in that department
 // @access  Private
 router.get(
   "/members",

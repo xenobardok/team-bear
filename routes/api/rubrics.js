@@ -225,7 +225,7 @@ router.get(
         if (err) throw err;
         else {
           if (result.length < 1) {
-            return res.status(400).json({ error: "Rubric Not Found" });
+            return res.status(404).json({ error: "Rubric Not Found" });
           }
           Rubric.Rubric_ID = Rubric_ID;
           Rubric.Rubric_Name = result[0].Rubric_Name;
@@ -312,8 +312,8 @@ router.get(
   }
 );
 
-// @route   POST api/rubrics/edit/rubrics:handle
-// @desc    update the changes in  a Rubric
+// @route   POST api/rubrics/measures/update/:handle
+// @desc    update the changes in  a measure
 // @access  Private route
 router.post(
   "/measure/update/:handle",
@@ -346,6 +346,9 @@ router.post(
   }
 );
 
+// @route   POST api/rubrics/column/update/:handle
+// @desc    update the changes in  a column cell
+// @access  Private route
 router.post(
   "/column/update/:handle",
   passport.authenticate("jwt", { session: false }),
@@ -369,6 +372,44 @@ router.post(
         if (err) throw err;
         else {
           res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   POST api/rubrics/assign/:handle
+// @desc    update the changes in  a column cell
+// @access  Private route
+router.post(
+  "/assign/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_ID = req.params.handle;
+    const Evaluator_email = db.escape(req.body.Evaluator_email);
+
+    if (type == "Admin") {
+      let sql =
+        "INSERT INTO RUBRIC_ASSIGN(Rubric,ID, Evaluator_Email) VALUES(" +
+        Rubric_ID +
+        "," +
+        Evaluator_email +
+        ")";
+
+      db.query(sql, (err, result) => {
+        if (err)
+          res.status(404).json({ error: "There was a problem adding it" });
+        else {
+          res
+            .status(200)
+            .json({ message: "Rubric has been successfully assigned" });
         }
       });
     } else {
