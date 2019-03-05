@@ -2,6 +2,7 @@ import { GET_RUBRICS, RUBRICS_LOADING } from "../actions/types";
 
 const initialState = {
   allRubrics: null,
+  rubric: null,
   loading: false
 };
 

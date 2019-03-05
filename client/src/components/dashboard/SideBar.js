@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { slide as Menu } from "react-burger-menu";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,9 +15,9 @@ import {
 library.add(faBars, faTimes, faHome, faTasks, faFileAlt, faEnvelope);
 
 class SideBar extends Component {
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
 
   render() {
     return (
@@ -26,7 +26,7 @@ class SideBar extends Component {
         pageWrapId={"page-wrap"}
         outerContainerId={"outer-container"}
         noOverlay
-        isOpen
+        // isOpen
         customBurgerIcon={<FontAwesomeIcon icon="bars" />}
         customCrossIcon={<FontAwesomeIcon icon="times" color="white" />}
       >

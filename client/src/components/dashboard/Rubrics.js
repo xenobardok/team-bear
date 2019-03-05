@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getRubrics } from "../../actions/rubricsActions";
@@ -6,37 +7,25 @@ import { ListGroup, Card, Button } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 // import SideBar from "./SideBar";
 
-const DisplayRubric = props => {
-  return (
-    <ListGroup defaultActiveKey="#link1">
-      <ListGroup.Item action href="#link1">
-        {props.name}
-      </ListGroup.Item>
-    </ListGroup>
-  );
-};
-
 class Rubrics extends Component {
   componentDidMount() {
     this.props.getRubrics();
   }
-  componentWillReceiveProps(nextProps) {
-    const rubrics = this.props.rubrics.allRubrics;
-    if (rubrics) {
-      for (let i = 0; i < rubrics.length; i++) {
-        console.log(rubrics[i].Rubrics_Name);
-      }
-    }
-  }
+
   render() {
     let { allRubrics, loading } = this.props.rubrics;
-    let rubricsList;
+    let rubricsList = "";
+    let createRubric;
     if (allRubrics === null || loading) {
       rubricsList = <Spinner />;
     } else {
       // Check if logged in user has rubrics to view
       if (Object.keys(allRubrics).length > 0) {
-        rubricsList = <p>Rubrics coming up</p>;
+        rubricsList = allRubrics.map(value => (
+          <ListGroup.Item action key={value.Rubric_ID}>
+            {value.Rubrics_Name}
+          </ListGroup.Item>
+        ));
       } else {
         rubricsList = (
           <div>
@@ -53,10 +42,21 @@ class Rubrics extends Component {
       }
     }
 
+    if (this.props.auth.user.type === "Admin") {
+      createRubric = (
+        <Link to="/dashboard/rubrics/create">
+          <Button variant="primary">Create a new rubric</Button>
+        </Link>
+      );
+    }
     return (
       <Card className="text-center">
         <Card.Header>List of Available Rubrics</Card.Header>
-        {rubricsList}
+        <Card.Body>
+          {rubricsList}
+          <br />
+          {createRubric}
+        </Card.Body>
         {/* {rubrics.map(item => (
           <DisplayRubric name={item.Rubrics_Name} />
         ))} */}
