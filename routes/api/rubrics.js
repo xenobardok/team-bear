@@ -15,7 +15,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = req.user.email;
+    const email = req.user.Email;
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
@@ -57,7 +57,8 @@ router.post(
     const rubricFields = {};
     let done = false;
 
-    const email = db.escape(req.user.email);
+    //console.log(req.body);
+    const email = db.escape(req.user.Email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
@@ -205,7 +206,6 @@ router.post(
     }
   }
 );
-
 // @route   GET api/rubrics/rubrics:handle
 // @desc    get the values of a Rubric
 // @access  Private route

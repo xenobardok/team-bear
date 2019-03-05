@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getRubrics } from "../../actions/rubricsActions";
+import { createRubric } from "../../actions/rubricsActions";
 import { Form, Col, Button, Row } from "react-bootstrap";
+import classnames from "classnames";
 
 class Scales extends Component {
   changeHandler(e) {
@@ -20,6 +21,7 @@ class Scales extends Component {
               placeholder="Letter"
               value={this.props.value.label}
               onChange={this.changeHandler.bind(this)}
+              required
             />
           </Col>
           <Col>
@@ -28,6 +30,7 @@ class Scales extends Component {
               name={this.props.name + ".value"}
               value={this.props.value.value}
               onChange={this.changeHandler.bind(this)}
+              required
             />
           </Col>
         </Row>
@@ -46,16 +49,28 @@ class CreateRubric extends Component {
       Column_Num: "2",
       Scale: [
         {
-          label: "First Label",
-          value: "First value"
+          label: "",
+          value: ""
         }
-      ]
+      ],
+      errors: {}
     };
   }
   componentDidMount() {
-    this.props.getRubrics();
+    // this.props.getRubrics();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.rubric) {
+      console.log(nextProps.rubric);
+      this.props.history.push("/rubrics");
+    }
+
+    if (nextProps.errors) {
+      console.log(nextProps.errors);
+      this.setState({ errors: nextProps.errors });
+    }
+  }
   onChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -70,11 +85,8 @@ class CreateRubric extends Component {
           value: ""
         });
       }
-      this.setState(state => {
-        console.log(scaleArray);
-        return {
-          Scale: scaleArray
-        };
+      this.setState({
+        Scale: scaleArray
       });
     }
   }
@@ -116,8 +128,8 @@ class CreateRubric extends Component {
       Column_Num: this.state.Column_Num,
       Scale: this.state.Scale
     };
-
     console.log(rubric);
+    this.props.createRubric(rubric);
   }
   render() {
     let scaleRows = [];
@@ -132,8 +144,9 @@ class CreateRubric extends Component {
         />
       );
     }
+    const { errors } = this.state;
     return (
-      <Form onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit.bind(this)}>
         <h2>Create a new Rubric</h2>
         <br />
         <Form.Group as={Row} controlId="formHorizontalRubric">
@@ -147,7 +160,11 @@ class CreateRubric extends Component {
               placeholder="Eg. BUSN 3005 Presentation Rubric"
               value={this.state.Rubric_Name}
               onChange={this.onChange.bind(this)}
+              className={classnames("", { "is-invalid": errors.Rubric_Name })}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.Rubric_Name}
+            </Form.Control.Feedback>
           </Col>
         </Form.Group>
         <Form.Group as={Row} controlId="formHorizontalRows">
@@ -198,7 +215,12 @@ class CreateRubric extends Component {
           </Form.Label>
           <Col sm={8}>{scaleRows}</Col>
         </Form.Group>
-        <Button variant="primary" block onClick={this.onSubmit.bind(this)}>
+        <Button
+          variant="primary"
+          block
+          onClick={this.onSubmit.bind(this)}
+          type="submit"
+        >
           Create
         </Button>
       </Form>
@@ -206,19 +228,19 @@ class CreateRubric extends Component {
   }
 }
 
-// export default Rubrics;
 CreateRubric.propTypes = {
-  getRubrics: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  createRubric: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  rubric: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
-  rubrics: state.rubrics
+  rubric: state.rubric
 });
 
 export default connect(
   mapStateToProps,
-  { getRubrics }
+  { createRubric }
 )(CreateRubric);
