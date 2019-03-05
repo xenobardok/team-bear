@@ -15,7 +15,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = req.user.Email;
+    const email = req.user.email;
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
@@ -58,7 +58,7 @@ router.post(
     let done = false;
 
     //console.log(req.body);
-    const email = db.escape(req.user.Email);
+    const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
@@ -183,9 +183,7 @@ router.post(
                         if (err) {
                           throw err;
                         } else {
-                          res
-                            .status(200)
-                            .json({ message: "Successfully Added" });
+                          res.status(200).json({ Rubric_ID: Rubric_ID });
                         }
                       });
                     }
@@ -199,11 +197,6 @@ router.post(
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
-    if (done) {
-      return res.status(200).json({
-        message: "Successfully added"
-      });
-    }
   }
 );
 // @route   GET api/rubrics/rubrics:handle
@@ -215,9 +208,9 @@ router.get(
   (req, res) => {
     //Get Fields
 
-    const email = db.escape(req.user.Email);
+    const email = db.escape(req.user.email);
     const type = req.user.type;
-    const dept = db.escape(req.user.Dept_ID);
+    const dept = db.escape(req.user.dept);
     const Rubric_ID = req.params.handle;
     const Rubric = {};
     if (type == "Admin") {
