@@ -5,6 +5,9 @@ const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
 
+// Loading Input Validation
+const validateRubricInput = require("../../validation/rubric");
+
 // @route   GET api/rubrics
 // @desc    Gets the lists of all rubrics
 // @access  Private
@@ -56,6 +59,7 @@ router.post(
 
     const email = db.escape(req.user.email);
     const type = req.user.type;
+<<<<<<< HEAD
     const dept = db.escape(req.user.dept);
     if (req.body.Rubric_Name)
       rubricFields.name = db.escape(req.body.Rubric_Name);
@@ -65,8 +69,24 @@ router.post(
       rubricFields.Scale = req.body.Scale;
       rubricFields.ScaleSize = db.escape(req.body.Scale.length);
     }
+=======
+    const dept = db.escape(req.user.Dept_ID);
+>>>>>>> 0d54c340f8554400480c2bf5b99bc851f9e64248
 
     if (type == "Admin") {
+      const { errors, isValid } = validateRubricInput(req.body);
+
+      if (!isValid) {
+        return res.status(404).json(errors);
+      }
+      if (req.body.Rubric_Name)
+        rubricFields.name = db.escape(req.body.Rubric_Name);
+      if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
+      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
+      if (req.body.Scale) {
+        rubricFields.Scale = req.body.Scale;
+        rubricFields.ScaleSize = db.escape(req.body.Scale.length);
+      }
       let sql =
         "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
         dept +
@@ -74,12 +94,20 @@ router.post(
         rubricFields.name;
 
       db.query(sql, (err, result) => {
+<<<<<<< HEAD
         if (err)
           // return res
           //   .status(400)
           //   .json({ message: "Rubric already exists with that name" });
           return err;
+=======
+        if (err) throw err;
+>>>>>>> 0d54c340f8554400480c2bf5b99bc851f9e64248
         else {
+          if (result.length > 0) {
+            errors.Rubric_Name = "Rubric with that name already exists.";
+            return res.status(404).json(errors);
+          }
           sql =
             "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
             rubricFields.name +
@@ -141,7 +169,6 @@ router.post(
 
                 sqls.push(value);
               }
-              console.log(sqls);
               db.query(newSql1, [sqls], function(err, result) {
                 if (err) {
                   throw err;
@@ -168,7 +195,6 @@ router.post(
                           sqls.push(value);
                         }
                       });
-                      console.log(sqls);
                       db.query(newSql2, [sqls], function(err, result) {
                         if (err) {
                           throw err;
@@ -184,44 +210,6 @@ router.post(
               });
             }
           });
-
-          // for (i = 1; i <= rubricFields.Rows_Num; i++) {
-          //   newsql =
-          //     "SELECT Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID =" +
-          //     Rubric_ID +
-          //     " AND Sort_Index=" +
-          //     i;
-          //   console.log(newsql);
-          //   db.query(newsql, (err, result) => {
-          //     if (err)
-          //       return res.status(400).json({
-          //         message:
-          //           "There was some error. Please try again later."
-          //       });
-          //     else {
-          //       let Rubric_Row_ID = db.escape(result[0].Rubric_Row_ID);
-          //       console.log(Rubric_Row_ID);
-          //       for (var j = 1; j <= rubricFields.Column_Num; j++) {
-          //         newSql =
-          //           "INSERT INTO COLUMNS(Rubric_Row_ID,Column_No,Value) VALUES(" +
-          //           Rubric_Row_ID +
-          //           "," +
-          //           j +
-          //           "," +
-          //           empty_var +
-          //           ")";
-          //         console.log(newSql);
-          //         db.query(newSql, (err, result) => {
-          //           if (err)
-          //             return res.status(400).json({
-          //               message:
-          //                 "There was some error. Please try again later."
-          //             });
-          //         });
-          //       }
-          //     }
-          //   });
-          // }
         }
       });
     } else {
@@ -258,7 +246,7 @@ router.get(
 
       db.query(sql, (err, result) => {
         var Rubrics = {};
-        if (err) return res.status(400).json({ error: "Rubric Not Found" });
+        if (err) throw err;
         else {
           if (result.length < 1) {
             return res.status(400).json({ error: "Rubric Not Found" });
@@ -285,77 +273,57 @@ router.get(
                 Rubric.Scale.push(aScale);
               });
               var newSql =
-                "SELECT * FROM RUBRIC_ROW NATURAL JOIN ROW_LABELS WHERE Rubric_ID =" +
+                "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
                 Rubric_ID +
                 " ORDER BY Sort_Index";
 
               db.query(newSql, (err, result) => {
-                if (err) return res.status(404).json(err);
+                if (err) throw err;
                 else {
+                  let done = false;
+                  let rowIndex = 0;
+                  const totalRows = result.length;
                   result.forEach(row => {
                     var Rubric_Row_ID = row.Rubric_Row_ID;
-                    var Row_ID = row.Row_ID;
                     var Sort_Index = row.Sort_Index;
                     var Measure_Factor = row.Measure_Factor;
                     var Column_values = [];
                     var newSql2 =
-                      "SELECT * FROM ROW_LABELS NATURAL JOIN COLUMNS WHERE Row_ID =" +
-                      Row_ID +
+                      "SELECT * FROM COLUMNS WHERE Rubric_Row_ID =" +
+                      Rubric_Row_ID +
                       " ORDER BY Column_No";
-                    console.log(newSql2);
+
                     db.query(newSql2, (err, result) => {
                       if (err) return res.status(404).json(err);
                       else {
+                        let columnIndex = 0;
+                        const totalColumn = result.length;
                         result.forEach(row => {
                           var eachColumn = {
+                            Column_ID: row.Columns_ID,
                             Column_No: row.Column_No,
                             value: row.Value
                           };
+                          columnIndex++;
                           Column_values.push(eachColumn);
                         });
 
-                        //console.log(Rubric.Column_Num - result.length);
-                        for (
-                          j = 0;
-                          j < Rubric.Column_Num - result.length;
-                          j++
-                        ) {
-                          var eachColumn = {
-                            Column_No: null,
-                            value: null
-                          };
-                          Column_values.push(eachColumn);
-                        }
                         var eachRow = {
-                          Row_ID: Row_ID,
+                          Rubric_Row_ID: Rubric_Row_ID,
                           Measure_Factor: Measure_Factor,
                           Column_values: Column_values
                         };
                         Rubric.data.push(eachRow);
+                        rowIndex++;
+                        if (
+                          rowIndex == totalRows &&
+                          columnIndex == totalColumn
+                        ) {
+                          return res.json(Rubric);
+                        }
                       }
                     });
                   });
-                  console.log(Rubric.Rows_Num - result.length);
-                  for (i = 0; i < Rubric.Rows_Num - result.length; i++) {
-                    var Column_values = [];
-                    for (j = 0; j < Rubric.Column_Num; j++) {
-                      var eachColumn = {
-                        Column_No: null,
-                        value: null
-                      };
-                      Column_values.push(eachColumn);
-                    }
-                    var eachRow = {
-                      Row_ID: null,
-                      Measure_Factor: null,
-                      Column_values: Column_values
-                    };
-
-                    Rubric.data.push(eachRow);
-                    //console.log(Rubric);
-                  }
-                  console.log(Rubric);
-                  return res.json(Rubric);
                 }
               });
             }
