@@ -71,7 +71,8 @@ router.post(
       if (req.body.Rubric_Name)
         rubricFields.name = db.escape(req.body.Rubric_Name);
       if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
+      if (req.body.Column_Num)
+        rubricFields.Column_Num = req.body.Column_Num - 1;
       if (req.body.Scale) {
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
@@ -259,7 +260,7 @@ router.get(
               db.query(newSql, (err, result) => {
                 if (err) throw err;
                 else {
-                  let done = false;
+                  //let done = false;
                   let rowIndex = 0;
                   const totalRows = result.length;
                   result.forEach(row => {
