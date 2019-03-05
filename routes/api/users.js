@@ -153,4 +153,47 @@ router.get(
   }
 );
 
+// @route   GET api/users/current
+// @desc    Return current user
+// @access  Private
+router.get(
+  "/members",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const profiles = [];
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    if (type == "Admin") {
+      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
+      db.query(sql, (err, result) => {
+        if (err) res.status(400).json(err);
+        else {
+          result.forEach(row => {
+            let name = row.Fname;
+            if (row.Mname != null) {
+              name = name + " " + row.Mname;
+            }
+            name = name + " " + row.Lname;
+
+            let email = row.Email;
+
+            let profile = {
+              Name: name,
+              Email: email
+            };
+
+            profiles.push(profile);
+          });
+
+          res.status(200).json(profiles);
+        }
+      });
+    } else {
+      res.status(200).json(profiles);
+    }
+  }
+);
+
 module.exports = router;
