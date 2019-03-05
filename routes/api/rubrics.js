@@ -316,10 +316,64 @@ router.get(
 // @desc    update the changes in  a Rubric
 // @access  Private route
 router.post(
-  "/edit/:handle",
+  "/measure/update/:handle",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_Row_ID = req.params.handle;
+    const value = db.escape(req.body.Measure_Factor);
+
+    if (type == "Admin") {
+      let sql =
+        "UPDATE  RUBRIC_ROW SET Measure_Factor = " +
+        value +
+        " WHERE Rubric_Row_ID = " +
+        Rubric_Row_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        else {
+          res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+router.post(
+  "/column/update/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Columns_ID = req.params.handle;
+    const value = db.escape(req.body.Value);
+
+    if (type == "Admin") {
+      let sql =
+        "UPDATE  COLUMNS SET Value = " +
+        value +
+        " WHERE Columns_ID = " +
+        Columns_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        else {
+          res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
   }
 );
 
