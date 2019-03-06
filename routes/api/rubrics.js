@@ -235,7 +235,8 @@ router.get(
 
           sql =
             "SELECT * FROM RUBRIC NATURAL JOIN RUBRIC_SCALE WHERE Rubric_ID =" +
-            Rubric_ID;
+            Rubric_ID +
+            " ORDER BY Value ASC";
 
           db.query(sql, (err, result) => {
             if (err) return res.status(404).json(err);
@@ -325,7 +326,6 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Rubric_Row_ID = req.params.handle;
     const value = db.escape(req.body.Measure_Factor);
-
     if (type == "Admin") {
       let sql =
         "UPDATE  RUBRIC_ROW SET Measure_Factor = " +

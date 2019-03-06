@@ -4,7 +4,9 @@ import {
   RUBRICS_LOADING,
   CREATE_RUBRIC,
   GET_ERRORS,
-  GET_SINGLE_RUBRIC
+  GET_SINGLE_RUBRIC,
+  SET_DATA_VALUE,
+  SET_MEASURE_VALUE
 } from "./types";
 
 export const getRubrics = () => dispatch => {
@@ -70,6 +72,36 @@ export const createRubric = rubric => dispatch => {
     });
 };
 
-export const changeMeasureValue = id => dispatch => {};
+export const setMeasureValue = (id, Measure_Factor) => dispatch => {
+  axios
+    .post(`/api/rubrics/measure/update/${id}`, {
+      Measure_Factor: Measure_Factor
+    })
+    .then(res => {
+      dispatch({
+        type: SET_MEASURE_VALUE,
+        payload: res.data
+      });
+    })
+    .catch(err => ({
+      type: GET_ERRORS,
+      payload: err.response.data
+    }));
+};
 
-export const changeDataValue = id => dispatch => {};
+export const setDataValue = (id, value) => dispatch => {
+  axios
+    .post(`/api/rubrics/column/update/${id}`, {
+      Value: value
+    })
+    .then(res => {
+      dispatch({
+        type: SET_DATA_VALUE,
+        payload: res.data
+      });
+    })
+    .catch(err => ({
+      type: GET_ERRORS,
+      payload: err.response.data
+    }));
+};

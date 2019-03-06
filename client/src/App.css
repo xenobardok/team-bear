@@ -177,3 +177,21 @@ form{
 a.dropdown-item{
   width: 50px!important;
 }
+
+td{
+  padding: 0px!important;
+}
+textarea {
+  resize: none!important;
+  height: 130px!important;
+  font-size: 14px!important;
+}
+
+.measureTitle{
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px!important;
+  vertical-align: middle!important;
+  width: 250px!important;
+  padding: 6px 3px;
+}
