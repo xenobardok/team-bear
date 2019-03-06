@@ -229,9 +229,8 @@ class CreateRubric extends Component {
 }
 
 CreateRubric.propTypes = {
-  createRubric: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  rubric: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired
+  // rubric: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

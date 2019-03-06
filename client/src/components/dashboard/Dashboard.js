@@ -11,6 +11,7 @@ import "../../App.css";
 
 import Rubrics from "./Rubrics";
 import CreateRubric from "./CreateRubric";
+import ShowRubric from "./ShowRubric";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -48,6 +49,11 @@ class Dashboard extends Component {
               exact
               path="/dashboard/rubrics/create"
               component={CreateRubric}
+            />
+            <Route
+              exact
+              path="/dashboard/rubrics/:id(\d+)"
+              component={ShowRubric}
             />
           </Container>
         </main>

@@ -3,7 +3,8 @@ import {
   GET_RUBRICS,
   RUBRICS_LOADING,
   CREATE_RUBRIC,
-  GET_ERRORS
+  GET_ERRORS,
+  GET_SINGLE_RUBRIC
 } from "./types";
 
 export const getRubrics = () => dispatch => {
@@ -20,6 +21,24 @@ export const getRubrics = () => dispatch => {
       dispatch({
         type: GET_RUBRICS,
         payload: []
+      })
+    );
+};
+
+export const getSingleRubric = id => dispatch => {
+  dispatch(setRubricsLoading());
+  axios
+    .get(`/api/rubrics/${id}`)
+    .then(res =>
+      dispatch({
+        type: GET_SINGLE_RUBRIC,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_RUBRICS,
+        payload: null
       })
     );
 };
@@ -50,3 +69,7 @@ export const createRubric = rubric => dispatch => {
       });
     });
 };
+
+export const changeMeasureValue = id => dispatch => {};
+
+export const changeDataValue = id => dispatch => {};

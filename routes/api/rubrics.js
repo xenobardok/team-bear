@@ -15,7 +15,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = req.user.Email;
+    const email = req.user.email;
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
@@ -215,9 +215,9 @@ router.get(
   (req, res) => {
     //Get Fields
 
-    const email = db.escape(req.user.Email);
+    const email = db.escape(req.user.email);
     const type = req.user.type;
-    const dept = db.escape(req.user.Dept_ID);
+    const dept = db.escape(req.user.dept);
     const Rubric_ID = req.params.handle;
     const Rubric = {};
     if (type == "Admin") {

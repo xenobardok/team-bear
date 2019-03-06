@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getRubrics } from "../../actions/rubricsActions";
@@ -22,9 +22,11 @@ class Rubrics extends Component {
       // Check if logged in user has rubrics to view
       if (Object.keys(allRubrics).length > 0) {
         rubricsList = allRubrics.map(value => (
-          <ListGroup.Item action key={value.Rubric_ID}>
-            {value.Rubrics_Name}
-          </ListGroup.Item>
+          <Link to={"/dashboard/rubrics/" + value.Rubric_ID}>
+            <ListGroup.Item action key={value.Rubric_ID}>
+              {value.Rubrics_Name}
+            </ListGroup.Item>
+          </Link>
         ));
       } else {
         rubricsList = (
@@ -57,9 +59,6 @@ class Rubrics extends Component {
           <br />
           {createRubric}
         </Card.Body>
-        {/* {rubrics.map(item => (
-          <DisplayRubric name={item.Rubrics_Name} />
-        ))} */}
       </Card>
     );
   }
