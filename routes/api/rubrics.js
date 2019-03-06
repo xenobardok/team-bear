@@ -72,8 +72,7 @@ router.post(
       if (req.body.Rubric_Name)
         rubricFields.name = db.escape(req.body.Rubric_Name);
       if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-      if (req.body.Column_Num)
-        rubricFields.Column_Num = req.body.Column_Num - 1;
+      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
       if (req.body.Scale) {
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
@@ -415,6 +414,43 @@ router.post(
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
+  }
+);
+
+// @route   GET api/rubrics/evaluations/
+// @desc    Returns the list of all the assigned rubrics
+// @access  Private route
+router.get(
+  "/evaluations/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    Rubrics = [];
+    let sql =
+      "SELECT * FROM  RUBRIC_ASSIGN NATURAL JOIN RUBRIC WHERE Evaluators_Email = " +
+      email;
+
+    db.query(sql, (err, result) => {
+      if (err)
+        res.status(404).json({ error: "There was a problem loading it" });
+      else {
+        result.forEach(row => {
+          id = row.Rubric_ID;
+          name = row.Rubric_Name;
+
+          rubric = {
+            Rubric_ID: id,
+            Rubric_Name: name
+          };
+          Rubrics.push(rubric);
+        });
+        return res.status(200).json(Rubrics);
+      }
+    });
   }
 );
 
