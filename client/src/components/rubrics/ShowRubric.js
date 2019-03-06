@@ -22,31 +22,32 @@ class AnalyseRubric extends Component {
   };
   render() {
     scalesRow = this.props.Scale.map(singleValue => (
-      <th key={singleValue.value}>
-        {singleValue.label + "(" + singleValue.value + ")"}
+      <th key={singleValue.value} className="centerAlign borderedCell">
+        {singleValue.label + " (" + singleValue.value + ")"}
       </th>
     ));
 
     dataRow = this.props.data.map(singleRow => (
       <tr key={singleRow.Rubric_Row_ID}>
-        <td>
+        <td className="borderedCell">
           <FormControl
             name={singleRow.Rubric_Row_ID}
             as="textarea"
             aria-label="With textarea"
             onChange={this.onChangeMeasure.bind(this)}
             defaultValue={singleRow.Measure_Factor}
-            className="measureTitle"
+            className="measureTitle centerAlign cells"
           />
         </td>
         {singleRow.Column_values.map(cell => (
-          <td key={cell.Column_ID}>
+          <td key={cell.Column_ID} className="borderedCell">
             <FormControl
               name={cell.Column_ID}
               as="textarea"
               aria-label="With textarea"
               onChange={this.onChangeDataValue.bind(this)}
               defaultValue={cell.value}
+              className="cells"
             />
           </td>
         ))}
@@ -55,10 +56,14 @@ class AnalyseRubric extends Component {
     return (
       <div key={this.props.Rubric_ID}>
         <h2>{this.props.Rubric_Name}</h2>
+        <br />
         <Table bordered striped>
           <thead>
-            <tr>
-              <th key="Criteria" className="measureTitle">
+            <tr className="header">
+              <th
+                key="Criteria"
+                className="measureTitle centerAlign borderedCell"
+              >
                 Criteria
               </th>
               {scalesRow}

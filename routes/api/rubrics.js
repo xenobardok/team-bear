@@ -169,7 +169,7 @@ router.post(
                       result.forEach(row => {
                         Rubric_Row_ID = row.Rubric_Row_ID;
 
-                        for (var j = 1; j <= rubricFields.Column_Num; j++) {
+                        for (var j = 1; j <= rubricFields.Column_Num - 1; j++) {
                           value = [];
                           value.push(Rubric_Row_ID);
                           value.push(j);
