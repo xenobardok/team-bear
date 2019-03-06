@@ -58,7 +58,7 @@ router.post(
     let done = false;
 
     //console.log(req.body);
-    const email = db.escape(req.user.Email);
+    const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
@@ -72,8 +72,7 @@ router.post(
       if (req.body.Rubric_Name)
         rubricFields.name = db.escape(req.body.Rubric_Name);
       if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
-      if (req.body.Column_Num)
-        rubricFields.Column_Num = req.body.Column_Num - 1;
+      if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
       if (req.body.Scale) {
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
@@ -183,9 +182,7 @@ router.post(
                         if (err) {
                           throw err;
                         } else {
-                          res
-                            .status(200)
-                            .json({ message: "Successfully Added" });
+                          res.status(200).json({ Rubric_ID: Rubric_ID });
                         }
                       });
                     }
@@ -198,11 +195,6 @@ router.post(
       });
     } else {
       res.status(404).json({ error: "Not an Admin" });
-    }
-    if (done) {
-      return res.status(200).json({
-        message: "Successfully added"
-      });
     }
   }
 );
@@ -232,7 +224,7 @@ router.get(
         if (err) throw err;
         else {
           if (result.length < 1) {
-            return res.status(400).json({ error: "Rubric Not Found" });
+            return res.status(404).json({ error: "Rubric Not Found" });
           }
           Rubric.Rubric_ID = Rubric_ID;
           Rubric.Rubric_Name = result[0].Rubric_Name;
@@ -319,14 +311,146 @@ router.get(
   }
 );
 
-// @route   POST api/rubrics/edit/rubrics:handle
-// @desc    update the changes in  a Rubric
+// @route   POST api/rubrics/measures/update/:handle
+// @desc    update the changes in  a measure
 // @access  Private route
 router.post(
-  "/edit/:handle",
+  "/measure/update/:handle",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_Row_ID = req.params.handle;
+    const value = db.escape(req.body.Measure_Factor);
+
+    if (type == "Admin") {
+      let sql =
+        "UPDATE  RUBRIC_ROW SET Measure_Factor = " +
+        value +
+        " WHERE Rubric_Row_ID = " +
+        Rubric_Row_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        else {
+          res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   POST api/rubrics/column/update/:handle
+// @desc    update the changes in  a column cell
+// @access  Private route
+router.post(
+  "/column/update/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Columns_ID = req.params.handle;
+    const value = db.escape(req.body.Value);
+
+    if (type == "Admin") {
+      let sql =
+        "UPDATE  COLUMNS SET Value = " +
+        value +
+        " WHERE Columns_ID = " +
+        Columns_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        else {
+          res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   POST api/rubrics/assign/:handle
+// @desc    update the changes in  a column cell
+// @access  Private route
+router.post(
+  "/assign/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_ID = req.params.handle;
+    const Evaluator_email = db.escape(req.body.Evaluator_email);
+
+    if (type == "Admin") {
+      let sql =
+        "INSERT INTO RUBRIC_ASSIGN(Rubric,ID, Evaluator_Email) VALUES(" +
+        Rubric_ID +
+        "," +
+        Evaluator_email +
+        ")";
+
+      db.query(sql, (err, result) => {
+        if (err)
+          res.status(404).json({ error: "There was a problem adding it" });
+        else {
+          res
+            .status(200)
+            .json({ message: "Rubric has been successfully assigned" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   GET api/rubrics/evaluations/
+// @desc    Returns the list of all the assigned rubrics
+// @access  Private route
+router.get(
+  "/evaluations/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    Rubrics = [];
+    let sql =
+      "SELECT * FROM  RUBRIC_ASSIGN NATURAL JOIN RUBRIC WHERE Evaluators_Email = " +
+      email;
+
+    db.query(sql, (err, result) => {
+      if (err)
+        res.status(404).json({ error: "There was a problem loading it" });
+      else {
+        result.forEach(row => {
+          id = row.Rubric_ID;
+          name = row.Rubric_Name;
+
+          rubric = {
+            Rubric_ID: id,
+            Rubric_Name: name
+          };
+          Rubrics.push(rubric);
+        });
+        return res.status(200).json(Rubrics);
+      }
+    });
   }
 );
 
