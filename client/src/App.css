@@ -204,12 +204,12 @@ textarea {
 }
 
 .cells {
-  border: 1px black solid !important;
   border-radius: 0px;
   height: 150px !important;
+  margin: none;
 }
 .cells:hover {
-  border: 1px solid grey !important;
+  border: 1.5px solid black !important;
   border-radius: 5px !important;
   cursor: pointer;
 }
@@ -217,4 +217,13 @@ textarea {
 .cells:focus {
   border: 1px solid blue !important;
   border-radius: 5px !important;
+}
+
+.borderedCell {
+  border: 1px darkgrey solid !important;
+}
+
+.header {
+  border: 1px black solid !important;
+  background-color: gainsboro;
 }

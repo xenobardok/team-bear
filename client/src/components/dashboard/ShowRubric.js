@@ -22,14 +22,14 @@ class AnalyseRubric extends Component {
   };
   render() {
     scalesRow = this.props.Scale.map(singleValue => (
-      <th key={singleValue.value} className="centerAlign">
+      <th key={singleValue.value} className="centerAlign borderedCell">
         {singleValue.label + " (" + singleValue.value + ")"}
       </th>
     ));
 
     dataRow = this.props.data.map(singleRow => (
       <tr key={singleRow.Rubric_Row_ID}>
-        <td>
+        <td className="borderedCell">
           <FormControl
             name={singleRow.Rubric_Row_ID}
             as="textarea"
@@ -40,7 +40,7 @@ class AnalyseRubric extends Component {
           />
         </td>
         {singleRow.Column_values.map(cell => (
-          <td key={cell.Column_ID}>
+          <td key={cell.Column_ID} className="borderedCell">
             <FormControl
               name={cell.Column_ID}
               as="textarea"
@@ -59,8 +59,11 @@ class AnalyseRubric extends Component {
         <br />
         <Table bordered striped>
           <thead>
-            <tr>
-              <th key="Criteria" className="measureTitle centerAlign">
+            <tr className="header">
+              <th
+                key="Criteria"
+                className="measureTitle centerAlign borderedCell"
+              >
                 Criteria
               </th>
               {scalesRow}
