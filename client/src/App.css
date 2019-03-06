@@ -1,59 +1,69 @@
-html{
+html {
   height: 100%;
 }
 
-body{
-  font-family: 'Rubik', sans-serif;
+body {
+  font-family: "Rubik", sans-serif;
   /* height: 100%; */
 }
 
-#root{
+#root {
   /* height: 100%; */
 }
 
-.main{
-  background: url('./img/landing.jpg'), #FF5F6D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)), url('./img/landing.jpg');  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)), url('./img/landing.jpg'); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+.main {
+  background: url("./img/landing.jpg"), #ff5f6d; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+      rgba(255, 195, 113, 0.5),
+      rgba(255, 95, 109, 0.5)
+    ),
+    url("./img/landing.jpg"); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)),
+    url("./img/landing.jpg"); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   min-height: 700px;
 }
 
-.main h1{
+.main h1 {
   color: #840029;
   text-align: center;
   padding-top: 25vh;
 }
 
-nav.navbar.navbar-expand-lg.navbar-dark.bg-dark{
-  background-color: #7b344a!important;
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark {
+  background-color: #7b344a !important;
 }
 
-.main .mainContext{
+.main .mainContext {
   text-align: center;
   font-size: 1.25em;
 }
 
-.background-gradient{
-  background: url('./img/landing.jpg'), #FF5F6D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5));  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(rgba(255, 195, 113, 0.5), rgba(255, 95, 109, 0.5)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+.background-gradient {
+  background: url("./img/landing.jpg"), #ff5f6d; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    rgba(255, 195, 113, 0.5),
+    rgba(255, 95, 109, 0.5)
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    rgba(255, 195, 113, 0.5),
+    rgba(255, 95, 109, 0.5)
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
-.fullpage{
+.fullpage {
   height: 100%;
 }
 
-@media (min-width: 768px){
+@media (min-width: 768px) {
   form {
     padding: 5em;
-    
   }
 }
 
-form{
+form {
   padding-top: 5em;
 }
 
@@ -62,11 +72,10 @@ form{
   border-color: #c36c87;
 }
 
-.btn-primary:hover{
+.btn-primary:hover {
   background-color: #a04561;
   border-color: #c36c87;
 }
-
 
 /* SIDEBAR CSS */
 /* Individual item */
@@ -81,18 +90,15 @@ form{
   transition: color 0.2s;
 }
 
-
-.label:hover{
-  background: none!important;
+.label:hover {
+  background: none !important;
 }
 
-.label span{
-  color:#7b344a;
-  text-shadow:
-   -1px -1px 0 rgba(255, 255, 255, 0.596),  
-    1px -1px 0 rgba(255, 255, 255, 0.596),
-    -1px 1px 0 rgba(255, 255, 255, 0.596),
-     1px 1px 0 rgba(255, 255, 255, 0.596);
+.label span {
+  color: #7b344a;
+  text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.596),
+    1px -1px 0 rgba(255, 255, 255, 0.596), -1px 1px 0 rgba(255, 255, 255, 0.596),
+    1px 1px 0 rgba(255, 255, 255, 0.596);
 }
 
 /* Change color on hover */
@@ -133,7 +139,7 @@ form{
 /* General sidebar styles */
 .bm-menu {
   background: #151b26;
-  padding: .5em 1.5em 0;
+  padding: 0.5em 1.5em 0;
   font-size: 1.15em;
 }
 
@@ -152,19 +158,17 @@ form{
   background: rgba(0, 0, 0, 0.3);
 }
 
-
-
 /* New styles */
 
-.workspace{
+.workspace {
   background-color: #f6f8f9;
 }
 
-#page-wrap h2{
+#page-wrap h2 {
   text-align: center;
 }
 
-.initial{
+.initial {
   z-index: 50;
   position: fixed;
   /* width: 36px; */
@@ -174,24 +178,43 @@ form{
   top: 36px;
   font-size: 1.05em;
 }
-a.dropdown-item{
-  width: 50px!important;
+a.dropdown-item {
+  width: 50px !important;
 }
 
-td{
-  padding: 0px!important;
+td {
+  padding: 0px !important;
 }
 textarea {
-  resize: none!important;
-  height: 130px!important;
-  font-size: 14px!important;
+  resize: none !important;
+  height: 130px !important;
+  font-size: 14px !important;
 }
 
-.measureTitle{
+.measureTitle {
   font-weight: bold;
-  text-align: center;
-  font-size: 18px!important;
-  vertical-align: middle!important;
-  width: 250px!important;
+  font-size: 18px !important;
+  vertical-align: middle !important;
+  width: 200px !important;
   padding: 6px 3px;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+.cells {
+  border: 1px black solid !important;
+  border-radius: 0px;
+  height: 150px !important;
+}
+.cells:hover {
+  border: 1px solid grey !important;
+  border-radius: 5px !important;
+  cursor: pointer;
+}
+
+.cells:focus {
+  border: 1px solid blue !important;
+  border-radius: 5px !important;
 }

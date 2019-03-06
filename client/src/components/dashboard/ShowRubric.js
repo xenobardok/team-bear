@@ -22,8 +22,8 @@ class AnalyseRubric extends Component {
   };
   render() {
     scalesRow = this.props.Scale.map(singleValue => (
-      <th key={singleValue.value}>
-        {singleValue.label + "(" + singleValue.value + ")"}
+      <th key={singleValue.value} className="centerAlign">
+        {singleValue.label + " (" + singleValue.value + ")"}
       </th>
     ));
 
@@ -36,7 +36,7 @@ class AnalyseRubric extends Component {
             aria-label="With textarea"
             onChange={this.onChangeMeasure.bind(this)}
             defaultValue={singleRow.Measure_Factor}
-            className="measureTitle"
+            className="measureTitle centerAlign cells"
           />
         </td>
         {singleRow.Column_values.map(cell => (
@@ -47,6 +47,7 @@ class AnalyseRubric extends Component {
               aria-label="With textarea"
               onChange={this.onChangeDataValue.bind(this)}
               defaultValue={cell.value}
+              className="cells"
             />
           </td>
         ))}
@@ -55,10 +56,11 @@ class AnalyseRubric extends Component {
     return (
       <div key={this.props.Rubric_ID}>
         <h2>{this.props.Rubric_Name}</h2>
+        <br />
         <Table bordered striped>
           <thead>
             <tr>
-              <th key="Criteria" className="measureTitle">
+              <th key="Criteria" className="measureTitle centerAlign">
                 Criteria
               </th>
               {scalesRow}
