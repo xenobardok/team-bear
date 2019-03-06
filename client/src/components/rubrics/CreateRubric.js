@@ -61,9 +61,12 @@ class CreateRubric extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.rubric) {
+    console.log(nextProps);
+    if (nextProps.Rubric_ID) {
       console.log(nextProps.rubric);
-      this.props.history.push("/rubrics");
+      this.props.history.push(
+        "/dashboard/rubrics/" + nextProps.rubric.Rubric_ID
+      );
     }
 
     if (nextProps.errors) {

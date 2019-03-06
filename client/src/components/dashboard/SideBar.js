@@ -38,9 +38,9 @@ class SideBar extends Component {
           <FontAwesomeIcon icon="home" />
           &nbsp;&nbsp;Home
         </Link>
-        <Link className="menu-item" to="/tasks">
+        <Link className="menu-item" to="/dashboard/tasks">
           <FontAwesomeIcon icon="tasks" />
-          &nbsp;&nbsp;My Tasks [NW]
+          &nbsp;&nbsp;My Tasks
         </Link>
         <Link className="menu-item" to="/inbox">
           <FontAwesomeIcon icon="envelope" />
@@ -50,7 +50,7 @@ class SideBar extends Component {
           <FontAwesomeIcon icon="file-alt" />
           &nbsp;&nbsp;Reports [NW]
         </Link>
-        <hr />
+        <hr className="label" />
         <Link to="/dashboard/rubrics">Rubrics</Link>
       </Menu>
     );

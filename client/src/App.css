@@ -133,8 +133,8 @@ form{
 /* General sidebar styles */
 .bm-menu {
   background: #151b26;
-  padding: .5em 1.5em 0;
-  font-size: 1.15em;
+  padding: 7px 10px;
+  font-size: 14px;
 }
 
 /* Morph shape necessary with bubble or elastic */

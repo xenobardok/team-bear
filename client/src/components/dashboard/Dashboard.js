@@ -9,9 +9,11 @@ import SideBar from "./SideBar";
 import SimpleName from "./SimpleName";
 import "../../App.css";
 
-import Rubrics from "./Rubrics";
-import CreateRubric from "./CreateRubric";
-import ShowRubric from "./ShowRubric";
+import DashboardContents from "./DashboardContents";
+import Rubrics from "../rubrics/Rubrics";
+import Tasks from "../tasks/Tasks";
+import CreateRubric from "../rubrics/CreateRubric";
+import ShowRubric from "../rubrics/ShowRubric";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -44,7 +46,9 @@ class Dashboard extends Component {
             <br />
             <br />
             <br />
+            <Route exact path="/dashboard" component={DashboardContents} />
             <Route exact path="/dashboard/rubrics" component={Rubrics} />
+            <Route exact path="/dashboard/tasks" component={Tasks} />
             <Route
               exact
               path="/dashboard/rubrics/create"
