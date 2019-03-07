@@ -182,7 +182,9 @@ router.post(
                         if (err) {
                           throw err;
                         } else {
-                          res.status(200).json({ Rubric_ID: Rubric_ID });
+                          res
+                            .status(200)
+                            .json((Rubric = { Rubric_ID: Rubric_ID }));
                         }
                       });
                     }
