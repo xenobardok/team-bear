@@ -53,7 +53,8 @@ class CreateRubric extends Component {
           value: ""
         }
       ],
-      errors: {}
+      errors: {},
+      Rubric_ID: ""
     };
   }
   componentDidMount() {
@@ -63,14 +64,12 @@ class CreateRubric extends Component {
   componentWillReceiveProps(nextProps) {
     console.log(nextProps);
     if (nextProps.Rubric_ID) {
-      console.log(nextProps.rubric);
-      this.props.history.push(
-        "/dashboard/rubrics/" + nextProps.rubric.Rubric_ID
-      );
+      // console.log(nextProps.rubric);
+      this.props.history.push("/dashboard");
     }
 
     if (nextProps.errors) {
-      console.log(nextProps.errors);
+      // console.log(nextProps.errors);
       this.setState({ errors: nextProps.errors });
     }
   }

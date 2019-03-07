@@ -58,7 +58,7 @@ export const createRubric = rubric => dispatch => {
       console.log(
         "Successfully created axios request. Dispatching result now!"
       );
-      console.log(res.data);
+      console.log(res);
       dispatch({
         type: CREATE_RUBRIC,
         payload: res.data

@@ -25,6 +25,7 @@ export default function(state = initialState, action) {
         loading: false
       };
     case CREATE_RUBRIC:
+      // console.log(action.payload);
       return {
         ...state,
         rubric: action.payload,

@@ -41,7 +41,6 @@ class Dashboard extends Component {
         <main id="page-wrap">
           <Route path={"/dashboard"} component={SimpleName} />
           <Container>
-            {/* <h1>This is just a dashboard</h1>  */}
             <br />
             <br />
             <br />

@@ -57,7 +57,7 @@ class Rubrics extends Component {
     return (
       <Card className="text-center">
         <Card.Header>List of Available Rubrics</Card.Header>
-        <Card.Body>
+        <Card.Body style={{ padding: "0px" }}>
           {rubricsList}
           <br />
           {createRubric}
