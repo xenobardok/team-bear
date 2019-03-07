@@ -53,7 +53,8 @@ class CreateRubric extends Component {
           value: ""
         }
       ],
-      errors: {}
+      errors: {},
+      rubric: {}
     };
   }
   componentDidMount() {
@@ -61,9 +62,9 @@ class CreateRubric extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
-    if (nextProps.Rubric_ID) {
-      console.log(nextProps.rubric);
+    // console.log(nextProps);
+    if (nextProps.rubric) {
+      // console.log(nextProps.rubric);
       this.props.history.push(
         "/dashboard/rubrics/" + nextProps.rubric.Rubric_ID
       );
@@ -232,14 +233,14 @@ class CreateRubric extends Component {
 }
 
 CreateRubric.propTypes = {
-  auth: PropTypes.object.isRequired
-  // rubric: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  rubric: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
-  rubric: state.rubric
+  rubric: state.rubrics.rubric
 });
 
 export default connect(
