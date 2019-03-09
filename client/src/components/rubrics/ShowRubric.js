@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
@@ -80,7 +80,6 @@ class ShowRubric extends Component {
   componentDidMount() {
     if (this.props.match.params.id) {
       this.props.getSingleRubric(this.props.match.params.id);
-      console.log(this.props.rubrics);
     }
   }
   render() {

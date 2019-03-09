@@ -1,7 +1,6 @@
 import {
   GET_RUBRICS,
   RUBRICS_LOADING,
-  CREATE_RUBRIC,
   GET_SINGLE_RUBRIC
 } from "../actions/types";
 
@@ -22,13 +21,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allRubrics: action.payload,
-        loading: false
-      };
-    case CREATE_RUBRIC:
-      // console.log(action.payload);
-      return {
-        ...state,
-        rubric: action.payload,
         loading: false
       };
     case GET_SINGLE_RUBRIC:

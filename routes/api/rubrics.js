@@ -21,7 +21,7 @@ router.get(
       let sql =
         "SELECT * FROM Evaluators natural join Department natural join RUBRIC where Admin_Email = Email and Email =  ('" +
         email +
-        "')";
+        "') order by Rubric_ID";
 
       db.query(sql, (err, result) => {
         var Rubrics = [];

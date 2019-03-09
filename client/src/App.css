@@ -232,3 +232,7 @@ textarea {
   margin: 0px auto;
   max-width: 700px;
 }
+
+#page-wrap {
+  padding-top: 100px;
+}

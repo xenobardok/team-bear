@@ -41,10 +41,10 @@ class Dashboard extends Component {
         <main id="page-wrap">
           <Route path={"/dashboard"} component={SimpleName} />
           <Container>
+            {/* <br />
             <br />
             <br />
-            <br />
-            <br />
+            <br /> */}
             <Route exact path="/dashboard" component={DashboardContents} />
             <Route exact path="/dashboard/rubrics" component={Rubrics} />
             <Route exact path="/dashboard/tasks" component={Tasks} />
