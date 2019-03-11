@@ -31,12 +31,11 @@
   },
   "scripts": {
     "client-install": "npm install --prefix client",
-    "compile": "babel src --presets react,es2015 --out-dir static",
-    "watch": "babel src --presets react,es2015 --out-dir static -watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run start\" \"npm run client\""
+    "dev": "concurrently \"npm run start\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "repository": {
     "type": "git",

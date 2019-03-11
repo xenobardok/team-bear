@@ -57,16 +57,7 @@ export const createRubric = rubric => dispatch => {
       console.log(
         "Successfully created axios request. Dispatching result now!"
       );
-      // console.log(res.data.Rubric_ID);
-      // dispatch({
-      //   type: CREATE_RUBRIC,
-      //   payload: res.data
-      // });
       dispatch(getSingleRubric(res.data.Rubric_ID));
-      // dispatch({
-      //   type: GET_SINGLE_RUBRIC,
-      //   payload: res.data
-      // });
     })
     .catch(err => {
       dispatch({
