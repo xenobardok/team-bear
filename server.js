@@ -21,12 +21,6 @@ require("./config/passport")(passport);
 
 const port = process.env.PORT || 9000;
 
-express.static("static");
-
-app.get("/", function(req, res) {
-  res.send("hello from expressjs");
-});
-
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/rubrics", rubrics);
@@ -37,6 +31,12 @@ if (process.env.NODE_ENV === "production") {
 
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+} else {
+  express.static("static");
+
+  app.get("/", function(req, res) {
+    res.send("hello from expressjs");
   });
 }
 
