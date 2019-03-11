@@ -19,7 +19,7 @@ app.use(passport.initialize());
 //passport config
 require("./config/passport")(passport);
 
-const port = 9000;
+const port = process.env.PORT || 9000;
 
 express.static("static");
 
@@ -40,5 +40,6 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(port, "0.0.0.0");
-console.log("listening to port: " + port);
+app.listen(port, (req, res) => {
+  console.log("listening to port: " + port);
+});
