@@ -36,6 +36,7 @@ class App extends Component {
       <Provider store={store}>
         <Router>
           <div>
+            {console.log(process.env.NODE_ENV)}
             <Route exact path="/" component={NavBar} />
             <Route exact path="/login" component={NavBar} />
             <Route exact path="/register" component={NavBar} />
