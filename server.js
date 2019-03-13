@@ -25,6 +25,7 @@ const port = process.env.PORT || 9000;
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/rubrics", rubrics);
+app.use("/api/cycle", cycle);
 app.use("/api/dashboard", dashboard);
 app.use("/api/cycle", cycle);
 
