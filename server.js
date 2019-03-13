@@ -27,7 +27,6 @@ app.use("/api/profile", profile);
 app.use("/api/rubrics", rubrics);
 app.use("/api/cycle", cycle);
 app.use("/api/dashboard", dashboard);
-app.use("/api/cycle", cycle);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

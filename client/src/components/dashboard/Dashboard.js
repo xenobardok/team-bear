@@ -10,6 +10,7 @@ import SimpleName from "./SimpleName";
 import "../../App.css";
 
 import DashboardContents from "./DashboardContents";
+import ShowCycle from "../cycles/ShowCycle";
 import Rubrics from "../rubrics/Rubrics";
 import Tasks from "../tasks/Tasks";
 import CreateRubric from "../rubrics/CreateRubric";
@@ -41,11 +42,12 @@ class Dashboard extends Component {
         <main id="page-wrap">
           <Route path={"/dashboard"} component={SimpleName} />
           <Container>
-            {/* <br />
-            <br />
-            <br />
-            <br /> */}
             <Route exact path="/dashboard" component={DashboardContents} />
+            <Route
+              exact
+              path="/dashboard/cycles/:id(\d+)"
+              component={ShowCycle}
+            />
             <Route exact path="/dashboard/rubrics" component={Rubrics} />
             <Route exact path="/dashboard/tasks" component={Tasks} />
             <Route

@@ -1,8 +1,4 @@
-import {
-  GET_RUBRICS,
-  RUBRICS_LOADING,
-  GET_SINGLE_RUBRIC
-} from "../actions/types";
+import { GET_RUBRICS, LOADING, GET_SINGLE_RUBRIC } from "../actions/types";
 
 const initialState = {
   allRubrics: null,
@@ -12,7 +8,7 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case RUBRICS_LOADING:
+    case LOADING:
       return {
         ...state,
         loading: true

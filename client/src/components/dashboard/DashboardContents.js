@@ -1,32 +1,16 @@
 import React, { Component } from "react";
-import Spinner from "../../common/Spinner";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { getCycles } from "../../actions/cycleActions";
-import { ListGroup, Card, Button } from "react-bootstrap";
-import { emoji } from "node-emoji";
+// import Spinner from "../../common/Spinner";
+import { Route } from "react-router-dom";
+// import PropTypes from "prop-types";
+// import { connect } from "react-redux";
+// import { getCycles } from "../../actions/cycleActions";
+// import { ListGroup, Card, Button } from "react-bootstrap";
+// import { emoji } from "node-emoji";
+import Cycles from "../cycles/Cycles";
 
 class DashboardContents extends Component {
-  componentDidMount() {
-    this.props.getCycles();
-  }
   render() {
-    return <Spinner />;
+    return <Route exact path="/dashboard" component={Cycles} />;
   }
 }
-DashboardContents.propTypes = {
-  getCycles: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
-};
-
-const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors,
-  cycles: state.cycles
-});
-
-export default connect(
-  mapStateToProps,
-  { getCycles }
-)(DashboardContents);
+export default DashboardContents;

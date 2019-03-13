@@ -236,3 +236,7 @@ textarea {
 #page-wrap {
   padding-top: 100px;
 }
+
+.modal-footer{
+  justify-content: center;
+}

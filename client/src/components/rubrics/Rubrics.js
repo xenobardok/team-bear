@@ -49,18 +49,21 @@ class Rubrics extends Component {
 
     if (this.props.auth.user.type === "Admin") {
       createRubric = (
-        <Link to="/dashboard/rubrics/create">
-          <Button variant="primary">Create a new rubric</Button>
-        </Link>
+        <ListGroup.Item>
+          <Link to="/dashboard/rubrics/create">
+            <Button variant="primary">Create a new rubric</Button>
+          </Link>
+        </ListGroup.Item>
       );
     }
     return (
       <Card className="text-center">
         <Card.Header>List of Available Rubrics</Card.Header>
         <Card.Body style={{ padding: "0px" }}>
-          {rubricsList}
-          <br />
-          {createRubric}
+          <ListGroup variant="flush">
+            {rubricsList}
+            {createRubric}
+          </ListGroup>
         </Card.Body>
       </Card>
     );
