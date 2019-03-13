@@ -15,7 +15,7 @@ router.get(
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
-    const dept = db.escape(req.user.dept);
+    const dept = req.user.dept;
 
     let sql =
       "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = ('" +
@@ -57,9 +57,9 @@ router.post(
       let sql =
         "SELECT Cycle_ID FROM ASSESSMENT_CYCLE WHERE Dept_ID =" +
         dept +
-        " AND Rubric_Name=" +
+        " AND Cycle_Name=" +
         name;
-
+      console.log(sql);
       db.query(sql, (err, result) => {
         if (err) res.send(err);
         else {
@@ -96,3 +96,5 @@ router.post(
     }
   }
 );
+
+module.exports = router;
