@@ -1,6 +1,6 @@
 import {
   GET_CURRENT_PROFILE,
-  PROFILE_LOADING,
+  LOADING,
   CLEAR_CURRENT_PROFILE
 } from "../actions/types";
 
@@ -11,7 +11,7 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case PROFILE_LOADING:
+    case LOADING:
       return {
         ...state,
         loading: true

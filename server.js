@@ -12,6 +12,7 @@ const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const rubrics = require("./routes/api/rubrics");
 const dashboard = require("./routes/api/dashboard");
+const cycle = require("./routes/api/cycle");
 
 //passport middleware
 app.use(passport.initialize());
@@ -25,6 +26,7 @@ app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/rubrics", rubrics);
 app.use("/api/dashboard", dashboard);
+app.use("/api/cycle", cycle);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

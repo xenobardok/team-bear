@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   GET_RUBRICS,
-  RUBRICS_LOADING,
+  LOADING,
   GET_ERRORS,
   GET_SINGLE_RUBRIC,
   SET_DATA_VALUE,
@@ -46,7 +46,7 @@ export const getSingleRubric = id => dispatch => {
 
 export const setRubricsLoading = () => {
   return {
-    type: RUBRICS_LOADING
+    type: LOADING
   };
 };
 
