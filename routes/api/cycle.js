@@ -4,7 +4,7 @@ const db = require("../../config/connection");
 const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
-
+const validateCycleInput = require("../../validation/cycle");
 // @route   GET api/cycle
 // @desc    Gets the lists of all rubrics
 // @access  Private
@@ -48,57 +48,57 @@ router.post(
   "/create",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    let { errors, isValid } = validateCycleInput(req.body);
+
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
-
-    //console.log(req.user);
-    if (type == "Admin") {
-      const name = db.escape(req.body.Cycle_Name);
-      if (isEmpty(name)) {
-        return res
-          .status(404)
-          .json((errors = { Cycle_Name: "Cycle Name cannot be empty" }));
-      }
-      let sql =
-        "SELECT Cycle_ID FROM ASSESSMENT_CYCLE WHERE Dept_ID =" +
-        dept +
-        " AND Cycle_Name=" +
-        name;
-      //console.log(sql);
-      db.query(sql, (err, result) => {
-        if (err) res.send(err);
-        else {
-          if (result.length > 0) {
-            errors.Cycle_Name = "Cycle with that name already exists.";
-            return res.status(404).json(errors);
-          }
-
-          let False = db.escape("false");
-          sql =
-            "INSERT INTO ASSESSMENT_CYCLE(Cycle_Name, Dept_ID,isSubmitted) VALUES(" +
-            name +
-            "," +
-            dept +
-            "," +
-            False +
-            ")";
-
-          db.query(sql, (err, result) => {
-            if (err)
-              return res
-                .status(400)
-                .json({ error: "There was some problem adding it" });
-            else {
-              let Cycle_ID = db.escape(result.insertId);
-
-              res.status(200).json((cycle = { Cycle_ID: Cycle_ID }));
-            }
-          });
-        }
-      });
+    if (!isValid) {
+      return res.status(404).json(errors);
     } else {
-      res.status(404).json({ error: "Not an Admin" });
+      //console.log(req.user);
+      if (type == "Admin") {
+        const name = db.escape(req.body.Cycle_Name);
+        let sql =
+          "SELECT Cycle_ID FROM ASSESSMENT_CYCLE WHERE Dept_ID =" +
+          dept +
+          " AND Cycle_Name=" +
+          name;
+        //console.log(sql);
+        db.query(sql, (err, result) => {
+          if (err) res.send(err);
+          else {
+            if (result.length > 0) {
+              errors.Cycle_Name = "Cycle with that name already exists.";
+              return res.status(404).json(errors);
+            }
+
+            let False = db.escape("false");
+            sql =
+              "INSERT INTO ASSESSMENT_CYCLE(Cycle_Name, Dept_ID,isSubmitted) VALUES(" +
+              name +
+              "," +
+              dept +
+              "," +
+              False +
+              ")";
+
+            db.query(sql, (err, result) => {
+              if (err)
+                return res
+                  .status(400)
+                  .json({ error: "There was some problem adding it" });
+              else {
+                let Cycle_ID = db.escape(result.insertId);
+
+                res.status(200).json((cycle = { Cycle_ID: Cycle_ID }));
+              }
+            });
+          }
+        });
+      } else {
+        res.status(404).json({ error: "Not an Admin" });
+      }
     }
   }
 );

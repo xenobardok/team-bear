@@ -17,11 +17,17 @@ class NavBar extends Component {
 
     const authLinks = (
       <Nav>
-        <Nav.Link>Hi, {user.firstname}</Nav.Link>
+        <Navbar.Text>Hi, {user.firstname}</Navbar.Text>
         <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
           Logout?
         </Nav.Link>
       </Nav>
+      // <Nav>
+      //   <Nav.Link>Hi, {user.firstname}</Nav.Link>
+      //   <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
+      //     Logout?
+      //   </Nav.Link>
+      // </Nav>
     );
 
     const guestLinks = (

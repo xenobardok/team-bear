@@ -3,7 +3,7 @@ import Spinner from "../../common/Spinner";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getCycles, createCycle } from "../../actions/cycleActions";
+import { getCycles, getSingleCycle } from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
 
@@ -14,36 +14,63 @@ import CreateCycle from "./CreateCycle";
 library.add(faPlus);
 
 class Cycles extends Component {
-  constructor() {
-    super();
-
-    this.state = { modalShow: false };
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedOption: ""
+    };
   }
   componentDidMount() {
     this.props.getCycles();
+    this.props.getSingleCycle(this.props.cycles.activeCycle);
+    console.log(this.props.cycles);
   }
-  render() {
-    let modalClose = () => this.setState({ modalShow: false });
 
+  onSelectChange = e => {
+    this.props.getSingleCycle(e.target.value);
+    console.log(e.target.value);
+    this.setState({
+      selectedOption: e.target.value
+    });
+  };
+
+  render() {
     let { allCycles, loading } = this.props.cycles;
 
     let cyclesList = "";
     let newCycle;
+
+    const { cycle } = this.props.cycles;
+    let outcomes = "";
+    let cycleName = "";
+    if (loading) {
+      outcomes = <Spinner />;
+    } else if (cycle === null) {
+      outcomes = <h1>CYCLE NOT FOUND</h1>;
+    } else {
+      cycleName = cycle.Cycle_Name;
+      if (Object.keys(cycle).length > 0) {
+        outcomes = cycle.data.map(value => (
+          <ListGroup.Item action key={value.Outcome_ID}>
+            {value.Outcome_Name}
+          </ListGroup.Item>
+        ));
+      }
+    }
     if (this.props.auth.user.type === "Admin") {
       if (allCycles === null || loading) {
-        cyclesList = <Spinner />;
+        cyclesList = <option>Loading...</option>;
       } else {
         //   Check if logged in user has cycles to view
         if (Object.keys(allCycles).length > 0) {
           cyclesList = allCycles.map(value => (
-            <Link
+            <option
               key={value.Cycle_ID}
-              to={"/dashboard/cycles/" + value.Cycle_ID}
+              value={value.Cycle_ID}
+              id={value.Cycle_ID}
             >
-              <ListGroup.Item action key={value.Cycle_ID}>
-                {value.Cycle_Name}
-              </ListGroup.Item>
-            </Link>
+              {value.Cycle_Name}
+            </option>
           ));
         } else {
           cyclesList = (
@@ -73,16 +100,27 @@ class Cycles extends Component {
     return (
       <div>
         <Card className="text-center">
-          <Card.Header>List of Available Cycles</Card.Header>
+          <Card.Header>Active Cycle</Card.Header>
           <Card.Body style={{ padding: "0px" }}>
-            <ListGroup variant="flush">
+            <select
+              name="cycles"
+              className="custom-select"
+              onChange={this.onSelectChange.bind(this)}
+              value={this.state.selectedOption}
+            >
               {cyclesList}
-              {newCycle}
-            </ListGroup>
+            </select>
           </Card.Body>
+          {newCycle}
         </Card>
 
-        <CreateCycle show={this.state.modalShow} onHide={modalClose} />
+        <Card className="text-center cycle">
+          <Card.Header>List of Outcomes</Card.Header>
+
+          <ListGroup variant="flush">{outcomes}</ListGroup>
+
+          <Card.Footer className="text-muted">2 days ago</Card.Footer>
+        </Card>
       </div>
     );
   }
@@ -100,5 +138,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCycles }
+  { getCycles, getSingleCycle }
 )(Cycles);

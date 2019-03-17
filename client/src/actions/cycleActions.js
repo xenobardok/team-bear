@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_CYCLES, LOADING, GET_SINGLE_CYCLE } from "./types";
+import { GET_CYCLES, LOADING, GET_SINGLE_CYCLE, GET_ERRORS } from "./types";
 
 export const getCycles = () => dispatch => {
   axios.get("/api/cycle").then(res =>
@@ -32,4 +32,23 @@ export const setCycleLoading = () => {
   return {
     type: LOADING
   };
+};
+
+export const createCycle = cycleName => dispatch => {
+  console.log(cycleName);
+  axios
+    .post("/api/cycle/create", cycleName)
+    .then(res => {
+      console.log(
+        "Successfully created axios request. Dispatching result now!"
+      );
+      // console.log(res.data.Cycle_ID);
+      dispatch(getSingleCycle(res.data.Cycle_ID));
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
 };

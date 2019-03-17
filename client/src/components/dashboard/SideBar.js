@@ -26,7 +26,7 @@ class SideBar extends Component {
         pageWrapId={"page-wrap"}
         outerContainerId={"outer-container"}
         noOverlay
-        // isOpen
+        isOpen
         customBurgerIcon={<FontAwesomeIcon icon="bars" />}
         customCrossIcon={<FontAwesomeIcon icon="times" color="white" />}
       >

@@ -7,6 +7,7 @@ import { getCurrentProfile } from "../../actions/profileActions";
 import { logoutUser } from "../../actions/authActions";
 import SideBar from "./SideBar";
 import SimpleName from "./SimpleName";
+import NavBar from "../layouts/NavBar";
 import "../../App.css";
 
 import DashboardContents from "./DashboardContents";
@@ -40,7 +41,7 @@ class Dashboard extends Component {
       <div id="outer-container">
         <SideBar />
         <main id="page-wrap">
-          <Route path={"/dashboard"} component={SimpleName} />
+          <Route path={"/dashboard"} component={NavBar} />
           <Container>
             <Route exact path="/dashboard" component={DashboardContents} />
             <Route
