@@ -365,86 +365,126 @@ router.get(
   }
 );
 
-// // @route   POST api/cycle/outcome/:outcomeID/createRubricMeasure
-// // @desc    Create a new Rubric Measure
-// // @access  Private
-// router.post(
-//   "/outcome/:outcomeID/createRubricMeasure",
-//   passport.authenticate("jwt", { session: false }),
-//   (req, res) => {
-//     const email = db.escape(req.user.email);
-//     const type = req.user.type;
-//     const dept = db.escape(req.user.dept);
-//     const outcomeID = db.escape(req.params.outcomeID);
-//     let Measure_Name = req.body.Measure_Name;
-//     const errors = {};
-//     if (type == "Admin") {
-//       //console.log(isEmpty(Outcome_Name));
-//       if (isEmpty(Measure_Name)) {
-//         return res
-//           .status(404)
-//           .json((errors.Measure_Name = "Measure Name cannot be empty"));
-//       }
-//       Measure_Name = db.escape(Measure_Name);
-//       let sql =
-//         "SELECT * FROM MEASURES WHERE Outcome_ID =" +
-//         outcomeID +
-//         " AND Measure_label=" +
-//         Measure_Name;
+// @route   POST api/cycle/outcome/:outcomeID/createrubricmeasure
+// @desc    Create a new Rubric Measure
+// @access  Private
 
-//       db.query(sql, (err, result) => {
-//         if (err) res.send(err);
-//         else {
-//           if (result.length > 0) {
-//             errors.Measure_Name = "Measure Name with that name already exists.";
-//             return res.status(404).json(errors);
-//           }
+router.post(
+  "/outcome/:outcomeID/createrubricmeasure",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const outcomeID = db.escape(req.params.outcomeID);
+    let Measure_Name = req.body.Measure_Name;
+    const errors = {};
+    if (type == "Admin") {
+      //console.log(isEmpty(Outcome_Name));
+      if (isEmpty(Measure_Name)) {
+        return res
+          .status(404)
+          .json((errors.Measure_Name = "Measure Name cannot be empty"));
+      }
+      Measure_Name = db.escape(Measure_Name);
+      let sql =
+        "SELECT * FROM MEASURES WHERE Outcome_ID =" +
+        outcomeID +
+        " AND Measure_label=" +
+        Measure_Name;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length > 0) {
+            errors.Measure_Name = "Measure Name with that name already exists.";
+            return res.status(404).json(errors);
+          }
 
-//           sql =
-//             "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
-//             dept +
-//             " AND Cycle_ID=" +
-//             Cycle_ID;
+          let isSuccess = "false";
+          sql = "SELECT * FROM MEASURES WHERE Outcome_ID =" + outcomeID;
+          // console.log(sql);
+          db.query(sql, (err, result) => {
+            if (err) res.send(err);
+            else {
+              if (err) {
+                return res.status(404).json(err);
+              }
 
-//           db.query(sql, (err, result) => {
-//             if (err) res.send(err);
-//             else {
-//               if (err) {
-//                 return res.status(404).json(err);
-//               }
-//               let Outcome_Index = 0;
-//               if (result.length != 0) {
-//                 Outcome_Index = result[result.length - 1].Outcome_Index + 1;
-//               }
+              let Measure_Index = 0;
+              const Measure_type = db.escape(req.body.Measure_type);
 
-//               sql =
-//                 "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name, Outcome_Index) VALUES(" +
-//                 Cycle_ID +
-//                 "," +
-//                 Outcome_Name +
-//                 "," +
-//                 Outcome_Index +
-//                 ")";
+              if (result.length != 0) {
+                Measure_Index = result[result.length - 1].Measure_Index + 1;
+              }
 
-//               db.query(sql, (err, result) => {
-//                 if (err)
-//                   return res
-//                     .status(400)
-//                     .json({ error: "There was some problem adding it" });
-//                 else {
-//                   let Outcome_ID = db.escape(result.insertId);
+              console.log(Measure_type);
+              sql =
+                "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_Index,Measure_type) VALUES(" +
+                Measure_Name +
+                "," +
+                isSuccess +
+                "," +
+                outcomeID +
+                "," +
+                Measure_Index +
+                "," +
+                Measure_type +
+                ")";
 
-//                   res.status(200).json((outcome = { Outcome_ID: Outcome_ID }));
-//                 }
-//               });
-//             }
-//           });
-//         }
-//       });
-//     } else {
-//       res.status(404).json({ error: "Not an Admin" });
-//     }
-//   }
-// );
+              console.log(sql);
+              db.query(sql, (err, result) => {
+                if (err)
+                  return res
+                    .status(400)
+                    .json({ error: "There was some problem adding it" });
+                else {
+                  let Measure_ID = db.escape(result.insertId);
+
+                  const Threshold = db.escape(req.body.Threshold);
+
+                  const Rubric_ID = db.escape(req.body.Rubric_ID);
+                  const Target = db.escape(req.body.Target);
+                  //const End_Date = db.escape(req.body.End_Date)
+
+                  sql =
+                    "INSERT INTO RUBRIC_MEASURES(Rubric_ID,Measure_ID, Target,Threshold,Is_Success ) VALUES(" +
+                    Rubric_ID +
+                    "," +
+                    Measure_ID +
+                    "," +
+                    Target +
+                    "," +
+                    Threshold +
+                    "," +
+                    isSuccess +
+                    ")";
+
+                  db.query(sql, (err, result) => {
+                    if (err)
+                      return res
+                        .status(400)
+                        .json({ error: "There was some problem adding it" });
+                    else {
+                      Rubric_Measure_ID = db.escape(result.insertId);
+
+                      Rubric_Measure = {
+                        Measure_ID: Measure_ID,
+                        Rubric_Measure_ID: Rubric_Measure_ID
+                      };
+                      return res.status(200).json(Rubric_Measure);
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
 
 module.exports = router;
