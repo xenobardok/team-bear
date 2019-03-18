@@ -346,7 +346,7 @@ router.get(
               result.forEach(row => {
                 measure = {
                   Measure_ID: row.Measure_ID,
-                  Measure_Name: row.Measure_Name,
+                  Measure_Name: row.Measure_label,
                   Measure_Index: row.Measure_Index,
                   Measure_type: row.Measure_type
                 };
