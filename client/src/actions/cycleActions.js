@@ -58,3 +58,18 @@ export const createCycle = cycleName => dispatch => {
       });
     });
 };
+
+export const createNewOutcome = (id, Outcome_Name) => dispatch => {
+  console.log(id, Outcome_Name);
+  axios
+    .post(`/api/cycle/${id}/outcome/create`, { Outcome_Name: Outcome_Name })
+    .then(res => {
+      console.log("Outcome created!");
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};

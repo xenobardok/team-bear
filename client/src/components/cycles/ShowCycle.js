@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getSingleCycle } from "../../actions/cycleActions";
+import { getSingleCycle, createNewOutcome } from "../../actions/cycleActions";
 import { getMeasures } from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
@@ -37,6 +37,16 @@ class ShowCycle extends Component {
       showNewOutcome: true
     });
   };
+
+  saveButtonHandler = e => {
+    // e.preventDefault();
+    console.log(this.state.newOutcome);
+    this.props.createNewOutcome(
+      this.props.match.params.id,
+      this.state.newOutcome
+    );
+  };
+
   render() {
     const { cycle, loading, allCycles } = this.props.cycles;
     let outcomes = "";
@@ -90,11 +100,15 @@ class ShowCycle extends Component {
                     name="new-outcome"
                     as="textarea"
                     aria-label="With textarea"
-                    onClick={this.createNewOutcome.bind(this)}
-                    defaultValue="enter new outcome"
-                    className="cells"
+                    value={this.state.newOutcome}
+                    placeholder="Enter new Outcome"
+                    onChange={e =>
+                      this.setState({ newOutcome: e.target.value })
+                    }
                   />
-                  <Button variant="primary">Save</Button>
+                  <Button variant="primary" onClick={this.saveButtonHandler}>
+                    Save
+                  </Button>
                   &nbsp;
                   <Button
                     variant="primary"
@@ -128,5 +142,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getSingleCycle, getMeasures }
+  { getSingleCycle, getMeasures, createNewOutcome }
 )(ShowCycle);

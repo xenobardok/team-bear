@@ -13,3 +13,4 @@ export const SET_DATA_VALUE = "SET_DATA_VALUE";
 export const GET_CYCLES = "GET_CYCLES";
 export const GET_MEASURES = "GET_MEASURES";
 export const MEASURE_LOADING = "MEASURE_LOADING";
+export const CREATE_OUTCOME = "CREATE_OUTCOME";
