@@ -24,18 +24,6 @@ class CreateCycle extends React.Component {
     this.props.createCycle({ Cycle_Name: this.state.name });
   };
 
-  componentWillReceiveProps(nextProps) {
-    // Typical usage (don't forget to compare props):
-    if (nextProps.cycles.cycle) {
-      console.log(this.props.cycles);
-      if (this.props.cycles.cycle) {
-        console.log(this.props.cycles);
-        this.props.history.push(
-          "/dashboard/cycles/" + this.props.cycles.cycle.Cycle_ID
-        );
-      }
-    }
-  }
   render() {
     return (
       <Modal

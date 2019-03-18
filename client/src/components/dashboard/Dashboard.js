@@ -42,7 +42,8 @@ class Dashboard extends Component {
         <SideBar />
         <main id="page-wrap">
           <Route path={"/dashboard"} component={NavBar} />
-          <Container>
+          {/* <Container> */}
+          <div className="special-container">
             <Route exact path="/dashboard" component={DashboardContents} />
             <Route
               exact
@@ -61,7 +62,8 @@ class Dashboard extends Component {
               path="/dashboard/rubrics/:id(\d+)"
               component={ShowRubric}
             />
-          </Container>
+          </div>
+          {/* </Container> */}
         </main>
       </div>
     );

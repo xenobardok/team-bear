@@ -256,10 +256,20 @@ textarea {
   padding: 10px;
 }
 
-#page-wrap div.container:nth-child(2){
-  margin-top: 100px;
+#page-wrap div.special-container{
+  margin: 100px;
+}
+
+#page-wrap div.special-container .card {
+  min-width: 400px;
+  max-width: 500px;
 }
 
 .shrinkSize{
   width: 100%;
+}
+
+.cycle-outcome {
+  display: flex;
+  justify-content: center
 }

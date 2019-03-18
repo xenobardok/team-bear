@@ -6,11 +6,11 @@ import { connect } from "react-redux";
 import { getCycles, getSingleCycle } from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
+import CreateCycle from "./CreateCycle";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import CreateCycle from "./CreateCycle";
 library.add(faPlus);
 
 class Cycles extends Component {

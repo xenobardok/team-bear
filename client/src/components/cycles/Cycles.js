@@ -11,6 +11,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import CreateCycle from "./CreateCycle";
+import isEmpty from "../../validation/isEmpty";
 library.add(faPlus);
 
 class Cycles extends Component {
@@ -19,6 +20,25 @@ class Cycles extends Component {
 
     this.state = { modalShow: false };
   }
+  componentWillReceiveProps(nextProps) {
+    // Typical usage (don't forget to compare props):
+    if (nextProps.cycles.cycle) {
+      console.log(nextProps.cycles);
+      console.log(nextProps.errors);
+      // console.log(this.props.cycles);
+      // this.props.history.push(
+      //   "/dashboard/cycles/" + this.props.cycles.cycle.Cycle_ID
+      // );
+
+      if (isEmpty(nextProps.errors)) {
+        this.setState({
+          modalShow: false
+        });
+        console.log(this.props.cycles.cycle);
+      }
+    }
+  }
+
   componentDidMount() {
     this.props.getCycles();
   }

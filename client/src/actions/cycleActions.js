@@ -1,5 +1,11 @@
 import axios from "axios";
-import { GET_CYCLES, LOADING, GET_SINGLE_CYCLE, GET_ERRORS } from "./types";
+import {
+  GET_CYCLES,
+  LOADING,
+  GET_SINGLE_CYCLE,
+  GET_ERRORS,
+  GET_MEASURES
+} from "./types";
 
 export const getCycles = () => dispatch => {
   axios.get("/api/cycle").then(res =>

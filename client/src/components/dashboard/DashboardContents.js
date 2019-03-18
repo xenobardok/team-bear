@@ -11,7 +11,7 @@ import NewCycles from "../cycles/NewCycles";
 
 class DashboardContents extends Component {
   render() {
-    return <Route exact path="/dashboard" component={NewCycles} />;
+    return <Route exact path="/dashboard" component={Cycles} />;
   }
 }
 export default DashboardContents;
