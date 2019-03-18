@@ -15,10 +15,6 @@ import {
 library.add(faBars, faTimes, faHome, faTasks, faFileAlt, faEnvelope);
 
 class SideBar extends Component {
-  // constructor(props) {
-  //   super(props);
-  // }
-
   render() {
     return (
       <Menu
@@ -26,7 +22,7 @@ class SideBar extends Component {
         pageWrapId={"page-wrap"}
         outerContainerId={"outer-container"}
         noOverlay
-        // isOpen
+        isOpen
         customBurgerIcon={<FontAwesomeIcon icon="bars" />}
         customCrossIcon={<FontAwesomeIcon icon="times" color="white" />}
       >

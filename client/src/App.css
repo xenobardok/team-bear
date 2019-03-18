@@ -7,9 +7,9 @@ body {
   /* height: 100%; */
 }
 
-#root {
+/* #root { */
   /* height: 100%; */
-}
+/* } */
 
 .main {
   background: url("./img/landing.jpg"), #ff5f6d; /* fallback for old browsers */
@@ -58,12 +58,12 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark {
 }
 
 @media (min-width: 768px) {
-  form {
+  form.createRubric {
     padding: 5em;
   }
 }
 
-form {
+form.createRubric{
   padding-top: 5em;
 }
 
@@ -117,14 +117,17 @@ form {
   width: 36px;
   height: 30px;
   left: 36px;
-  top: 36px;
+  top: 12px;
 }
 
 /* Color/shape of burger icon bars */
-.bm-burger-bars {
-  background: #373a47;
-}
+/* .bm-burger-bars {
+  background: white!important;
+} */
 
+svg.fa-bars{
+  color: white;
+}
 /* Position and sizing of clickable cross button */
 .bm-cross-button {
   height: 24px;
@@ -132,9 +135,9 @@ form {
 }
 
 /* Color/shape of close button cross */
-.bm-cross {
+/* .bm-cross { */
   /* background: #bdc3c7; */
-}
+/* } */
 
 /* General sidebar styles */
 .bm-menu {
@@ -234,5 +237,39 @@ textarea {
 }
 
 #page-wrap {
-  padding-top: 100px;
+  padding-top: 0px;
+}
+
+.modal-footer{
+  justify-content: center;
+}
+
+#page-wrap .cycle{
+  max-width: none;
+}
+
+#page-wrap .list-group-item {
+  text-align: left;
+}
+
+.createCycle {
+  padding: 10px;
+}
+
+#page-wrap div.special-container{
+  margin: 100px;
+}
+
+#page-wrap div.special-container .card {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.shrinkSize{
+  width: 100%;
+}
+
+.cycle-outcome {
+  display: flex;
+  justify-content: center
 }

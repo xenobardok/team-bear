@@ -3,12 +3,12 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-// import { clearCurrentProfile } from "../../actions/profileActions";
+import { clearCurrentProfile } from "../../actions/profileActions";
 
 class NavBar extends Component {
   onLogoutClick(e) {
     e.preventDefault();
-    // this.props.clearCurrentProfile();
+    this.props.clearCurrentProfile();
     this.props.logoutUser();
   }
 
@@ -17,11 +17,17 @@ class NavBar extends Component {
 
     const authLinks = (
       <Nav>
-        <Nav.Link>Hi, {user.firstname}</Nav.Link>
+        <Navbar.Text>Hi, {user.firstname}</Navbar.Text>
         <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
           Logout?
         </Nav.Link>
       </Nav>
+      // <Nav>
+      //   <Nav.Link>Hi, {user.firstname}</Nav.Link>
+      //   <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
+      //     Logout?
+      //   </Nav.Link>
+      // </Nav>
     );
 
     const guestLinks = (
@@ -57,5 +63,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, clearCurrentProfile }
 )(NavBar);

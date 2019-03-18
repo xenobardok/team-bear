@@ -1,8 +1,9 @@
-import { GET_RUBRICS, LOADING, GET_SINGLE_RUBRIC } from "../actions/types";
+import { GET_CYCLES, GET_SINGLE_CYCLE, LOADING } from "../actions/types";
 
 const initialState = {
-  allRubrics: null,
-  rubric: null,
+  activeCycle: 1,
+  allCycles: null,
+  cycle: null,
   loading: false
 };
 
@@ -13,16 +14,16 @@ export default function(state = initialState, action) {
         ...state,
         loading: true
       };
-    case GET_RUBRICS:
+    case GET_CYCLES:
       return {
         ...state,
-        allRubrics: action.payload,
+        allCycles: action.payload,
         loading: false
       };
-    case GET_SINGLE_RUBRIC:
+    case GET_SINGLE_CYCLE:
       return {
         ...state,
-        rubric: action.payload,
+        cycle: action.payload,
         loading: false
       };
     default:

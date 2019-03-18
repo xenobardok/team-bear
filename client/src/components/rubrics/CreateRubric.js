@@ -150,7 +150,7 @@ class CreateRubric extends Component {
     }
     const { errors } = this.state;
     return (
-      <Form onSubmit={this.onSubmit.bind(this)}>
+      <Form onSubmit={this.onSubmit.bind(this)} className="createRubric">
         <h2>Create a new Rubric</h2>
         <br />
         <Form.Group as={Row} controlId="formHorizontalRubric">
