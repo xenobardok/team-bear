@@ -7,11 +7,18 @@ import { Route } from "react-router-dom";
 // import { ListGroup, Card, Button } from "react-bootstrap";
 // import { emoji } from "node-emoji";
 import Cycles from "../cycles/Cycles";
+import ShowCycle from "../cycles/ShowCycle";
+import ShowMeasures from "../cycles/ShowMeasures";
 import NewCycles from "../cycles/NewCycles";
 
 class DashboardContents extends Component {
   render() {
-    return <Route exact path="/dashboard" component={Cycles} />;
+    return (
+      <div>
+        <Route exact path="/dashboard" component={Cycles} />
+        <Route path="/dashboard/cycles/:id(\d+)" component={ShowCycle} />
+      </div>
+    );
   }
 }
 export default DashboardContents;

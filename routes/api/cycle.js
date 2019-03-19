@@ -180,9 +180,8 @@ router.post(
     if (type == "Admin") {
       console.log(isEmpty(Outcome_Name));
       if (isEmpty(Outcome_Name)) {
-        return res
-          .status(404)
-          .json((errors.Outcome_Name = "Outcome Name cannot be empty"));
+        errors.Outcome_Name = "Outcome Name cannot be empty";
+        return res.status(404).json(errors);
       }
       Outcome_Name = db.escape(Outcome_Name);
       let sql =
