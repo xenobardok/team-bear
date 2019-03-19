@@ -14,10 +14,10 @@ import NewCycles from "../cycles/NewCycles";
 class DashboardContents extends Component {
   render() {
     return (
-      <div>
+      <>
         <Route exact path="/dashboard" component={Cycles} />
         <Route path="/dashboard/cycles/:id(\d+)" component={ShowCycle} />
-      </div>
+      </>
     );
   }
 }

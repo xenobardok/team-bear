@@ -55,14 +55,15 @@ class ShowCycle extends Component {
         errors: ""
       });
     }
-
-    if (this.props.measures !== prevProps.measures) {
-      this.props.history.push(
-        "/dashboard/cycles/" +
-          this.props.cycles.cycle.Cycle_ID +
-          "/measures/" +
-          this.props.measures.measure.Outcome_ID
-      );
+    if (this.props.cycles.cycle) {
+      if (this.props.measures !== prevProps.measures) {
+        this.props.history.push(
+          "/dashboard/cycles/" +
+            this.props.cycles.cycle.Cycle_ID +
+            "/measures/" +
+            this.props.measures.measure.Outcome_ID
+        );
+      }
     }
 
     if (this.props.cycles.cycle !== prevProps.cycles.cycle) {
@@ -72,7 +73,6 @@ class ShowCycle extends Component {
         newOutcome: "",
         errors: ""
       });
-      console.log("Update outcomes now!");
     }
   };
   saveButtonHandler = e => {
@@ -88,7 +88,6 @@ class ShowCycle extends Component {
     const { cycle, loading, allCycles } = this.props.cycles;
     let outcomes = "";
     let cycleName = "";
-    let measures = "";
     createOutcome = (
       <Card.Footer
         style={{ cursor: "pointer" }}
@@ -118,12 +117,8 @@ class ShowCycle extends Component {
       }
     }
 
-    if (this.props.measures.measure) {
-      measures = <ShowMeasures {...this.props.measures.measure} />;
-    }
-
     return (
-      <div>
+      <div className="cycle-view">
         <h2>{cycleName}</h2>
         <div className="cycle-outcome">
           <div>
@@ -170,9 +165,8 @@ class ShowCycle extends Component {
           <Route
             exact
             path="/dashboard/cycles/:id(\d+)/measures/:measureID(\d+)"
-            component={() => <ShowMeasures {...this.props.measures.measure} />}
+            component={ShowMeasures}
           />
-          {/* {measures} */}
         </div>
       </div>
     );
