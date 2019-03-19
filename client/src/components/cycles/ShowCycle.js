@@ -60,7 +60,7 @@ class ShowCycle extends Component {
         this.props.history.push(
           "/dashboard/cycles/" +
             this.props.cycles.cycle.Cycle_ID +
-            "/measures/" +
+            "/outcome/" +
             this.props.measures.measure.Outcome_ID
         );
       }
@@ -164,7 +164,7 @@ class ShowCycle extends Component {
           </div>
           <Route
             exact
-            path="/dashboard/cycles/:id(\d+)/measures/:measureID(\d+)"
+            path="/dashboard/cycles/:id(\d+)/outcome/:measureID(\d+)"
             component={ShowMeasures}
           />
         </div>
