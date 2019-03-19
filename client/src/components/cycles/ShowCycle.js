@@ -11,8 +11,8 @@ import classnames from "classnames";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { get } from "http";
 library.add(faPlus);
+
 let createOutcome;
 class ShowCycle extends Component {
   constructor(props) {
@@ -20,24 +20,21 @@ class ShowCycle extends Component {
     this.state = {
       newOutcome: "",
       showNewOutcome: false,
-      errors: ""
+      errors: "",
+      allOutcomes: ""
     };
   }
   componentDidMount() {
     if (this.props.match.params.id) {
       this.props.getSingleCycle(this.props.match.params.id);
     }
+    if (this.props.cycles) {
+    }
   }
 
   onClickHandler = e => {
     console.log(e.target.name);
     this.props.getMeasures(e.target.name);
-    // this.props.history.push(
-    //   "/dashboard/cycles/" +
-    //     this.props.cycles.cycle.Cycle_ID +
-    //     "/measures/" +
-    //     this.props.measures.measure.Outcome_ID
-    // );
   };
 
   createNewOutcome = e => {
@@ -67,10 +64,20 @@ class ShowCycle extends Component {
           this.props.measures.measure.Outcome_ID
       );
     }
+
+    if (this.props.cycles.cycle !== prevProps.cycles.cycle) {
+      this.setState({
+        allOutcomes: this.props.cycles.cycle,
+        showNewOutcome: false,
+        newOutcome: "",
+        errors: ""
+      });
+      console.log("Update outcomes now!");
+    }
   };
   saveButtonHandler = e => {
     // e.preventDefault();
-    console.log(this.state.newOutcome);
+    // console.log(this.state.newOutcome);
     this.props.createNewOutcome(
       this.props.match.params.id,
       this.state.newOutcome
@@ -97,8 +104,8 @@ class ShowCycle extends Component {
       outcomes = <h1>CYCLE NOT FOUND</h1>;
     } else {
       cycleName = cycle.Cycle_Name;
-      if (Object.keys(cycle).length > 0) {
-        outcomes = cycle.data.map(value => (
+      if (Object.keys(this.state.allOutcomes).length > 0) {
+        outcomes = this.state.allOutcomes.data.map(value => (
           <ListGroup.Item
             action
             key={value.Outcome_ID}
