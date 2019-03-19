@@ -38,7 +38,7 @@ class NavBar extends Component {
     );
 
     return (
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+      <Navbar>
         <Container>
           <Navbar.Brand href="/">ULM Evaluations</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />

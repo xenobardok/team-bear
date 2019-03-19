@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getSingleCycle, createNewOutcome } from "../../actions/cycleActions";
@@ -7,23 +7,28 @@ import { getMeasures } from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
-
+import classnames from "classnames";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 library.add(faPlus);
+
 let createOutcome;
 class ShowCycle extends Component {
   constructor(props) {
     super(props);
     this.state = {
       newOutcome: "",
-      showNewOutcome: false
+      showNewOutcome: false,
+      errors: "",
+      allOutcomes: ""
     };
   }
   componentDidMount() {
     if (this.props.match.params.id) {
       this.props.getSingleCycle(this.props.match.params.id);
+    }
+    if (this.props.cycles) {
     }
   }
 
@@ -38,9 +43,41 @@ class ShowCycle extends Component {
     });
   };
 
+  componentDidUpdate = prevProps => {
+    if (this.props.errors) {
+      if (prevProps.errors !== this.props.errors) {
+        this.setState({
+          errors: this.props.errors
+        });
+      }
+    } else {
+      this.setState({
+        errors: ""
+      });
+    }
+    if (this.props.cycles.cycle) {
+      if (this.props.measures !== prevProps.measures) {
+        this.props.history.push(
+          "/dashboard/cycles/" +
+            this.props.cycles.cycle.Cycle_ID +
+            "/measures/" +
+            this.props.measures.measure.Outcome_ID
+        );
+      }
+    }
+
+    if (this.props.cycles.cycle !== prevProps.cycles.cycle) {
+      this.setState({
+        allOutcomes: this.props.cycles.cycle,
+        showNewOutcome: false,
+        newOutcome: "",
+        errors: ""
+      });
+    }
+  };
   saveButtonHandler = e => {
     // e.preventDefault();
-    console.log(this.state.newOutcome);
+    // console.log(this.state.newOutcome);
     this.props.createNewOutcome(
       this.props.match.params.id,
       this.state.newOutcome
@@ -51,7 +88,6 @@ class ShowCycle extends Component {
     const { cycle, loading, allCycles } = this.props.cycles;
     let outcomes = "";
     let cycleName = "";
-    let measures = "";
     createOutcome = (
       <Card.Footer
         style={{ cursor: "pointer" }}
@@ -67,8 +103,8 @@ class ShowCycle extends Component {
       outcomes = <h1>CYCLE NOT FOUND</h1>;
     } else {
       cycleName = cycle.Cycle_Name;
-      if (Object.keys(cycle).length > 0) {
-        outcomes = cycle.data.map(value => (
+      if (Object.keys(this.state.allOutcomes).length > 0) {
+        outcomes = this.state.allOutcomes.data.map(value => (
           <ListGroup.Item
             action
             key={value.Outcome_ID}
@@ -81,12 +117,8 @@ class ShowCycle extends Component {
       }
     }
 
-    if (this.props.measures.measure) {
-      measures = <ShowMeasures {...this.props.measures.measure} />;
-    }
-
     return (
-      <div>
+      <div className="cycle-view">
         <h2>{cycleName}</h2>
         <div className="cycle-outcome">
           <div>
@@ -105,14 +137,23 @@ class ShowCycle extends Component {
                     onChange={e =>
                       this.setState({ newOutcome: e.target.value })
                     }
+                    className={classnames("", {
+                      "is-invalid": this.state.errors.Outcome_Name
+                    })}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {this.state.errors.Outcome_Name}
+                  </FormControl.Feedback>
                   <Button variant="primary" onClick={this.saveButtonHandler}>
                     Save
                   </Button>
                   &nbsp;
                   <Button
                     variant="primary"
-                    onClick={() => this.setState({ showNewOutcome: false })}
+                    onClick={() => {
+                      this.setState({ showNewOutcome: false });
+                      this.setState({ errors: "" });
+                    }}
                   >
                     Cancel
                   </Button>
@@ -121,7 +162,11 @@ class ShowCycle extends Component {
               {createOutcome}
             </Card>
           </div>
-          {measures}
+          <Route
+            exact
+            path="/dashboard/cycles/:id(\d+)/measures/:measureID(\d+)"
+            component={ShowMeasures}
+          />
         </div>
       </div>
     );

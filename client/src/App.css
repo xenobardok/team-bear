@@ -32,8 +32,13 @@ body {
   padding-top: 25vh;
 }
 
-nav.navbar.navbar-expand-lg.navbar-dark.bg-dark {
+nav.navbar {
   background-color: #7b344a !important;
+  color: white!important;
+}
+.navbar-light .navbar-brand, 
+.navbar-light .navbar-text, .navbar-light .navbar-nav .nav-link{
+  color: white;
 }
 
 .main .mainContext {
@@ -257,7 +262,7 @@ textarea {
 }
 
 #page-wrap div.special-container{
-  margin: 100px;
+  margin-top: 100px;
 }
 
 #page-wrap div.special-container .card {
@@ -271,5 +276,9 @@ textarea {
 
 .cycle-outcome {
   display: flex;
-  justify-content: center
+  justify-content: space-around;
+}
+
+.cycle-view h2 {
+  margin: 0px 0px 50px 0px;
 }

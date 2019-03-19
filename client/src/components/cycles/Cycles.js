@@ -91,7 +91,7 @@ class Cycles extends Component {
       }
     }
     return (
-      <div>
+      <>
         <Card className="text-center">
           <Card.Header>List of Available Cycles</Card.Header>
           <Card.Body style={{ padding: "0px" }}>
@@ -103,7 +103,7 @@ class Cycles extends Component {
         </Card>
 
         <CreateCycle show={this.state.modalShow} onHide={modalClose} />
-      </div>
+      </>
     );
   }
 }

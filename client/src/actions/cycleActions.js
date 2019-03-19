@@ -64,7 +64,7 @@ export const createNewOutcome = (id, Outcome_Name) => dispatch => {
   axios
     .post(`/api/cycle/${id}/outcome/create`, { Outcome_Name: Outcome_Name })
     .then(res => {
-      console.log("Outcome created!");
+      dispatch(getSingleCycle(id));
     })
     .catch(err => {
       dispatch({

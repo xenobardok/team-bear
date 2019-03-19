@@ -42,28 +42,23 @@ class Dashboard extends Component {
         <SideBar />
         <main id="page-wrap">
           <Route path={"/dashboard"} component={NavBar} />
-          {/* <Container> */}
-          <div className="special-container">
-            <Route exact path="/dashboard" component={DashboardContents} />
-            <Route
-              exact
-              path="/dashboard/cycles/:id(\d+)"
-              component={ShowCycle}
-            />
-            <Route exact path="/dashboard/rubrics" component={Rubrics} />
-            <Route exact path="/dashboard/tasks" component={Tasks} />
-            <Route
-              exact
-              path="/dashboard/rubrics/create"
-              component={CreateRubric}
-            />
-            <Route
-              exact
-              path="/dashboard/rubrics/:id(\d+)"
-              component={ShowRubric}
-            />
-          </div>
-          {/* </Container> */}
+          <Container>
+            <div className="special-container">
+              <Route path="/dashboard" component={DashboardContents} />
+              <Route exact path="/dashboard/rubrics" component={Rubrics} />
+              <Route exact path="/dashboard/tasks" component={Tasks} />
+              <Route
+                exact
+                path="/dashboard/rubrics/create"
+                component={CreateRubric}
+              />
+              <Route
+                exact
+                path="/dashboard/rubrics/:id(\d+)"
+                component={ShowRubric}
+              />
+            </div>
+          </Container>
         </main>
       </div>
     );
