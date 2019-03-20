@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { slide as Menu } from "react-burger-menu";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Toggle from "react-bootstrap-toggle";
 import {
   faBars,
   faTimes,
@@ -15,6 +16,15 @@ import {
 library.add(faBars, faTimes, faHome, faTasks, faFileAlt, faEnvelope);
 
 class SideBar extends Component {
+  constructor() {
+    super();
+    this.state = { editMode: false };
+    this.onToggle = this.onToggle.bind(this);
+  }
+
+  onToggle() {
+    this.setState({ editMode: !this.state.editMode });
+  }
   render() {
     return (
       <Menu
@@ -48,6 +58,16 @@ class SideBar extends Component {
         </Link>
         <hr className="label" />
         <Link to="/dashboard/rubrics">Rubrics</Link>
+        <div>
+          <Toggle
+            onClick={this.onToggle}
+            on={<h2>ON</h2>}
+            off={<h2>OFF</h2>}
+            size="xs"
+            offstyle="danger"
+            active={this.state.editMode}
+          />
+        </div>
       </Menu>
     );
   }

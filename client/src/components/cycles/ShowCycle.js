@@ -28,7 +28,8 @@ class ShowCycle extends Component {
     if (this.props.match.params.id) {
       this.props.getSingleCycle(this.props.match.params.id);
     }
-    if (this.props.cycles) {
+    if (this.props.auth.user.type === "Evaluator") {
+      this.props.history.push("/dashboard");
     }
   }
 

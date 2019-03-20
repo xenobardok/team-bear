@@ -260,6 +260,7 @@ router.post(
     const Cycle_ID = db.escape(req.params.cycleID);
     const Outcome_ID = db.escape(req.params.outcomeID);
     let Outcome_Name = req.body.Outcome_Name;
+    let errors = {};
 
     if (type == "Admin") {
       if (isEmpty(Outcome_Name)) {
@@ -280,7 +281,7 @@ router.post(
         if (err) res.send(err);
         else {
           if (result.length > 0) {
-            errors.Cycle_Name = "Outcome with that name already exists.";
+            errors.Outcome_Name = "Outcome with that name already exists.";
             return res.status(404).json(errors);
           }
 
