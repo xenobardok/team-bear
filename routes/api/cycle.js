@@ -333,7 +333,7 @@ router.get(
           }
 
           Outcome.Outcome_ID = Outcome_ID;
-
+          Outcome.Cycle_ID = result[0].Cycle_ID;
           Outcome.data = [];
           sql =
             "SELECT * FROM MEASURES WHERE Outcome_ID= " +
