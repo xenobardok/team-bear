@@ -251,7 +251,7 @@ router.post(
 // @desc    Update an old outcome
 // @access  Private
 router.post(
-  "/:cycleID/outcome/update/:outcomeID",
+  "/:cycleID/outcome/:outcomeID/update", // updated from /update/:outcomeID
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);

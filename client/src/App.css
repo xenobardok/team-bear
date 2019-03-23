@@ -286,3 +286,12 @@ textarea {
 .login-register a{
   margin: 0px 5px;
 }
+
+.edit-post{
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.flex-grow{
+  flex-grow: 1
+}
