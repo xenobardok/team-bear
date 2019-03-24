@@ -1,6 +1,7 @@
 import { GET_CYCLES, GET_SINGLE_CYCLE, LOADING } from "../actions/types";
 
 const initialState = {
+  activeCycle: 1,
   allCycles: null,
   cycle: null,
   loading: false

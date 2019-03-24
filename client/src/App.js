@@ -1,17 +1,18 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./util/setAuthToken";
+import { clearCurrentProfile } from "./actions/profileActions";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
 import "./App.css";
-
 import NavBar from "./components/layouts/NavBar";
 import Landing from "./components/layouts/Landing";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
+import PrivateRoute from "./common/PrivateRoute";
 
 // Code that checks for token
 if (localStorage.jwtToken) {
@@ -25,7 +26,7 @@ if (localStorage.jwtToken) {
   const currentTime = Date.now() / 1000;
   if (decoded.exp < currentTime) {
     store.dispatch(logoutUser());
-
+    store.dispatch(clearCurrentProfile());
     window.location.href = "/login";
   }
 }
@@ -39,7 +40,9 @@ class App extends Component {
             <Route exact path="/" component={NavBar} />
             <Route exact path="/login" component={NavBar} />
             <Route exact path="/register" component={NavBar} />
-            <Route path="/dashboard" component={Dashboard} />
+            <Switch>
+              <PrivateRoute path="/dashboard" component={Dashboard} />
+            </Switch>
             {/* <Route path="/rubrics" component={Rubrics} /> */}
             <Route exact path="/" component={Landing} />
             <Route exact path="/login" component={Login} />

@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-// import { clearCurrentProfile } from "../../actions/profileActions";
+import { clearCurrentProfile } from "../../actions/profileActions";
 
 class NavBar extends Component {
   onLogoutClick(e) {
     e.preventDefault();
-    // this.props.clearCurrentProfile();
+    this.props.clearCurrentProfile();
     this.props.logoutUser();
   }
 
@@ -17,24 +18,36 @@ class NavBar extends Component {
 
     const authLinks = (
       <Nav>
-        <Nav.Link>Hi, {user.firstname}</Nav.Link>
+        <Navbar.Text>Hi, {user.firstname}</Navbar.Text>
         <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
           Logout?
         </Nav.Link>
       </Nav>
+      // <Nav>
+      //   <Nav.Link>Hi, {user.firstname}</Nav.Link>
+      //   <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
+      //     Logout?
+      //   </Nav.Link>
+      // </Nav>
     );
 
     const guestLinks = (
-      <Nav>
-        <Nav.Link href="/login">Login</Nav.Link>
-        <Nav.Link href="/register">Register</Nav.Link>
+      <Nav className="login-register">
+        <Link to="/login">
+          <Navbar.Text>Login</Navbar.Text>
+        </Link>
+        <Link to="/register">
+          <Navbar.Text>Register</Navbar.Text>
+        </Link>
       </Nav>
     );
 
     return (
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+      <Navbar>
         <Container>
-          <Navbar.Brand href="/">ULM Evaluations</Navbar.Brand>
+          <Link to="/">
+            <Navbar.Brand>ULM Evaluations</Navbar.Brand>
+          </Link>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto" />
@@ -57,5 +70,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, clearCurrentProfile }
 )(NavBar);
