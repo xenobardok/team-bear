@@ -201,6 +201,42 @@ router.post(
   }
 );
 
+// @route   GET api/rubrics/evaluations/
+// @desc    Returns the list of all the assigned rubrics
+// @access  Private route
+router.get(
+  "/evaluations",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log("Here");
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    Rubrics = [];
+    let sql =
+      "SELECT * FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
+      email;
+    console.log(sql);
+    db.query(sql, (err, result) => {
+      if (err)
+        res.status(404).json({ error: "There was a problem loading it" });
+      else {
+        result.forEach(row => {
+          id = row.Rubric_ID;
+          name = row.Rubric_Name;
+
+          rubric = {
+            Rubric_ID: id,
+            Rubric_Name: name
+          };
+          Rubrics.push(rubric);
+        });
+        return res.status(200).json(Rubrics);
+      }
+    });
+  }
+);
+
 // @route   GET api/rubrics/rubrics:handle
 // @desc    get the values of a Rubric
 // @access  Private route
@@ -379,42 +415,6 @@ router.post(
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
-  }
-);
-
-// @route   GET api/rubrics/evaluations/
-// @desc    Returns the list of all the assigned rubrics
-// @access  Private route
-router.get(
-  "/abc",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    console.log("Here");
-    const email = db.escape(req.user.email);
-    const type = req.user.type;
-    const dept = db.escape(req.user.dept);
-    Rubrics = [];
-    let sql =
-      "SELECT * FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
-      email;
-    console.log(sql);
-    db.query(sql, (err, result) => {
-      if (err)
-        res.status(404).json({ error: "There was a problem loading it" });
-      else {
-        result.forEach(row => {
-          id = row.Rubric_ID;
-          name = row.Rubric_Name;
-
-          rubric = {
-            Rubric_ID: id,
-            Rubric_Name: name
-          };
-          Rubrics.push(rubric);
-        });
-        return res.status(200).json(Rubrics);
-      }
-    });
   }
 );
 
