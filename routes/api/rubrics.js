@@ -200,6 +200,7 @@ router.post(
     }
   }
 );
+
 // @route   GET api/rubrics/rubrics:handle
 // @desc    get the values of a Rubric
 // @access  Private route
@@ -381,61 +382,22 @@ router.post(
   }
 );
 
-// @route   POST api/rubrics/assign/:handle
-// @desc    update the changes in  a column cell
-// @access  Private route
-router.post(
-  "/assign/:handle",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    //Get Fields
-
-    const email = db.escape(req.user.email);
-    const type = req.user.type;
-    const dept = db.escape(req.user.dept);
-    const Rubric_ID = req.params.handle;
-    const Evaluator_email = db.escape(req.body.Evaluator_email);
-
-    if (type == "Admin") {
-      let sql =
-        "INSERT INTO RUBRIC_ASSIGN(Rubric,ID, Evaluator_Email) VALUES(" +
-        Rubric_ID +
-        "," +
-        Evaluator_email +
-        ")";
-
-      db.query(sql, (err, result) => {
-        if (err)
-          res.status(404).json({ error: "There was a problem adding it" });
-        else {
-          res
-            .status(200)
-            .json({ message: "Rubric has been successfully assigned" });
-        }
-      });
-    } else {
-      res.status(404).json({ error: "Not an Admin" });
-    }
-  }
-);
-
 // @route   GET api/rubrics/evaluations/
 // @desc    Returns the list of all the assigned rubrics
 // @access  Private route
 router.get(
-  "/evaluations/",
+  "/abc",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    //Get Fields
-
+    console.log("Here");
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     Rubrics = [];
     let sql =
-      "SELECT * FROM  RUBRIC_ASSIGN NATURAL JOIN RUBRIC WHERE Evaluators_Email = " +
+      "SELECT * FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
       email;
-
+    console.log(sql);
     db.query(sql, (err, result) => {
       if (err)
         res.status(404).json({ error: "There was a problem loading it" });
