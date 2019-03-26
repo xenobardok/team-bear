@@ -118,7 +118,7 @@ form.createRubric{
 
 /* Position and sizing of burger button */
 .bm-burger-button {
-  position: fixed;
+  position: absolute;
   width: 36px;
   height: 30px;
   left: 36px;
@@ -281,4 +281,17 @@ textarea {
 
 .cycle-view h2 {
   margin: 0px 0px 50px 0px;
+}
+
+.login-register a{
+  margin: 0px 5px;
+}
+
+.edit-post{
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.flex-grow{
+  flex-grow: 1
 }

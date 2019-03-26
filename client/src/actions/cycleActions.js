@@ -73,3 +73,20 @@ export const createNewOutcome = (id, Outcome_Name) => dispatch => {
       });
     });
 };
+
+export const updateOutcome = (cycleID, outcomeID, Outcome_Name) => dispatch => {
+  axios
+    .post(`/api/cycle/${cycleID}/outcome/${outcomeID}/update`, {
+      Outcome_Name: Outcome_Name
+    })
+    .then(res => {
+      console.log("Successfully updated outcome");
+      dispatch(getSingleCycle(cycleID));
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};

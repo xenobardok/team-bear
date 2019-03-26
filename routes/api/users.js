@@ -8,6 +8,7 @@ const router = express.Router(),
 // Loading Input Validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+validateAddEvaluatorInput = require("../../validation/evaluator");
 
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -68,6 +69,49 @@ router.post("/register", (req, res) => {
     });
   }
 });
+
+// @route   POST api/users/addEvaluator
+// @desc    Register user
+// @access  Private
+router.post(
+  "/addEvaluator",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const dept = db.escape(req.user.dept);
+    const type = req.user.type;
+    if (type == "Admin") {
+      const { errors, isValid } = validateAddEvaluatorInput(req.body);
+
+      //Check for validation
+      if (!isValid) {
+        return res.status(404).json(errors);
+      } else {
+        let newEmail = db.escape(req.body.newEmail);
+
+        let isActive = db.escape("false");
+        let sql =
+          "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
+          newEmail +
+          "," +
+          dept +
+          "," +
+          isActive +
+          ")";
+        console.log(sql);
+        db.query(sql, (err, result) => {
+          if (err) {
+            errors.message = "There was some problem adding a new user.";
+            return res.status(400).json(errors);
+          }
+          errors.message = "User successfully added.";
+          return res.status(200).json(errors);
+        });
+      }
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
 
 // @route   GET api/users/login
 // @desc    Login user

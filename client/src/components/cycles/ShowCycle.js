@@ -8,10 +8,11 @@ import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
 import classnames from "classnames";
+import EditableOutcomeList from "./EditableOutcomeList";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-library.add(faPlus);
+import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlus, faEdit);
 
 let createOutcome;
 class ShowCycle extends Component {
@@ -28,7 +29,8 @@ class ShowCycle extends Component {
     if (this.props.match.params.id) {
       this.props.getSingleCycle(this.props.match.params.id);
     }
-    if (this.props.cycles) {
+    if (this.props.auth.user.type === "Evaluator") {
+      this.props.history.push("/dashboard");
     }
   }
 
@@ -105,14 +107,31 @@ class ShowCycle extends Component {
       cycleName = cycle.Cycle_Name;
       if (Object.keys(this.state.allOutcomes).length > 0) {
         outcomes = this.state.allOutcomes.data.map(value => (
-          <ListGroup.Item
-            action
+          <EditableOutcomeList
+            value={value}
+            onClickHandler={this.onClickHandler}
             key={value.Outcome_ID}
-            name={value.Outcome_ID}
-            onClick={this.onClickHandler}
-          >
-            {value.Outcome_Name}
-          </ListGroup.Item>
+            cycleID={this.props.cycles.cycle.Cycle_ID}
+          />
+          // <ListGroup key={value.Outcome_ID} className="edit-post">
+          //   <ListGroup.Item
+          //     action
+          //     name={value.Outcome_ID}
+          //     onClick={this.onClickHandler}
+          //   >
+          //     {value.Outcome_Name}
+          //   </ListGroup.Item>
+          //   <div
+          //     style={{
+          //       display: "inline",
+          //       alignSelf: "center",
+          //       padding: "0px 5px"
+          //     }}
+          //     onClick={this.editHandler}
+          //   >
+          //     <FontAwesomeIcon icon="edit" />
+          //   </div>
+          // </ListGroup>
         ));
       }
     }

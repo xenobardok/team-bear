@@ -9,10 +9,11 @@ import { ListGroup, Card, Button } from "react-bootstrap";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 import CreateCycle from "./CreateCycle";
 import isEmpty from "../../validation/isEmpty";
-library.add(faPlus);
+import EditableCycleList from "../../common/EditableCycleList";
+library.add(faPlus, faEdit);
 
 class Cycles extends Component {
   constructor() {
@@ -37,6 +38,10 @@ class Cycles extends Component {
         console.log(this.props.cycles.cycle);
       }
     }
+
+    if (nextProps.errors === "unauthorized") {
+      this.props.history.push("/login");
+    }
   }
 
   componentDidMount() {
@@ -56,14 +61,7 @@ class Cycles extends Component {
         //   Check if logged in user has cycles to view
         if (Object.keys(allCycles).length > 0) {
           cyclesList = allCycles.map(value => (
-            <Link
-              key={value.Cycle_ID}
-              to={"/dashboard/cycles/" + value.Cycle_ID}
-            >
-              <ListGroup.Item action key={value.Cycle_ID}>
-                {value.Cycle_Name}
-              </ListGroup.Item>
-            </Link>
+            <EditableCycleList key={value.Cycle_ID} value={value} />
           ));
         } else {
           cyclesList = (
