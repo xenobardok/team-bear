@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import isEmpty from "../../validation/isEmpty";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { updateOutcome } from "../../actions/cycleActions";
+import { updateOutcome, getSingleCycle } from "../../actions/cycleActions";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+import classnames from "classnames";
 library.add(faPlus, faEdit);
 
 class EditableOutcomeList extends Component {
@@ -20,11 +21,48 @@ class EditableOutcomeList extends Component {
     };
   }
 
+  componentDidUpdate = prevProps => {
+    if (this.props.errors) {
+      if (prevProps.errors !== this.props.errors) {
+        this.setState({
+          errors: this.props.errors
+        });
+      }
+    } else {
+      this.setState({
+        errors: ""
+      });
+    }
+    if (this.props.errors !== prevProps.errors) {
+      // if (isEmpty(this.props.errors)) {
+      //   this.setState({
+      //     isEditable: false
+      //   });
+      // }
+      console.log(this.props.errors);
+    }
+
+    if (this.props.value !== prevProps.value) {
+      this.setState({
+        textValue: this.props.value.Outcome_Name
+      });
+    }
+  };
+
   editHandler = e => {
     let { isEditable } = this.state;
     this.setState({
       isEditable: !isEditable
     });
+  };
+
+  cancelHandler = e => {
+    let { isEditable } = this.state;
+    this.setState({
+      isEditable: !isEditable,
+      errors: ""
+    });
+    this.props.getSingleCycle(this.props.cycleID);
   };
 
   updateOutcomeButton = e => {
@@ -33,16 +71,10 @@ class EditableOutcomeList extends Component {
       this.props.value.Outcome_ID,
       this.state.textValue
     );
-    if (isEmpty(this.state.errors)) {
-      this.setState({
-        isEditable: false
-      });
-    }
   };
 
   render() {
     let { isEditable } = this.state;
-    console.log(this.props.value);
     return (
       <>
         {isEditable ? (
@@ -51,11 +83,17 @@ class EditableOutcomeList extends Component {
               type="text"
               value={this.state.textValue}
               onChange={e => this.setState({ textValue: e.target.value })}
+              className={classnames("", {
+                "is-invalid": this.state.errors.Outcome_Name
+              })}
             />
+            <Form.Control.Feedback type="invalid">
+              {this.state.errors.Outcome_Name}
+            </Form.Control.Feedback>
             <Button variant="primary" onClick={this.updateOutcomeButton}>
               Update
             </Button>
-            <Button variant="secondary" onClick={this.editHandler}>
+            <Button variant="secondary" onClick={this.cancelHandler}>
               Cancel
             </Button>
           </Form>
@@ -87,10 +125,14 @@ class EditableOutcomeList extends Component {
 }
 
 EditableOutcomeList.propTypes = {
-  updateOutcome: PropTypes.func.isRequired
+  updateOutcome: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired
 };
 
+const mapStateToProps = state => ({
+  errors: state.errors
+});
 export default connect(
-  null,
-  { updateOutcome }
+  mapStateToProps,
+  { getSingleCycle, updateOutcome }
 )(EditableOutcomeList);
