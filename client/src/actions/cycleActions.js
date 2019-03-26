@@ -81,6 +81,7 @@ export const updateOutcome = (cycleID, outcomeID, Outcome_Name) => dispatch => {
     })
     .then(res => {
       console.log("Successfully updated outcome");
+      dispatch(getSingleCycle(cycleID));
     })
     .catch(err =>
       dispatch({
