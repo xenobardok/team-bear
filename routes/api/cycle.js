@@ -721,7 +721,6 @@ router.post(
             " AND Student_ID=" +
             Student_ID;
 
-          console.log(sql);
           db.query(sql, (err, result) => {
             if (err) {
               return res.status(400).json({
