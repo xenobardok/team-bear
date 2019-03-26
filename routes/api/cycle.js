@@ -697,7 +697,7 @@ router.post(
             return res.status(404).json(errors);
           }
 
-          Student_ID = req.body.Student_ID;
+          Student_ID = db.escape(req.body.Student_ID);
           Student_Name = req.body.Student_Name;
 
           if (isEmpty(Student_ID)) {
