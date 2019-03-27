@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 // import Spinner from "../../common/Spinner";
-import { Switch, Route } from "react-router";
+import { Route } from "react-router-dom";
+import {Switch} from "react-router";
 // import PropTypes from "prop-types";
 // import { connect } from "react-redux";
 // import { getCycles } from "../../actions/cycleActions";
