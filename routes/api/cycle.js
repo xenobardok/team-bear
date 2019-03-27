@@ -374,7 +374,6 @@ router.get(
 // @route   POST api/cycle/outcome/:outcomeID/createRubricMeasure
 // @desc    Create a new Rubric Measure
 // @access  Private
-
 router.post(
   "/outcome/:outcomeID/createRubricMeasure",
   passport.authenticate("jwt", { session: false }),
@@ -475,10 +474,99 @@ router.post(
   }
 );
 
+// @route   GET api/cycle/outcome/:outcomeID/measure/:MeasureID
+// @desc    get the list of measures of a given measure
+// @access  Private route
+router.get(
+  "/outcome/:outcomeID/measure/:measureID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    let errors = {};
+    if (type == "Admin") {
+      const Outcome_ID = req.params.outcomeID;
+      const Measure_ID = req.params.measureID;
+      const Measure = {};
+
+      let sql =
+        "SELECT * FROM OUTCOMES NATURAL JOIN MEASURES WHERE Outcome_ID =" +
+        Outcome_ID +
+        " AND Measure_ID=" +
+        Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            errors.Outcome_Name = "Measure not found";
+            return res.status(200).json(errors);
+          }
+
+          Measure.Measure_ID = Measure_ID;
+          Measure.Measure_Name = result[0].Measure_Name;
+          Measure.Measure_Type = result[0].Measure_type;
+
+          if (Measure.Measure_Type == "rubric") {
+            sql =
+              " SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure_ID;
+            db.query(sql, (err, result) => {
+              if (err) return res.status(200).json(err);
+              else {
+                Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+                Measure.Rubric_Measure_ID = Rubric_Measure_ID;
+                Measure.End_Date = result[0].End_Date;
+                Measure.Target = result[0].Target;
+                Measure.Threshold = result[0].Threshold;
+                Measure.Achieved_Threshold = result[0].Score;
+                Measure.Is_Success = result[0].Is_Success;
+
+                sql =
+                  "SELECT Count(*) AS Total FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                  Rubric_Measure_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) throw err;
+                  else {
+                    const Total_Students = result[0].Total;
+                    Measure.Total_Students = Total_Students;
+
+                    //sql to find the count of students with required or better grade
+                    sql =
+                      "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                      Rubric_Measure_ID +
+                      " AND Student_Avg_Grade>=" +
+                      Measure.Target;
+
+                    db.query(sql, (err, result) => {
+                      if (err) throw err;
+                      else {
+                        Measure.Student_Achieved_Target_Count =
+                          result[0].Success_Count;
+
+                        res.status(200).json(Measure);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          } else {
+            // for test measure
+            res.status(200).json(Measure);
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/cycle/outcome/:outcomeID/renameMeasure/:MeasureID
 // @desc    Create a new Rubric Measure
 // @access  Private
-
 router.post(
   "/outcome/:outcomeID/renameMeasure/:MeasureID",
   passport.authenticate("jwt", { session: false }),
