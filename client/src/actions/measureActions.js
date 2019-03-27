@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_MEASURES, MEASURE_LOADING } from "./types";
+import { GET_MEASURES, MEASURE_LOADING, GET_ERRORS } from "./types";
 
 export const getMeasures = id => dispatch => {
   //   dispatch(setMeasureLoading());
@@ -19,20 +19,26 @@ export const getMeasures = id => dispatch => {
     );
 };
 
-// export const createNewRubricMeasure = (id, Outcome_Name) => dispatch => {
-//   console.log(id, Outcome_Name);
-//   axios
-//     .post(`/api/cycle/${id}/outcome/create`, { Outcome_Name: Outcome_Name })
-//     .then(res => {
-//       dispatch(getSingleCycle(id));
-//     })
-//     .catch(err => {
-//       dispatch({
-//         type: GET_ERRORS,
-//         payload: err.response.data
-//       });
-//     });
-// };
+export const createNewRubricMeasure = (
+  Outcome_ID,
+  Measure_Name
+) => dispatch => {
+  console.log(Measure_Name);
+  axios
+    .post(`/api/cycle/outcome/${Outcome_ID}/createRubricMeasure`, {
+      Measure_Name: Measure_Name
+    })
+    .then(res => {
+      console.log(res.data);
+      console.log("Create new measure");
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
 
 export const setMeasureLoading = () => ({
   type: MEASURE_LOADING

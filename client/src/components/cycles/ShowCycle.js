@@ -183,7 +183,7 @@ class ShowCycle extends Component {
           </div>
           <Route
             exact
-            path="/dashboard/cycles/:id(\d+)/outcome/:measureID(\d+)"
+            path="/dashboard/cycles/:id(\d+)/outcome/:outcomeID(\d+)"
             component={ShowMeasures}
           />
         </div>
