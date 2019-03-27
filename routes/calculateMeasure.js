@@ -20,7 +20,6 @@ let calculateMeasure = Rubric_Measure_ID => {
       sql =
         "SELECT Count(*) AS Total FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
         Rubric_Measure_ID;
-
       db.query(sql, (err, result) => {
         if (err) throw err;
         else {
@@ -38,7 +37,11 @@ let calculateMeasure = Rubric_Measure_ID => {
             else {
               const Success_Count = result[0].Success_Count;
 
-              const percent_success = (Success_Count / Total_Students) * 100;
+              let percent_success = (Success_Count / Total_Students) * 100;
+
+              if (Total_Students == 0) {
+                percent_success = 0;
+              }
               let Measure_Success = db.escape("false");
               if (percent_success >= Threshold) {
                 Measure_Success = db.escape("true");
