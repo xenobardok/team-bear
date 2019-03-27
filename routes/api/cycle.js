@@ -515,7 +515,7 @@ router.get(
               if (err) return res.status(200).json(err);
               else {
                 Rubric_Measure_ID = result[0].Rubric_Measure_ID;
-                Measure.Rubric_Measure_ID = Rubric_Measure_ID;
+                Measure.Rubric_ID = result[0].Rubric_ID;
                 Measure.End_Date = result[0].End_Date;
                 Measure.Target = result[0].Target;
                 Measure.Threshold = result[0].Threshold;
@@ -545,7 +545,53 @@ router.get(
                         Measure.Student_Achieved_Target_Count =
                           result[0].Success_Count;
 
-                        res.status(200).json(Measure);
+                        sql =
+                          " SELECT Evaluator_Email,CONCAT( Fname, Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
+                          Rubric_Measure_ID;
+                        // console.log(sql);
+                        Measure.Evaluators = [];
+                        db.query(sql, (err, result) => {
+                          if (err) res.status(400).json(err);
+                          result.forEach(row => {
+                            evaluator = {
+                              Evaluator_Email: row.Evaluator_Email,
+                              Evaluator_Name: row.FullName
+                            };
+                            Measure.Evaluators.push(evaluator);
+                          });
+
+                          Measure.Students = [];
+
+                          sql =
+                            "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
+                            Rubric_Measure_ID;
+
+                          Measure.Students = [];
+
+                          db.query(sql, (err, result) => {
+                            if (err) res.status(400).json(err);
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Measure.Students.push(student);
+                            });
+                            Measure.Rubric_Name = "";
+
+                            sql =
+                              " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
+                              Measure_ID;
+
+                            db.query(sql, (err, result) => {
+                              if (err) res.status(400).json(err);
+                              if (result.length > 0) {
+                                Measure.Rubric_Name = result[0].Rubric_Name;
+                              }
+                              res.status(200).json(Measure);
+                            });
+                          });
+                        });
                       }
                     });
                   }
