@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getSingleCycle } from "../../actions/cycleActions";
-import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
+// import { getSingleCycle } from "../../actions/cycleActions";
+import { createNewRubricMeasure } from "../../actions/measureActions";
+import { Card, ListGroup, Button, FormControl, Form } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import { getMeasures } from "../../actions/measureActions";
 import classnames from "classnames";
@@ -17,14 +18,16 @@ class ShowMeasures extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      newMeasure: "",
+      newMeasureType: "rubric",
       showNewMeasure: false,
       errors: ""
     };
   }
 
   componentDidMount() {
-    if (this.props.match.params.measureID) {
-      this.props.getMeasures(this.props.match.params.measureID);
+    if (this.props.match.params.outcomeID) {
+      this.props.getMeasures(this.props.match.params.outcomeID);
     }
   }
 
@@ -34,7 +37,13 @@ class ShowMeasures extends Component {
     });
   };
 
-  saveButtonHandler = () => {};
+  saveButtonHandler = () => {
+    let { newMeasure, newMeasureType } = this.state;
+    let { outcomeID } = this.props.match.params;
+    if (newMeasureType === "rubric") {
+      this.props.createNewRubricMeasure(outcomeID, newMeasure);
+    }
+  };
   render() {
     let { measure, loading } = this.props.measures;
     let measures = "";
@@ -56,21 +65,37 @@ class ShowMeasures extends Component {
 
           <ListGroup variant="flush">{measures}</ListGroup>
           {this.state.showNewMeasure ? (
-            <div>
-              <FormControl
-                name="new-outcome"
-                as="textarea"
-                aria-label="With textarea"
-                value={this.state.newOutcome}
-                placeholder="Enter new measure"
-                onChange={e => this.setState({ newOutcome: e.target.value })}
-                className={classnames("", {
-                  "is-invalid": this.state.errors.Outcome_Name
-                })}
-              />
-              <FormControl.Feedback type="invalid">
-                {this.state.errors.Outcome_Name}
-              </FormControl.Feedback>
+            <Form className="create">
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Label>Name of the measure:</Form.Label>
+                <FormControl
+                  name="new-outcome"
+                  as="textarea"
+                  aria-label="With textarea"
+                  value={this.state.newMeasure}
+                  placeholder="Enter new measure"
+                  onChange={e => this.setState({ newMeasure: e.target.value })}
+                  className={classnames("", {
+                    "is-invalid": this.state.errors.Measure_Name
+                  })}
+                />
+                <FormControl.Feedback type="invalid">
+                  {this.state.errors.Outcome_Name}
+                </FormControl.Feedback>
+              </Form.Group>
+              <Form.Group controlId="exampleForm.ControlSelect1">
+                <Form.Label>Type of the measure</Form.Label>
+                <FormControl
+                  as="select"
+                  onChange={e =>
+                    this.setState({ newMeasureType: e.target.value })
+                  }
+                  value={this.state.newMeasureType}
+                >
+                  <option value="rubric">Rubric</option>
+                  <option value="test">Test</option>
+                </FormControl>
+              </Form.Group>
               <Button variant="primary" onClick={this.saveButtonHandler}>
                 Save
               </Button>
@@ -84,7 +109,7 @@ class ShowMeasures extends Component {
               >
                 Cancel
               </Button>
-            </div>
+            </Form>
           ) : null}
           <Card.Footer
             style={{ cursor: "pointer" }}
@@ -112,5 +137,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMeasures }
+  { getMeasures, createNewRubricMeasure }
 )(ShowMeasures);

@@ -295,3 +295,7 @@ textarea {
 .flex-grow{
   flex-grow: 1
 }
+
+.create{
+  padding: 10px
+}

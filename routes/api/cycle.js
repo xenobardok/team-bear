@@ -885,7 +885,7 @@ router.post(
 );
 
 // @route   POST api/cycle/measures/:measureID/rubricMeasure/:rubricMeasureID/addStudent
-// @desc    Add an evaluator to a Rubric Measure
+// @desc    Add a student to a Rubric Measure
 // @access  Private
 router.post(
   "/measures/:measureID/rubricMeasure/:rubricMeasureID/addStudent",
