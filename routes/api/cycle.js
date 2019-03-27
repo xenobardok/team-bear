@@ -7,6 +7,8 @@ var async = require("async");
 const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
 
+const calculateMeasure = require("../calculateMeasure");
+
 const validateUpdateRubric = require("../../validation/rubricMeasure");
 // @route   GET api/cycle
 // @desc    Gets the lists of all rubrics
@@ -473,11 +475,72 @@ router.post(
   }
 );
 
-// @route   POST api/cycle/measures/:measureID/rubricMeasure/:rubricMeasureID/update
-// @desc    Update a Rubric Measure
+// @route   POST api/cycle/outcome/:outcomeID/renameMeasure/:MeasureID
+// @desc    Create a new Rubric Measure
+// @access  Private
+
+router.post(
+  "/outcome/:outcomeID/renameMeasure/:MeasureID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const outcomeID = db.escape(req.params.outcomeID);
+    let Measure_Name = req.body.Measure_Name;
+    const Measure_ID = req.params.MeasureID;
+
+    const errors = {};
+    if (type == "Admin") {
+      //console.log(isEmpty(Outcome_Name));
+      if (isEmpty(Measure_Name)) {
+        return res
+          .status(404)
+          .json((errors.Measure_Name = "Measure Name cannot be empty"));
+      }
+      Measure_Name = db.escape(Measure_Name);
+      let sql =
+        "SELECT * FROM MEASURES WHERE Outcome_ID =" +
+        outcomeID +
+        " AND Measure_ID=" +
+        Measure_ID;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            errors.Measure_Name = "Measure does not exist.";
+            return res.status(404).json(errors);
+          }
+
+          sql =
+            "UPDATE MEASURES SET Measure_label=" +
+            Measure_Name +
+            " WHERE Outcome_ID =" +
+            outcomeID +
+            " AND Measure_ID=" +
+            Measure_ID;
+          db.query(sql, (err, result) => {
+            if (err) res.send(err);
+            else {
+              return res
+                .status(200)
+                .json({ message: "Successfully renamed the Measure." });
+            }
+          });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   POST api/cycle/measures/:measureID/rubricMeasure/:rubricMeasureID/details
+// @desc    Update a Rubric Measure details
 // @access  Private
 router.post(
-  "/measures/:measureID/rubricMeasure/:rubricMeasureID/update",
+  "/measures/:measureID/rubricMeasure/:rubricMeasureID/details",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -750,6 +813,7 @@ router.post(
                   error: "There was some problem adding  the Evaluatee"
                 });
               } else {
+                calculateMeasure(Rubric_Measure_ID);
                 return res
                   .status(200)
                   .json({ message: "Evaluatee has successfully been added" });

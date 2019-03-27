@@ -47,7 +47,7 @@ router.get(
 );
 
 // @route   POST api/rubrics
-// @desc    Create a nre Rubric
+// @desc    Create a new Rubric
 // @access  Private
 router.post(
   "/create",
