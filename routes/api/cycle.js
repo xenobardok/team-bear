@@ -482,7 +482,7 @@ router.post(
 );
 
 // @route   GET api/cycle/outcome/:outcomeID/measure/:MeasureID
-// @desc    get the list of measures of a given measure
+// @desc    get the details of a given measure
 // @access  Private route
 router.get(
   "/outcome/:outcomeID/measure/:measureID",
@@ -512,7 +512,7 @@ router.get(
           }
 
           Measure.Measure_ID = Measure_ID;
-          Measure.Measure_Name = result[0].Measure_Name;
+          Measure.Measure_label = result[0].Measure_label;
           Measure.Measure_Type = result[0].Measure_type;
 
           if (Measure.Measure_Type == "rubric") {
