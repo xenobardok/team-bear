@@ -1,7 +1,12 @@
-import { GET_MEASURES, MEASURE_LOADING } from "../actions/types";
+import {
+  GET_MEASURES,
+  MEASURE_LOADING,
+  GET_SINGLE_MEASURE
+} from "../actions/types";
 
 const initialState = {
   measure: null,
+  singleMeasure: null,
   loading: true
 };
 
@@ -16,6 +21,12 @@ export default function(state = initialState, action) {
       return {
         ...initialState,
         measure: action.payload,
+        loading: false
+      };
+    case GET_SINGLE_MEASURE:
+      return {
+        ...initialState,
+        singleMeasure: action.payload,
         loading: false
       };
     default:

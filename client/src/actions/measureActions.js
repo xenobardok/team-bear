@@ -1,5 +1,10 @@
 import axios from "axios";
-import { GET_MEASURES, MEASURE_LOADING, GET_ERRORS } from "./types";
+import {
+  GET_MEASURES,
+  MEASURE_LOADING,
+  GET_ERRORS,
+  GET_SINGLE_MEASURE
+} from "./types";
 
 export const getMeasures = id => dispatch => {
   //   dispatch(setMeasureLoading());
@@ -19,14 +24,16 @@ export const getMeasures = id => dispatch => {
     );
 };
 
-export const createNewRubricMeasure = (
+export const createMeasure = (
   Outcome_ID,
-  Measure_Name
+  Measure_Name,
+  Measure_Type
 ) => dispatch => {
   console.log(Measure_Name);
   axios
-    .post(`/api/cycle/outcome/${Outcome_ID}/createRubricMeasure`, {
-      Measure_Name: Measure_Name
+    .post(`/api/cycle/outcome/${Outcome_ID}/measure/create`, {
+      Measure_Name: Measure_Name,
+      Measure_Type: Measure_Type
     })
     .then(res => {
       console.log(res.data);
@@ -43,3 +50,22 @@ export const createNewRubricMeasure = (
 export const setMeasureLoading = () => ({
   type: MEASURE_LOADING
 });
+
+export const getSingleMeasure = (outcomeID, measureID) => dispatch => {
+  dispatch(setMeasureLoading());
+  axios
+    .get(`/api/cycle/outcome/${outcomeID}/measure/${measureID}`)
+    .then(res => {
+      dispatch({
+        type: GET_SINGLE_MEASURE,
+        payload: res.data
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: GET_SINGLE_MEASURE,
+        payload: null
+      });
+    });
+};

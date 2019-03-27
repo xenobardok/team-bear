@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 // import { getSingleCycle } from "../../actions/cycleActions";
-import { createNewRubricMeasure } from "../../actions/measureActions";
+import { createMeasure } from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl, Form } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import { getMeasures } from "../../actions/measureActions";
@@ -41,19 +41,31 @@ class ShowMeasures extends Component {
     let { newMeasure, newMeasureType } = this.state;
     let { outcomeID } = this.props.match.params;
     if (newMeasureType === "rubric") {
-      this.props.createNewRubricMeasure(outcomeID, newMeasure);
+      this.props.createMeasure(outcomeID, newMeasure, newMeasureType);
     }
   };
   render() {
     let { measure, loading } = this.props.measures;
+    let { id, outcomeID } = this.props.match.params;
     let measures = "";
     if (loading) {
       measures = <Spinner />;
     } else if (measure.data) {
       measures = measure.data.map(value => (
-        <ListGroup.Item key={value.Measure_ID}>
-          {value.Measure_Name}
-        </ListGroup.Item>
+        <ListGroup key={value.Measure_ID}>
+          <Link
+            to={
+              "/dashboard/cycles/" +
+              id +
+              "/outcome/" +
+              outcomeID +
+              "/" +
+              value.Measure_ID
+            }
+          >
+            <ListGroup.Item>{value.Measure_Name}</ListGroup.Item>
+          </Link>
+        </ListGroup>
       ));
     } else {
       measures = <ListGroup.Item>This measure does not exist</ListGroup.Item>;
@@ -137,5 +149,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMeasures, createNewRubricMeasure }
+  { getMeasures, createMeasure }
 )(ShowMeasures);
