@@ -2,7 +2,7 @@ import React, { Component } from "react";
 // import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Container } from "react-bootstrap";
+import { Container, Badge } from "react-bootstrap";
 import { getSingleMeasure } from "../../actions/measureActions";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
@@ -65,7 +65,13 @@ class Measure extends Component {
       } = this.props.measures.singleMeasure;
       measure = (
         <div>
-          <h3>{Measure_Label}</h3>
+          <div className="measure-label">
+            <Badge variant="primary">
+              <span style={{ fontWeight: "400" }}>Measure Label</span>
+            </Badge>
+            <br />
+            <h3>{Measure_Label}</h3>
+          </div>
           <br />
           <h5>Measure Definition</h5>
           <ul>

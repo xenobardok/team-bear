@@ -299,3 +299,9 @@ textarea {
 .create{
   padding: 10px
 }
+
+.measure-label {
+  padding: 10px;
+  border: 1px solid #373a47;
+  border-radius: 5px;
+}
