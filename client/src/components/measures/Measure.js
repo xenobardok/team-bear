@@ -2,14 +2,27 @@ import React, { Component } from "react";
 // import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Container, Badge } from "react-bootstrap";
+import {
+  Container,
+  Badge,
+  InputGroup,
+  FormControl,
+  Form
+} from "react-bootstrap";
 import { getSingleMeasure } from "../../actions/measureActions";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlus, faEdit);
 
 class Measure extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isEditing: false
+    };
   }
 
   componentDidUpdate = prevProps => {
@@ -73,13 +86,79 @@ class Measure extends Component {
             <h3>{Measure_Label}</h3>
           </div>
           <br />
+          <Badge variant="success">
+            <span style={{ fontWeight: "400" }}>Important</span>
+          </Badge>
           <h5>Measure Definition</h5>
-          <ul>
-            <li>Measure Type: {Measure_Type}</li>
-            <li>Target: {Target}</li>
-            <li>Threshold: {Threshold}</li>
-            <li>Deadline: {End_Date}</li>
-          </ul>
+          <div className="label-defination px-2">
+            {Threshold && !this.state.isEditing ? (
+              <span>
+                <strong>{Threshold}</strong> %
+              </span>
+            ) : (
+              <InputGroup className="mb-3 small px-2">
+                <FormControl
+                  placeholder="Eg. 75"
+                  aria-label="percentage"
+                  aria-describedby="percentage"
+                  defaultValue={Threshold ? Threshold : ""}
+                />
+                <InputGroup.Append>
+                  <InputGroup.Text id="percentage">%</InputGroup.Text>
+                </InputGroup.Append>
+              </InputGroup>
+            )}
+            <span> of students evaluated on </span>
+            {Rubric_Name && !this.state.isEditing ? (
+              <span>
+                <strong>{Rubric_Name}</strong> rubric
+              </span>
+            ) : (
+              <InputGroup className="mb-3 rubric px-2">
+                <Form.Control as="select" aria-describedby="rubric">
+                  {Rubric_Name ? (
+                    <option value="" selected>
+                      {Rubric_Name}
+                    </option>
+                  ) : (
+                    <>
+                      <option value="" disabled selected>
+                        Choose a Rubric
+                      </option>
+                      <option>...</option>
+                    </>
+                  )}
+                </Form.Control>
+                <InputGroup.Append>
+                  <InputGroup.Text id="rubric">Rubric</InputGroup.Text>
+                </InputGroup.Append>
+              </InputGroup>
+            )}
+            <span> of </span>
+            {Target && !this.state.isEditing ? (
+              <span>
+                <strong>{Target}</strong>
+              </span>
+            ) : (
+              <InputGroup className=" mb-3 target px-2">
+                <Form.Control as="select" aria-describedby="target">
+                  {Target ? (
+                    <option value={Target} selected>
+                      {Target}
+                    </option>
+                  ) : (
+                    <>
+                      <option value="" disabled selected>
+                        Choose a Rubric
+                      </option>
+                      <option>...</option>
+                    </>
+                  )}
+                </Form.Control>
+              </InputGroup>
+            )}
+            <span> or better.</span>
+          </div>
           <br />
           <h5>Stats:</h5>
           <ul>
@@ -95,7 +174,7 @@ class Measure extends Component {
           <h5>Evaluators</h5>
           <ul>
             {Evaluators.map(value => (
-              <li>
+              <li key={value.Evaluator_Email}>
                 {value.Evaluator_Name} : {value.Evaluator_Email}
               </li>
             ))}

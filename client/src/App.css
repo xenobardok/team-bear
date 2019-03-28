@@ -301,7 +301,22 @@ textarea {
 }
 
 .measure-label {
-  padding: 10px;
-  border: 1px solid #373a47;
+  /* padding: 10px; */
+  /* border: 1px solid #373a47; */
   border-radius: 5px;
+}
+
+.label-defination .input-group.small{
+  width: 150px;
+  display: inline-flex;
+}
+
+.label-defination .input-group.rubric {
+  width: 300px;
+  display: inline-flex;
+}
+
+.label-defination .input-group.target {
+  width: 200px;
+  display: inline-flex;
 }
