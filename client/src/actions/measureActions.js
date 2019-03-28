@@ -7,10 +7,11 @@ import {
 } from "./types";
 
 export const getMeasures = id => dispatch => {
-  //   dispatch(setMeasureLoading());
+  dispatch(setMeasureLoading());
   axios
     .get(`/api/cycle/outcome/${id}`)
     .then(res => {
+      console.log(res.data);
       dispatch({
         type: GET_MEASURES,
         payload: res.data
