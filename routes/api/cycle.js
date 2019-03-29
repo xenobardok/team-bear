@@ -382,7 +382,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const outcomeID = db.escape(req.params.outcomeID);
-    let Measure_Name = req.body.Measure_Name;
+    let Measure_Name = req.body.Measure_label;
     let Measure_Type = req.body.Measure_Type;
     const errors = {};
 
@@ -431,9 +431,8 @@ router.post(
                 "," +
                 Measure_Index +
                 "," +
-                Measure_type +
+                db.escape(Measure_Type) +
                 ")";
-
               db.query(sql, (err, result) => {
                 if (err)
                   return res
@@ -443,7 +442,7 @@ router.post(
                   let Measure_ID = db.escape(result.insertId);
 
                   //If Measure_Type is rubric, create a rubric measure
-                  if (Measure_Type == "rubric") {
+                  if (Measure_Type === "rubric") {
                     sql =
                       "INSERT INTO RUBRIC_MEASURES(Measure_ID,Is_Success ) VALUES(" +
                       Measure_ID +
