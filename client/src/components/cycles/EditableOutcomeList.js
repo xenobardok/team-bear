@@ -39,7 +39,7 @@ class EditableOutcomeList extends Component {
       //     isEditable: false
       //   });
       // }
-      console.log(this.props.errors);
+      // console.log(this.props.errors);
     }
 
     if (this.props.value !== prevProps.value) {

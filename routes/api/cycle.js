@@ -389,9 +389,8 @@ router.post(
     if (type == "Admin") {
       //console.log(isEmpty(Outcome_Name));
       if (isEmpty(Measure_Name)) {
-        return res
-          .status(404)
-          .json((errors.Measure_Name = "Measure Name cannot be empty"));
+        errors.Measure_Name = "Measure Name cannot be empty";
+        return res.status(404).json(errors);
       }
       Measure_Name = db.escape(Measure_Name);
       let sql =
@@ -431,7 +430,7 @@ router.post(
                 "," +
                 Measure_Index +
                 "," +
-                Measure_type +
+                Measure_Type +
                 ")";
 
               db.query(sql, (err, result) => {
@@ -787,7 +786,7 @@ router.post(
 // @desc    Add an evaluator to a Rubric Measure
 // @access  Private
 router.post(
-  "/measures/:measureID/rubricMeasure/:rubricMeasureID/addEvaluator",
+  "/measures/:measureID/addEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);

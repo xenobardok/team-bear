@@ -9,19 +9,27 @@ import {
   FormControl,
   Form
 } from "react-bootstrap";
-import { getSingleMeasure } from "../../actions/measureActions";
+import { getEvaluators } from "../../actions/profileActions";
+import {
+  getSingleMeasure,
+  assignEvaluatorToMeasure
+} from "../../actions/measureActions";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import EvaluatorBox from "./EvaluatorBox";
+import Stats from "./Stats";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
-library.add(faPlus, faEdit);
+import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlus, faEdit, faUserPlus);
 
 class Measure extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditing: false
+      isEditing: false,
+      newEvaluator: false,
+      allEvaluators: []
     };
   }
 
@@ -30,60 +38,109 @@ class Measure extends Component {
       if (
         this.props.measures.singleMeasure !== prevProps.measures.singleMeasure
       ) {
+        let { singleMeasure } = this.props.measures;
         this.setState({
-          Measure_Label: this.props.measures.singleMeasure.Measure_Label,
-          Measure_Type: this.props.measures.singleMeasure.Measure_Type,
-          Target: this.props.measures.singleMeasure.Target,
-          Threshold: this.props.measures.singleMeasure.Threshold,
-          Achieved_Threshold: this.props.measures.singleMeasure
-            .Achieved_Threshold,
-          Is_Success: this.props.measures.singleMeasure.Is_Success,
-          Total_Students: this.props.measures.singleMeasure.Total_Students,
-          Students_Achieved_Target_Count: this.props.measures.singleMeasure
-            .Students_Achieved_Target_Count,
-          Evaluators: this.props.measures.singleMeasure.Evaluators,
-          Students: this.props.measures.singleMeasure.Students,
-          Rubric_Name: this.props.measures.singleMeasure.Rubric_Name
+          Measure_Label: singleMeasure.Measure_Label,
+          Measure_Type: singleMeasure.Measure_Type,
+          Target: singleMeasure.Target,
+          Threshold: singleMeasure.Threshold,
+          Achieved_Threshold: singleMeasure.Achieved_Threshold,
+          Is_Success: singleMeasure.Is_Success,
+          Total_Students: singleMeasure.Total_Students,
+          Student_Achieved_Target_Count:
+            singleMeasure.Student_Achieved_Target_Count,
+          Evaluators: singleMeasure.Evaluators,
+          Students: singleMeasure.Students,
+          Rubric_Name: singleMeasure.Rubric_Name
         });
       }
     }
-    if (this.props.measure !== prevProps.measure) {
+
+    if (this.props.profile.evaluators !== prevProps.profile.evaluators) {
+      console.log(this.props.profile.evaluators);
+      this.setState({
+        allEvaluators: this.props.profile.evaluators
+      });
     }
   };
 
   componentDidMount() {
     let { outcomeID, measureID } = this.props.match.params;
     this.props.getSingleMeasure(outcomeID, measureID);
+    this.props.getEvaluators();
   }
+
+  addEvaluator = () => {
+    this.setState({
+      newEvaluator: !this.state.newEvaluator
+    });
+  };
+
+  addButtonEvaluator = email => {
+    console.log(this.props.match.params.measureID, email);
+    if (!isEmpty(email)) {
+      this.props.assignEvaluatorToMeasure(
+        this.props.match.params.measureID,
+        email
+      );
+    }
+  };
   render() {
+    let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
+    let {
+      Measure_Label,
+      Measure_Type,
+      Target,
+      Threshold,
+      Achieved_Threshold,
+      Is_Success,
+      Evaluators,
+      Students,
+      Rubric_Name,
+      End_Date,
+      Total_Students,
+      Student_Achieved_Target_Count,
+      newEvaluator
+    } = this.state;
 
     let measure;
     if (loading || isEmpty(singleMeasure)) {
       measure = <Spinner />;
     } else {
-      let {
-        Measure_Label,
-        Measure_Type,
-        Target,
-        Threshold,
-        Achieved_Threshold,
-        Is_Success,
-        Evaluators,
-        Students,
-        Rubric_Name,
-        End_Date,
-        Total_Students,
-        Student_Achieved_Target_Count
-      } = this.props.measures.singleMeasure;
-      measure = (
+      // Measure_Label = stateMeasure.Measure_Label;
+      // Measure_Type = stateMeasure.Measure_Type;
+      // Target = stateMeasure.Target;
+      // Threshold = stateMeasure.Threshold;
+      // Achieved_Threshold = stateMeasure.Achieved_Threshold;
+      // Is_Success = stateMeasure.Is_Success;
+      // Evaluators = stateMeasure.Evaluator;
+      // Students = stateMeasure.Students;
+      // Rubric_Name = stateMeasure.Rubric_Name;
+      // End_Date = stateMeasure.End_Date;
+      // Total_Students = stateMeasure.Total_Students;
+      // Student_Achieved_Target_Count =
+      //   stateMeasure.Student_Achieved_Target_Count;
+    }
+
+    if (newEvaluator) {
+      newEvaluatorBox = (
+        <EvaluatorBox
+          addEvaluator={this.addEvaluator}
+          values={this.state.allEvaluators}
+          addButtonEvaluator={this.addButtonEvaluator}
+        />
+      );
+    }
+    return (
+      <Container>
         <div>
           <div className="measure-label">
             <Badge variant="primary">
               <span style={{ fontWeight: "400" }}>Measure Label</span>
             </Badge>
             <br />
-            <h3>{Measure_Label}</h3>
+            <h3>{Measure_Label ? Measure_Label : null}</h3>
           </div>
           <br />
           <Badge variant="success">
@@ -115,14 +172,16 @@ class Measure extends Component {
               </span>
             ) : (
               <InputGroup className="mb-3 rubric px-2">
-                <Form.Control as="select" aria-describedby="rubric">
+                <Form.Control
+                  as="select"
+                  aria-describedby="rubric"
+                  defaultValue={this.state.Rubric_Name}
+                >
                   {Rubric_Name ? (
-                    <option value="" selected>
-                      {Rubric_Name}
-                    </option>
+                    <option value="">{Rubric_Name}</option>
                   ) : (
                     <>
-                      <option value="" disabled selected>
+                      <option value="choose" disabled>
                         Choose a Rubric
                       </option>
                       <option>...</option>
@@ -160,57 +219,68 @@ class Measure extends Component {
             <span> or better.</span>
           </div>
           <br />
-          <h5>Stats:</h5>
-          <ul>
-            <li>Achieved Threshold: {Achieved_Threshold}</li>
-            <li>Measure Success: {Is_Success}</li>
-            <li>Total Students: {Total_Students}</li>
-            <li>
-              Count of students who achieved target:{" "}
-              {Student_Achieved_Target_Count}
-            </li>
-          </ul>
+          <Stats
+            Achieved_Threshold={Achieved_Threshold}
+            Is_Success={Is_Success}
+            Total_Students={Total_Students}
+            Student_Achieved_Target_Count={Student_Achieved_Target_Count}
+          />
           <br />
-          <h5>Evaluators</h5>
-          <ul>
-            {Evaluators.map(value => (
-              <li key={value.Evaluator_Email}>
-                {value.Evaluator_Name} : {value.Evaluator_Email}
-              </li>
-            ))}
-          </ul>
+
+          <section id="evaluators">
+            <h5>
+              Evaluators
+              <span style={{ float: "right" }}>
+                <FontAwesomeIcon
+                  icon="user-plus"
+                  onClick={this.addEvaluator}
+                  className="addEvaluatorIcon"
+                />
+              </span>
+            </h5>
+            <div className="evaluators">
+              {Evaluators
+                ? Evaluators.map(value => <EvaluatorBox {...value} />)
+                : null}
+
+              {newEvaluatorBox}
+            </div>
+          </section>
           <br />
           <h5>Students</h5>
           <ul>
-            {Students.map(value => (
-              <li>
-                {value.Student_Name} : {value.Student_ID}
-              </li>
-            ))}
+            {Students
+              ? Students.map(value => (
+                  <li>
+                    {value.Student_Name} : {value.Student_ID}
+                  </li>
+                ))
+              : null}
           </ul>
           <br />
           <p>
             Rubric Associated with this measure: <strong>{Rubric_Name}</strong>
           </p>
         </div>
-      );
-    }
-    return <Container>{measure}</Container>;
+      </Container>
+    );
   }
 }
 
 Measure.propTypes = {
   getSingleMeasure: PropTypes.func.isRequired,
-  measures: PropTypes.object.isRequired
+  measures: PropTypes.object.isRequired,
+  getEvaluators: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
-  measures: state.measures
+  measures: state.measures,
+  profile: state.profile
 });
 
 export default connect(
   mapStateToProps,
-  { getSingleMeasure }
+  { getSingleMeasure, getEvaluators, assignEvaluatorToMeasure }
 )(Measure);

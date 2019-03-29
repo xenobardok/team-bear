@@ -11,7 +11,6 @@ export const getMeasures = id => dispatch => {
   axios
     .get(`/api/cycle/outcome/${id}`)
     .then(res => {
-      console.log(res.data);
       dispatch({
         type: GET_MEASURES,
         payload: res.data
@@ -30,7 +29,7 @@ export const createMeasure = (
   Measure_Name,
   Measure_Type
 ) => dispatch => {
-  console.log(Measure_Name);
+  console.log(Measure_Name, Measure_Type);
   axios
     .post(`/api/cycle/outcome/${Outcome_ID}/measure/create`, {
       Measure_Name: Measure_Name,
@@ -69,4 +68,19 @@ export const getSingleMeasure = (outcomeID, measureID) => dispatch => {
         payload: null
       });
     });
+};
+
+export const assignEvaluatorToMeasure = (
+  measureID,
+  Evaluator_Email
+) => dispatch => {
+  console.log(
+    "Doing axios request with measureID " +
+      measureID +
+      " and email " +
+      Evaluator_Email
+  );
+  // axios.post(`/api/cycle/measures/${measureID}/addEvaluator`, {
+  //   Evaluator_Email: Evaluator_Email
+  // });
 };

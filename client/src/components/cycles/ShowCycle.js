@@ -69,7 +69,7 @@ class ShowCycle extends Component {
             "/outcome/" +
             this.props.measures.measure.Outcome_ID
         );
-        console.log(this.props.measures.measure);
+        // console.log(this.props.measures.measure);
       }
     }
 
