@@ -511,7 +511,7 @@ router.get(
           }
 
           Measure.Measure_ID = Measure_ID;
-          Measure.Measure_label = result[0].Measure_label;
+          Measure.Measure_Label = result[0].Measure_label;
           Measure.Measure_Type = result[0].Measure_type;
 
           if (Measure.Measure_Type == "rubric") {
