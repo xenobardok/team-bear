@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import {
   Container,
   Badge,
+  OverlayTrigger,
+  Tooltip,
   InputGroup,
   FormControl,
   Form
@@ -14,10 +16,12 @@ import {
   getSingleMeasure,
   assignEvaluatorToMeasure
 } from "../../actions/measureActions";
+import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import EvaluatorBox from "./EvaluatorBox";
 import Stats from "./Stats";
+import DefineMeasure from "./DefineMeasure";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
@@ -29,7 +33,8 @@ class Measure extends Component {
     this.state = {
       isEditing: false,
       newEvaluator: false,
-      allEvaluators: []
+      allEvaluators: [],
+      rubricScales: []
     };
   }
 
@@ -62,14 +67,30 @@ class Measure extends Component {
         allEvaluators: this.props.profile.evaluators
       });
     }
+
+    if (this.props.rubrics.allRubrics !== prevProps.rubrics.allRubrics) {
+      this.setState({
+        allRubrics: this.props.rubrics.allRubrics
+      });
+    }
+
+    if (this.props.rubrics.rubric !== prevProps.rubrics.rubric) {
+      this.setState({
+        rubricScales: this.props.rubrics.rubric.Scale
+      });
+    }
   };
 
   componentDidMount() {
     let { outcomeID, measureID } = this.props.match.params;
     this.props.getSingleMeasure(outcomeID, measureID);
     this.props.getEvaluators();
+    this.props.getRubrics();
   }
 
+  getSingleRubricScale = id => {
+    this.props.getSingleRubric(id);
+  };
   addEvaluator = () => {
     this.setState({
       newEvaluator: !this.state.newEvaluator
@@ -133,7 +154,7 @@ class Measure extends Component {
       );
     }
     return (
-      <Container>
+      <Container className="single-measure">
         <div>
           <div className="measure-label">
             <Badge variant="primary">
@@ -143,81 +164,14 @@ class Measure extends Component {
             <h3>{Measure_Label ? Measure_Label : null}</h3>
           </div>
           <br />
-          <Badge variant="success">
-            <span style={{ fontWeight: "400" }}>Important</span>
-          </Badge>
-          <h5>Measure Definition</h5>
-          <div className="label-defination px-2">
-            {Threshold && !this.state.isEditing ? (
-              <span>
-                <strong>{Threshold}</strong> %
-              </span>
-            ) : (
-              <InputGroup className="mb-3 small px-2">
-                <FormControl
-                  placeholder="Eg. 75"
-                  aria-label="percentage"
-                  aria-describedby="percentage"
-                  defaultValue={Threshold ? Threshold : ""}
-                />
-                <InputGroup.Append>
-                  <InputGroup.Text id="percentage">%</InputGroup.Text>
-                </InputGroup.Append>
-              </InputGroup>
-            )}
-            <span> of students evaluated on </span>
-            {Rubric_Name && !this.state.isEditing ? (
-              <span>
-                <strong>{Rubric_Name}</strong> rubric
-              </span>
-            ) : (
-              <InputGroup className="mb-3 rubric px-2">
-                <Form.Control
-                  as="select"
-                  aria-describedby="rubric"
-                  defaultValue={this.state.Rubric_Name}
-                >
-                  {Rubric_Name ? (
-                    <option value="">{Rubric_Name}</option>
-                  ) : (
-                    <>
-                      <option value="choose" disabled>
-                        Choose a Rubric
-                      </option>
-                      <option>...</option>
-                    </>
-                  )}
-                </Form.Control>
-                <InputGroup.Append>
-                  <InputGroup.Text id="rubric">Rubric</InputGroup.Text>
-                </InputGroup.Append>
-              </InputGroup>
-            )}
-            <span> of </span>
-            {Target && !this.state.isEditing ? (
-              <span>
-                <strong>{Target}</strong>
-              </span>
-            ) : (
-              <InputGroup className=" mb-3 target px-2">
-                <Form.Control as="select" aria-describedby="target">
-                  {Target ? (
-                    <option value={Target} selected>
-                      {Target}
-                    </option>
-                  ) : (
-                    <>
-                      <option value="" disabled selected>
-                        Choose a Rubric
-                      </option>
-                      <option>...</option>
-                    </>
-                  )}
-                </Form.Control>
-              </InputGroup>
-            )}
-            <span> or better.</span>
-          </div>
+          <DefineMeasure
+            Threshold={Threshold}
+            Rubric_Name={Rubric_Name}
+            Target={Target}
+            allRubrics={this.state.allRubrics}
+            getSingleRubricScale={this.getSingleRubricScale}
+            rubricScales={this.state.rubricScales}
+          />
           <br />
           <Stats
             Achieved_Threshold={Achieved_Threshold}
@@ -228,19 +182,25 @@ class Measure extends Component {
           <br />
 
           <section id="evaluators">
-            <h5>
-              Evaluators
-              <span style={{ float: "right" }}>
+            <span style={{ float: "right", fontSize: "1.25rem" }}>
+              <OverlayTrigger
+                key="top"
+                placement="top"
+                overlay={<Tooltip id="add-evaluator">Add Evaluator</Tooltip>}
+              >
                 <FontAwesomeIcon
                   icon="user-plus"
                   onClick={this.addEvaluator}
                   className="addEvaluatorIcon"
                 />
-              </span>
-            </h5>
+              </OverlayTrigger>
+            </span>
+            <h5>Evaluators</h5>
             <div className="evaluators">
               {Evaluators
-                ? Evaluators.map(value => <EvaluatorBox {...value} />)
+                ? Evaluators.map(value => (
+                    <EvaluatorBox key={value.Evaluator_Name} {...value} />
+                  ))
                 : null}
 
               {newEvaluatorBox}
@@ -251,7 +211,7 @@ class Measure extends Component {
           <ul>
             {Students
               ? Students.map(value => (
-                  <li>
+                  <li key={value.Student_Name}>
                     {value.Student_Name} : {value.Student_ID}
                   </li>
                 ))
@@ -277,10 +237,17 @@ const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
   measures: state.measures,
-  profile: state.profile
+  profile: state.profile,
+  rubrics: state.rubrics
 });
 
 export default connect(
   mapStateToProps,
-  { getSingleMeasure, getEvaluators, assignEvaluatorToMeasure }
+  {
+    getSingleMeasure,
+    getEvaluators,
+    assignEvaluatorToMeasure,
+    getRubrics,
+    getSingleRubric
+  }
 )(Measure);

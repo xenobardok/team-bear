@@ -26,16 +26,17 @@ class Dashboard extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.auth.isAuthenticated) {
+  componentDidUpdate = prevProps => {
+    if (this.props.auth.isAuthenticated === false) {
       this.props.history.push("/login");
     }
 
-    if (nextProps.errors) {
-      console.log(nextProps.errors);
-      this.setState({ errors: nextProps.errors });
+    if (this.props.errors !== prevProps.errors) {
+      console.log(this.props.errors);
+      this.setState({ errors: this.props.errors });
     }
-  }
+  };
+
   render() {
     return (
       <div id="outer-container">
@@ -71,7 +72,8 @@ Dashboard.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  errors: state.errors
 });
 
 export default connect(

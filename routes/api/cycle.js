@@ -382,7 +382,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const outcomeID = db.escape(req.params.outcomeID);
-    let Measure_Name = req.body.Measure_label;
+    let Measure_Name = req.body.Measure_Name;
     let Measure_Type = req.body.Measure_Type;
     const errors = {};
 

@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import isEmpty from "../../validation/isEmpty";
-import { Form, Row, Col } from "react-bootstrap";
-import { getEvaluators } from "../../actions/profileActions";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -36,16 +33,28 @@ class EvaluatorBox extends Component {
       content = (
         <>
           <Form onSubmit={this.addEvaluator}>
-            <FontAwesomeIcon
-              icon="times-circle"
-              className="crossIcon"
-              onClick={this.props.addEvaluator}
-            />
-            <FontAwesomeIcon
-              icon="check"
-              className="checkIcon"
-              onClick={this.addEvaluator}
-            />
+            <OverlayTrigger
+              key="c"
+              placement="top"
+              overlay={<Tooltip id="tooltip-top">Cancel</Tooltip>}
+            >
+              <FontAwesomeIcon
+                icon="times-circle"
+                className="crossIcon"
+                onClick={this.props.addEvaluator}
+              />
+            </OverlayTrigger>
+            <OverlayTrigger
+              key="e"
+              placement="top"
+              overlay={<Tooltip id="tooltip-top">Add Evaluator</Tooltip>}
+            >
+              <FontAwesomeIcon
+                icon="check"
+                className="checkIcon"
+                onClick={this.addEvaluator}
+              />
+            </OverlayTrigger>
             <div style={{ paddingRight: "30px" }}>
               <Form.Group
                 controlId="formBasicEmail"
@@ -66,7 +75,7 @@ class EvaluatorBox extends Component {
                   </option>
                   {!isEmpty(this.props.values) ? (
                     this.props.values.map((item, index) => (
-                      <option value={item.Email}>
+                      <option value={item.Email} key={index}>
                         {item.Name}
                         {" ("}
                         {item.Email}
