@@ -528,8 +528,10 @@ router.get(
                 Measure.Is_Success = result[0].Is_Success;
                 Measure.Class_Name = result[0].Class_Name;
 
+                calculateMeasure(Rubric_Measure_ID);
+
                 sql =
-                  "SELECT Count(*) AS Total FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                  "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
                   Rubric_Measure_ID;
 
                 db.query(sql, (err, result) => {
