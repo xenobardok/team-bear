@@ -526,6 +526,7 @@ router.get(
                 Measure.Threshold = result[0].Threshold;
                 Measure.Achieved_Threshold = result[0].Score;
                 Measure.Is_Success = result[0].Is_Success;
+                Measure.Class_Name = result[0].Class_Name;
 
                 sql =
                   "SELECT Count(*) AS Total FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
@@ -628,7 +629,6 @@ router.post(
     const outcomeID = db.escape(req.params.outcomeID);
     let Measure_Name = req.body.Measure_Name;
     const Measure_ID = req.params.MeasureID;
-
     const errors = {};
     if (type == "Admin") {
       //console.log(isEmpty(Outcome_Name));
@@ -659,6 +659,7 @@ router.post(
             outcomeID +
             " AND Measure_ID=" +
             Measure_ID;
+
           db.query(sql, (err, result) => {
             if (err) res.send(err);
             else {
@@ -725,6 +726,8 @@ router.post(
                 Threshold = req.body.Threshold;
                 Target = req.body.Target;
                 Rubric_ID = req.body.Rubric_ID;
+                const Class_Name = db.escape(req.body.Class_Name);
+
                 //leave for date
 
                 sql =
@@ -750,10 +753,13 @@ router.post(
                     Target +
                     ", Rubric_ID=" +
                     Rubric_ID +
+                    ", Class_Name=" +
+                    Class_Name +
                     " WHERE Rubric_Measure_ID=" +
                     Rubric_Measure_ID;
 
-                  console.log(sql);
+                  // console.log(sql);
+
                   db.query(sql, (err, result) => {
                     if (err) {
                       return res
@@ -781,11 +787,11 @@ router.post(
   }
 );
 
-// @route   POST api/cycle/measures/:measureID/rubricMeasure/:rubricMeasureID/addEvaluator
+// @route   POST api/cycle/measures/:measureID/addEvaluator
 // @desc    Add an evaluator to a Rubric Measure
 // @access  Private
 router.post(
-  "/measures/:measureID/addEvaluator",
+  "/measure/:measureID/addEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -793,87 +799,106 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Measure_ID = db.escape(req.params.measureID);
+    Evaluator_Email = req.body.Evaluator_Email;
 
     const errors = {};
+
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" +
-        Measure_ID +
-        " AND Rubric_Measure_ID=" +
-        Rubric_Measure_ID;
+        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
 
-      // console.log(sql);
       db.query(sql, (err, result) => {
-        if (err) res.send(err);
+        if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.Measure = "Rubric Measure could not be found";
+            errors.error = "Measure Not found";
             return res.status(404).json(errors);
           }
-
-          Evaluator_Email = req.body.Evaluator_Email;
-
-          if (isEmpty(Evaluator_Email)) {
-            errors.Evaluator_Email = "Evaluator email cannot be empty";
-            return res.status(404).json(errors);
-          }
-          console.log(Evaluator_Email);
-          if (!Validator.isEmail(Evaluator_Email)) {
-            errors.Evaluator_Email = "Evaluator email is not valid";
-            return res.status(404).json(errors);
-          }
-          Evaluator_Email = db.escape(Evaluator_Email);
-
-          sql = "SELECT * FROM Evaluators WHERE Email = " + Evaluator_Email;
-          db.query(sql, (err, result) => {
-            if (err) {
-              return res
-                .status(400)
-                .json({ error: "There was some problem adding the Evaluator" });
-            }
-
-            if (result.length < 1) {
-              return res.status(400).json({ error: "Evaluator not found" });
-            }
-
+          //for rubric Measure Type
+          if (result[0].Measure_type == "rubric") {
             sql =
-              "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
-              Rubric_Measure_ID +
-              " AND Evaluator_Email=" +
-              Evaluator_Email;
+              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
 
+            // console.log(sql);
             db.query(sql, (err, result) => {
-              if (err) {
-                return res.status(400).json({
-                  error: "There was some problem adding the Evaluator"
+              if (err) res.send(err);
+              else {
+                let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                if (isEmpty(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email cannot be empty";
+                  return res.status(404).json(errors);
+                }
+
+                if (!Validator.isEmail(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email is not valid";
+                  return res.status(404).json(errors);
+                }
+                Evaluator_Email = db.escape(Evaluator_Email);
+
+                //Threshold is %  of total students
+                //Target is target score
+                //Rubric_ID is the assigned Rubric ID
+                //add date later
+
+                sql =
+                  "SELECT * FROM Evaluators WHERE Email = " + Evaluator_Email;
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluator"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res
+                      .status(400)
+                      .json({ error: "Evaluator not found" });
+                  }
+
+                  sql =
+                    "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
+                    Rubric_Measure_ID +
+                    " AND Evaluator_Email=" +
+                    Evaluator_Email;
+                  console.log(sql);
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem adding the Evaluator"
+                      });
+                    }
+
+                    if (result.length > 0) {
+                      return res
+                        .status(400)
+                        .json({ error: "Evaluator is already assigned" });
+                    }
+                    sql =
+                      "INSERT INTO RUBRIC_MEASURE_EVALUATOR (Rubric_Measure_ID,Evaluator_Email) VALUES(" +
+                      Rubric_Measure_ID +
+                      "," +
+                      Evaluator_Email +
+                      ")";
+
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json({
+                          error: "There was some problem adding  the evaluator"
+                        });
+                      } else {
+                        return res.status(200).json({
+                          message: "Evaluator has successfully been assigned."
+                        });
+                      }
+                    });
+                  });
                 });
               }
-
-              if (result.length > 0) {
-                return res
-                  .status(400)
-                  .json({ error: "Evaluator is already assigned" });
-              }
-              sql =
-                "INSERT INTO RUBRIC_MEASURE_EVALUATOR (Rubric_Measure_ID,Evaluator_Email) VALUES(" +
-                Rubric_Measure_ID +
-                "," +
-                Evaluator_Email +
-                ")";
-
-              db.query(sql, (err, result) => {
-                if (err) {
-                  return res.status(400).json({
-                    error: "There was some problem adding  the evaluator"
-                  });
-                } else {
-                  return res.status(200).json({
-                    message: "Evaluator has successfully been assigned."
-                  });
-                }
-              });
             });
-          });
+          } else {
+            //for test
+          }
         }
       });
     } else {
@@ -882,11 +907,11 @@ router.post(
   }
 );
 
-// @route   POST api/cycle/measures/:measureID/rubricMeasure/:rubricMeasureID/addStudent
+// @route   POST api/cycle/addStudent
 // @desc    Add a student to a Rubric Measure
 // @access  Private
 router.post(
-  "/measures/:measureID/rubricMeasure/:rubricMeasureID/addStudent",
+  "/measure/:measureID/addStudent",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -898,80 +923,89 @@ router.post(
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" +
-        Measure_ID +
-        " AND Rubric_Measure_ID=" +
-        Rubric_Measure_ID;
+        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
 
-      // console.log(sql);
       db.query(sql, (err, result) => {
-        if (err) res.send(err);
+        if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.Measure = "Rubric Measure could not be found";
+            errors.error = "Measure Not found";
             return res.status(404).json(errors);
           }
-
-          Student_ID = db.escape(req.body.Student_ID);
-          Student_Name = req.body.Student_Name;
-
-          if (isEmpty(Student_ID)) {
-            errors.Student_Email = "Evaluatee ID cannot be empty";
-          }
-
-          if (isEmpty(Student_Name)) {
-            errors.Student_Name = "Evaluatee Name cannot be empty";
-          }
-
-          if (!isEmpty(errors)) {
-            return res.status(404).json(errors);
-          }
-
-          Student_ID = db.escape(Student_ID);
-          Student_Name = db.escape(Student_Name);
-
-          sql =
-            "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
-            Rubric_Measure_ID +
-            " AND Student_ID=" +
-            Student_ID;
-
-          db.query(sql, (err, result) => {
-            if (err) {
-              return res.status(400).json({
-                error: "There was some problem adding the Evaluatee"
-              });
-            }
-
-            if (result.length > 0) {
-              return res
-                .status(400)
-                .json({ error: "Evaluatee is already added" });
-            }
+          //for rubric Measure Type
+          if (result[0].Measure_type == "rubric") {
             sql =
-              "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES(" +
-              Rubric_Measure_ID +
-              "," +
-              Student_ID +
-              "," +
-              Student_Name +
-              "," +
-              0 +
-              ")";
+              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
 
+            // console.log(sql);
             db.query(sql, (err, result) => {
-              if (err) {
-                return res.status(400).json({
-                  error: "There was some problem adding  the Evaluatee"
+              if (err) res.send(err);
+              else {
+                let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                Student_ID = req.body.Student_ID;
+                Student_Name = req.body.Student_Name;
+
+                if (isEmpty(Student_ID)) {
+                  errors.Student_ID = "Evaluatee ID cannot be empty";
+                }
+
+                if (isEmpty(Student_Name)) {
+                  errors.Student_Name = "Evaluatee Name cannot be empty";
+                }
+
+                if (!isEmpty(errors)) {
+                  return res.status(404).json(errors);
+                }
+
+                Student_ID = db.escape(Student_ID);
+                Student_Name = db.escape(Student_Name);
+
+                sql =
+                  "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
+                  Rubric_Measure_ID +
+                  " AND Student_ID=" +
+                  Student_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluatee"
+                    });
+                  }
+
+                  if (result.length > 0) {
+                    return res
+                      .status(400)
+                      .json({ error: "Evaluatee is already added" });
+                  }
+                  sql =
+                    "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES(" +
+                    Rubric_Measure_ID +
+                    "," +
+                    Student_ID +
+                    "," +
+                    Student_Name +
+                    "," +
+                    0 +
+                    ")";
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem adding  the Evaluatee"
+                      });
+                    } else {
+                      calculateMeasure(Rubric_Measure_ID);
+                      return res.status(200).json({
+                        message: "Evaluatee has successfully been added"
+                      });
+                    }
+                  });
                 });
-              } else {
-                calculateMeasure(Rubric_Measure_ID);
-                return res
-                  .status(200)
-                  .json({ message: "Evaluatee has successfully been added" });
               }
             });
-          });
+          }
         }
       });
     } else {

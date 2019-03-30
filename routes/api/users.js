@@ -210,7 +210,8 @@ router.get(
     const dept = db.escape(req.user.dept);
 
     if (type == "Admin") {
-      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
+      let sql =
+        "SELECT * FROM Evaluators where isActive='true' AND Dept_ID = " + dept;
       db.query(sql, (err, result) => {
         if (err) res.status(400).json(err);
         else {
