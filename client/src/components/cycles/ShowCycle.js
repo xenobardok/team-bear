@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { getSingleCycle, createNewOutcome } from "../../actions/cycleActions";
 import { getMeasures } from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
+import isEmpty from "../../validation/isEmpty";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
 import classnames from "classnames";
@@ -58,13 +59,17 @@ class ShowCycle extends Component {
       });
     }
     if (this.props.cycles.cycle) {
-      if (this.props.measures !== prevProps.measures) {
+      if (
+        !isEmpty(this.props.measures.measure) &&
+        this.props.measures !== prevProps.measures
+      ) {
         this.props.history.push(
           "/dashboard/cycles/" +
             this.props.cycles.cycle.Cycle_ID +
             "/outcome/" +
             this.props.measures.measure.Outcome_ID
         );
+        // console.log(this.props.measures.measure);
       }
     }
 

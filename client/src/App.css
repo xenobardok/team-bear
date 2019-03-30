@@ -299,3 +299,78 @@ textarea {
 .create{
   padding: 10px
 }
+
+.measure-label {
+  /* padding: 10px; */
+  /* border: 1px solid #373a47; */
+  border-radius: 5px;
+}
+
+.label-defination .input-group.small{
+  width: 150px;
+  display: inline-flex;
+}
+
+.label-defination .input-group.rubric {
+  width: 300px;
+  display: inline-flex;
+}
+
+.label-defination .input-group.target {
+  width: 200px;
+  display: inline-flex;
+}
+
+.evaluators{
+  display: flex;
+}
+
+.evaluators .singleEvaluator {
+  justify-content: left;
+  height: auto;
+  border: 1px solid #9e9898;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  transition: 0.2s all;
+}
+.evaluators .singleEvaluator:hover{
+  background-color: #f8f8f8;
+  cursor: default;
+
+}
+
+section#evaluators{
+  padding: 10px;
+  border-radius: 5px;
+  /* border: 2px solid black; */
+}
+
+.crossIcon, .checkIcon {
+  cursor: pointer;
+  position: relative;
+  float: right;
+  color: #9e9898;
+  transition: 0.2s all;  
+  margin: 0px 5px;
+}
+
+.crossIcon:hover{
+  color:#dc3545
+}
+
+.checkIcon:hover {
+  color: green;
+}
+
+.addEvaluatorIcon:hover {
+  color: black;
+}
+
+
+
+.addEvaluatorIcon{
+  cursor: pointer;
+  color: #9e9898;
+  transition: 0.2s all;
+}

@@ -1,9 +1,10 @@
 import axios from "axios";
 import {
   GET_CURRENT_PROFILE,
-  LOADING,
+  PROFILE_LOADING,
   GET_ERRORS,
-  CLEAR_CURRENT_PROFILE
+  CLEAR_CURRENT_PROFILE,
+  GET_EVALUATORS
 } from "./types";
 
 // Get Current Profile
@@ -29,7 +30,7 @@ export const getCurrentProfile = () => dispatch => {
 // Loading Profile
 export const setProfileLoading = () => {
   return {
-    type: LOADING
+    type: PROFILE_LOADING
   };
 };
 
@@ -37,4 +38,16 @@ export const clearCurrentProfile = () => {
   return {
     type: CLEAR_CURRENT_PROFILE
   };
+};
+
+export const getEvaluators = () => dispatch => {
+  axios
+    .get("/api/users/members")
+    .then(res =>
+      dispatch({
+        type: GET_EVALUATORS,
+        payload: res.data
+      })
+    )
+    .catch(err => console.log(err.response.body));
 };

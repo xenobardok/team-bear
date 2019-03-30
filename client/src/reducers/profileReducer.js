@@ -1,17 +1,19 @@
 import {
   GET_CURRENT_PROFILE,
-  LOADING,
-  CLEAR_CURRENT_PROFILE
+  PROFILE_LOADING,
+  CLEAR_CURRENT_PROFILE,
+  GET_EVALUATORS
 } from "../actions/types";
 
 const initialState = {
   profile: null,
+  evaluators: null,
   loading: false
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case LOADING:
+    case PROFILE_LOADING:
       return {
         ...state,
         loading: true
@@ -27,6 +29,11 @@ export default function(state = initialState, action) {
         ...state,
         profile: null,
         loading: false
+      };
+    case GET_EVALUATORS:
+      return {
+        ...state,
+        evaluators: action.payload
       };
     default:
       return state;
