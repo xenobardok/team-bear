@@ -3,7 +3,8 @@ import {
   GET_MEASURES,
   MEASURE_LOADING,
   GET_ERRORS,
-  GET_SINGLE_MEASURE
+  GET_SINGLE_MEASURE,
+  ADD_EVALUATOR_MEASURE
 } from "./types";
 
 export const getMeasures = id => dispatch => {
@@ -80,16 +81,27 @@ export const assignEvaluatorToMeasure = (
       " and email " +
       Evaluator_Email
   );
-  // axios.post(`/api/cycle/measures/${measureID}/addEvaluator`, {
-  //   Evaluator_Email: Evaluator_Email
-  // });
+  axios
+    .post(`/api/cycle/measure/${measureID}/addEvaluator`, {
+      Evaluator_Email: Evaluator_Email
+    })
+    .then(res =>
+      dispatch({
+        type: ADD_EVALUATOR_MEASURE,
+        payload: res.data
+      })
+    );
 };
 
-export const defineMeasure = (measureID, measureData) => dispatch => {
+export const defineMeasure = (
+  outcomeID,
+  measureID,
+  measureData
+) => dispatch => {
   console.log(measureID);
   console.log(measureData);
   axios
     .post(`/api/cycle/measure/${measureID}/update`, measureData)
-    .then(res => console.log("Measure defined!"))
+    .then(res => dispatch(getSingleMeasure(outcomeID, measureID)))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };

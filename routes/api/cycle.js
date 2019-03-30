@@ -889,7 +889,7 @@ router.post(
                       .status(400)
                       .json({ error: "Evaluator not found" });
                   }
-
+                    let Evaluator_Name = result[0].Fname + " "+ result[0].Lname ;
                   sql =
                     "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
                     Rubric_Measure_ID +
@@ -922,8 +922,11 @@ router.post(
                         });
                       } else {
                         return res.status(200).json({
-                          message: "Evaluator has successfully been assigned."
+                          // message: "Evaluator has successfully been assigned."
+                          "Evaluator_Email": req.body.Evaluator_Email,
+                          "Evaluator_Name": Evaluator_Name
                         });
+                        
                       }
                     });
                   });

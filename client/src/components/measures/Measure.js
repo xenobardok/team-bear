@@ -42,7 +42,9 @@ class Measure extends Component {
   componentDidUpdate = prevProps => {
     if (this.props.measures) {
       if (
-        this.props.measures.singleMeasure !== prevProps.measures.singleMeasure
+        this.props.measures.singleMeasure !==
+          prevProps.measures.singleMeasure &&
+        !isEmpty(this.props.measures.singleMeasure)
       ) {
         let { singleMeasure } = this.props.measures;
         this.setState({
@@ -106,12 +108,15 @@ class Measure extends Component {
         this.props.match.params.measureID,
         email
       );
+
+      this.setState({ newEvaluator: false });
     }
   };
 
   measureDefination = defination => {
+    let { outcomeID, measureID } = this.props.match.params;
     // console.log("Reached defineMeasure method");
-    this.props.defineMeasure(this.props.match.params.measureID, defination);
+    this.props.defineMeasure(outcomeID, measureID, defination);
   };
   render() {
     let newEvaluatorBox;

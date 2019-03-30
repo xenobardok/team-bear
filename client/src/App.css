@@ -323,6 +323,7 @@ textarea {
 
 .evaluators{
   display: flex;
+  flex-wrap: wrap;
 }
 
 .evaluators .singleEvaluator {
@@ -331,7 +332,7 @@ textarea {
   border: 1px solid #9e9898;
   padding: 10px 10px 10px 10px;
   border-radius: 5px;
-  margin-right: 10px;
+  margin: 0px 10px 10px 0px;
   transition: 0.2s all;
 }
 .evaluators .singleEvaluator:hover{
@@ -344,6 +345,11 @@ section#evaluators{
   padding: 10px 10px 10px 0px;
   border-radius: 5px;
   /* border: 2px solid black; */
+}
+
+section#evaluators .singleEvaluator:hover{
+  box-shadow:1px 2px 3px #ada7a7;
+  cursor: pointer;
 }
 
 .crossIcon, .checkIcon, .edit {

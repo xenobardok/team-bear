@@ -46,18 +46,17 @@ class Stats extends Component {
     }
     return (
       <section>
-        <h5>Stats:</h5>
-        <ul style={{ listStyleType: "none" }}>
-          <li>Status: {label}</li>
-          <li style={{ display: "flex", alignItems: "center" }}>
+        <h5>Status: {label}</h5>
+        <div className="px-2">
+          <div style={{ display: "flex", alignItems: "center" }}>
             <p style={{ margin: "5px 10px 5px 0px" }}>Progress:</p>{" "}
             {progressInstance}
-          </li>
-          <li>
+          </div>
+          <p>
             {Total_Students} student(s) were evaluated and only{" "}
             {Student_Achieved_Target_Count} student(s) achieved target score.
-          </li>
-        </ul>
+          </p>
+        </div>
       </section>
     );
   }

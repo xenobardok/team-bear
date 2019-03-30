@@ -46,10 +46,10 @@ export default class DefineMeasure extends Component {
   checkButtonHandler = e => {
     console.log(this.state.Class_Name);
     let measureValue = {
-      Threshold: this.state.Threshold,
+      Threshold: this.state.Threshold.toString(),
       Class_Name: this.state.Class_Name,
       Rubric_ID: this.state.rubric,
-      Target: this.state.Target
+      Target: this.state.scale.toString()
     };
     console.log(measureValue);
     this.props.measureDefination(measureValue);
@@ -97,6 +97,7 @@ export default class DefineMeasure extends Component {
         !Target ||
         !isEmpty(Class_Name)
       ) {
+        this.setState({ inComplete: false });
       } else {
         this.setState({ isEditing: true, inComplete: true });
       }
@@ -119,7 +120,7 @@ export default class DefineMeasure extends Component {
       allRubrics,
       rubricScales,
       Class_Name,
-      isComplete
+      inComplete
     } = this.state;
     let measureDefination;
     let scaleOptions;
@@ -179,11 +180,11 @@ export default class DefineMeasure extends Component {
           )}
           <h5>
             Measure Definition{" "}
-            {isComplete ? null : (
+            {inComplete ? (
               <Badge variant="warning">
                 <span style={{ fontWeight: "400" }}>Incomplete</span>
               </Badge>
-            )}
+            ) : null}
           </h5>
 
           <div className="label-defination px-2">
