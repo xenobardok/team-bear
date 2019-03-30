@@ -37,9 +37,23 @@ export default class DefineMeasure extends Component {
       rubricScales: rubricScales,
       Class_Name: Class_Name,
       isEditing: false,
-      rubric: ""
+      rubric: "",
+      scale: "",
+      inComplete: false
     };
   }
+
+  checkButtonHandler = e => {
+    console.log(this.state.Class_Name);
+    let measureValue = {
+      Threshold: this.state.Threshold,
+      Class_Name: this.state.Class_Name,
+      Rubric_ID: this.state.rubric,
+      Target: this.state.Target
+    };
+    console.log(measureValue);
+    this.props.measureDefination(measureValue);
+  };
 
   getScales = e => {
     console.log(e.target.name, e.target.value);
@@ -63,21 +77,33 @@ export default class DefineMeasure extends Component {
       Class_Name
     } = this.props;
     if (this.props !== prevProps) {
+      if (this.props.Class_Name !== null) {
+        console.log(Class_Name, Threshold);
+        this.setState({
+          Class_Name: Class_Name,
+          Threshold: Threshold
+        });
+      }
       this.setState({
-        Threshold: Threshold,
         Rubric_Name: Rubric_Name,
         Target: Target,
         allRubrics: allRubrics,
-        rubricScales: rubricScales,
-        Class_Name: Class_Name
+        rubricScales: rubricScales
       });
-      if (!Threshold || isEmpty(Rubric_Name) || !Target) {
-        this.setState({ isEditing: true });
+      console.log(isEmpty(Rubric_Name));
+      if (
+        !Threshold ||
+        isEmpty(Rubric_Name) ||
+        !Target ||
+        !isEmpty(Class_Name)
+      ) {
+      } else {
+        this.setState({ isEditing: true, inComplete: true });
       }
     }
-    if (this.props.Rubric_Name !== prevProps.Rubric_Name) {
-      this.setState({ rubric: this.props.Rubric_ID });
-    }
+    // if (this.props.Rubric_Name !== prevProps.Rubric_Name) {
+    //   this.setState({ rubric: this.props.Rubric_ID });
+    // }
   };
 
   onChangeHandler = e => {
@@ -92,13 +118,12 @@ export default class DefineMeasure extends Component {
       Target,
       allRubrics,
       rubricScales,
-      Class_Name
+      Class_Name,
+      isComplete
     } = this.state;
     let measureDefination;
     let scaleOptions;
-    if (isEmpty(rubricScales)) {
-      scaleOptions = <option>No Scales defined yet</option>;
-    } else {
+    if (!isEmpty(rubricScales)) {
       scaleOptions = rubricScales.map(entry => (
         <option value={entry.value} key={entry.value}>
           {entry.label}
@@ -135,7 +160,7 @@ export default class DefineMeasure extends Component {
                 <FontAwesomeIcon
                   icon="check"
                   className="checkIcon"
-                  onClick={this.addEvaluator}
+                  onClick={this.checkButtonHandler}
                 />
               </OverlayTrigger>
             </>
@@ -154,9 +179,11 @@ export default class DefineMeasure extends Component {
           )}
           <h5>
             Measure Definition{" "}
-            <Badge variant="success">
-              <span style={{ fontWeight: "400" }}>Important</span>
-            </Badge>
+            {isComplete ? null : (
+              <Badge variant="warning">
+                <span style={{ fontWeight: "400" }}>Incomplete</span>
+              </Badge>
+            )}
           </h5>
 
           <div className="label-defination px-2">
@@ -180,7 +207,7 @@ export default class DefineMeasure extends Component {
               </InputGroup>
             )}
             <span> of students </span>
-            {Class_Name || !this.state.isEditing ? (
+            {!isEmpty(Class_Name) && !this.state.isEditing ? (
               <span>
                 <strong>{Class_Name}</strong>
               </span>
@@ -231,7 +258,16 @@ export default class DefineMeasure extends Component {
               </span>
             ) : (
               <InputGroup className=" mb-3 target px-2">
-                <Form.Control as="select" aria-describedby="target">
+                <Form.Control
+                  name="scale"
+                  as="select"
+                  aria-describedby="target"
+                  value={this.state.scale}
+                  onChange={this.onChangeHandler}
+                >
+                  <option value="" disabled>
+                    Choose a scale
+                  </option>
                   {scaleOptions}
                 </Form.Control>
               </InputGroup>

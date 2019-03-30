@@ -726,7 +726,7 @@ router.post(
                 }
 
                 Threshold = req.body.Threshold;
-                Target = req.body.Target;
+                Target = db.escape(req.body.Target);
                 Rubric_ID = req.body.Rubric_ID;
                 const Class_Name = db.escape(req.body.Class_Name);
 

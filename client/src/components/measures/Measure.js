@@ -14,7 +14,8 @@ import {
 import { getEvaluators } from "../../actions/profileActions";
 import {
   getSingleMeasure,
-  assignEvaluatorToMeasure
+  assignEvaluatorToMeasure,
+  defineMeasure
 } from "../../actions/measureActions";
 import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -107,6 +108,11 @@ class Measure extends Component {
       );
     }
   };
+
+  measureDefination = defination => {
+    // console.log("Reached defineMeasure method");
+    this.props.defineMeasure(this.props.match.params.measureID, defination);
+  };
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -157,7 +163,8 @@ class Measure extends Component {
             allRubrics={this.state.allRubrics}
             getSingleRubricScale={this.getSingleRubricScale}
             rubricScales={this.state.rubricScales}
-            Class_Name={this.state.Class_Name}
+            Class_Name={Class_Name}
+            measureDefination={this.measureDefination}
           />
           <br />
           <Stats
@@ -216,7 +223,8 @@ class Measure extends Component {
 Measure.propTypes = {
   getSingleMeasure: PropTypes.func.isRequired,
   measures: PropTypes.object.isRequired,
-  getEvaluators: PropTypes.func.isRequired
+  getEvaluators: PropTypes.func.isRequired,
+  defineMeasure: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -234,6 +242,7 @@ export default connect(
     getEvaluators,
     assignEvaluatorToMeasure,
     getRubrics,
-    getSingleRubric
+    getSingleRubric,
+    defineMeasure
   }
 )(Measure);

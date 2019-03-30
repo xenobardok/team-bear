@@ -84,3 +84,12 @@ export const assignEvaluatorToMeasure = (
   //   Evaluator_Email: Evaluator_Email
   // });
 };
+
+export const defineMeasure = (measureID, measureData) => dispatch => {
+  console.log(measureID);
+  console.log(measureData);
+  axios
+    .post(`/api/cycle/measure/${measureID}/update`, measureData)
+    .then(res => console.log("Measure defined!"))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
