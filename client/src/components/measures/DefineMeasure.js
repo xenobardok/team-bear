@@ -20,13 +20,29 @@ library.add(faTimesCircle, faCheck, faEdit);
 export default class DefineMeasure extends Component {
   constructor(props) {
     super(props);
+    let {
+      Threshold,
+      Rubric_Name,
+      Target,
+      allRubrics,
+      rubricScales,
+      Class_Name
+    } = this.props;
+
     this.state = {
+      Threshold: Threshold,
+      Rubric_Name: Rubric_Name,
+      Target: Target,
+      allRubrics: allRubrics,
+      rubricScales: rubricScales,
+      Class_Name: Class_Name,
       isEditing: false,
       rubric: ""
     };
   }
 
   getScales = e => {
+    console.log(e.target.name, e.target.value);
     this.setState({ [e.target.name]: e.target.value });
     this.props.getSingleRubricScale(e.target.value);
   };
@@ -43,9 +59,18 @@ export default class DefineMeasure extends Component {
       Rubric_Name,
       Target,
       allRubrics,
-      rubricScales
+      rubricScales,
+      Class_Name
     } = this.props;
     if (this.props !== prevProps) {
+      this.setState({
+        Threshold: Threshold,
+        Rubric_Name: Rubric_Name,
+        Target: Target,
+        allRubrics: allRubrics,
+        rubricScales: rubricScales,
+        Class_Name: Class_Name
+      });
       if (!Threshold || isEmpty(Rubric_Name) || !Target) {
         this.setState({ isEditing: true });
       }
@@ -55,18 +80,22 @@ export default class DefineMeasure extends Component {
     }
   };
 
+  onChangeHandler = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
   render() {
     let {
       Threshold,
       Rubric_Name,
       Target,
       allRubrics,
-      rubricScales
-    } = this.props;
-    console.log(this.props);
+      rubricScales,
+      Class_Name
+    } = this.state;
     let measureDefination;
     let scaleOptions;
-    console.log(rubricScales);
     if (isEmpty(rubricScales)) {
       scaleOptions = <option>No Scales defined yet</option>;
     } else {
@@ -138,17 +167,36 @@ export default class DefineMeasure extends Component {
             ) : (
               <InputGroup className="mb-3 small px-2">
                 <FormControl
+                  name="Threshold"
                   placeholder="Eg. 75"
                   aria-label="percentage"
                   aria-describedby="percentage"
-                  defaultValue={Threshold ? Threshold : ""}
+                  value={this.state.Threshold}
+                  onChange={this.onChangeHandler}
                 />
                 <InputGroup.Append>
                   <InputGroup.Text id="percentage">%</InputGroup.Text>
                 </InputGroup.Append>
               </InputGroup>
             )}
-            <span> of students evaluated on </span>
+            <span> of students </span>
+            {Class_Name || !this.state.isEditing ? (
+              <span>
+                <strong>{Class_Name}</strong>
+              </span>
+            ) : (
+              <InputGroup className="mb-3 small px-2">
+                <FormControl
+                  name="Class_Name"
+                  placeholder="eg. BUSN 3005"
+                  aria-label="coursename"
+                  aria-describedby="coursename"
+                  value={this.state.Class_Name}
+                  onChange={this.onChangeHandler}
+                />
+              </InputGroup>
+            )}
+            <span> class evaluated on </span>
             {!isEmpty(Rubric_Name) && !this.state.isEditing ? (
               <span>
                 <strong>{Rubric_Name}</strong> rubric

@@ -14,7 +14,7 @@ class Stats extends Component {
     let progressInstance;
     const now = Math.floor(Achieved_Threshold * 100) / 100;
     let label;
-    if (Is_Success === true) {
+    if (Is_Success === "true") {
       label = (
         <Badge variant="success">
           <span style={{ fontWeight: "400" }}>Passing</span>

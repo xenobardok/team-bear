@@ -56,7 +56,8 @@ class Measure extends Component {
             singleMeasure.Student_Achieved_Target_Count,
           Evaluators: singleMeasure.Evaluators,
           Students: singleMeasure.Students,
-          Rubric_Name: singleMeasure.Rubric_Name
+          Rubric_Name: singleMeasure.Rubric_Name,
+          Class_Name: singleMeasure.Class_Name
         });
       }
     }
@@ -122,28 +123,11 @@ class Measure extends Component {
       End_Date,
       Total_Students,
       Student_Achieved_Target_Count,
-      newEvaluator
+      newEvaluator,
+      Class_Name
     } = this.state;
 
     let measure;
-    if (loading || isEmpty(singleMeasure)) {
-      measure = <Spinner />;
-    } else {
-      // Measure_Label = stateMeasure.Measure_Label;
-      // Measure_Type = stateMeasure.Measure_Type;
-      // Target = stateMeasure.Target;
-      // Threshold = stateMeasure.Threshold;
-      // Achieved_Threshold = stateMeasure.Achieved_Threshold;
-      // Is_Success = stateMeasure.Is_Success;
-      // Evaluators = stateMeasure.Evaluator;
-      // Students = stateMeasure.Students;
-      // Rubric_Name = stateMeasure.Rubric_Name;
-      // End_Date = stateMeasure.End_Date;
-      // Total_Students = stateMeasure.Total_Students;
-      // Student_Achieved_Target_Count =
-      //   stateMeasure.Student_Achieved_Target_Count;
-    }
-
     if (newEvaluator) {
       newEvaluatorBox = (
         <EvaluatorBox
@@ -153,8 +137,10 @@ class Measure extends Component {
         />
       );
     }
-    return (
-      <Container className="single-measure">
+    if (loading || isEmpty(singleMeasure)) {
+      measure = <Spinner />;
+    } else {
+      measure = (
         <div>
           <div className="measure-label">
             <Badge variant="primary">
@@ -171,6 +157,7 @@ class Measure extends Component {
             allRubrics={this.state.allRubrics}
             getSingleRubricScale={this.getSingleRubricScale}
             rubricScales={this.state.rubricScales}
+            Class_Name={this.state.Class_Name}
           />
           <br />
           <Stats
@@ -209,21 +196,20 @@ class Measure extends Component {
           <br />
           <h5>Students</h5>
           <ul>
-            {Students
-              ? Students.map(value => (
-                  <li key={value.Student_Name}>
-                    {value.Student_Name} : {value.Student_ID}
-                  </li>
-                ))
-              : null}
+            {!isEmpty(Students) ? (
+              Students.map(value => (
+                <li key={value.Student_Name}>
+                  {value.Student_Name} : {value.Student_ID}
+                </li>
+              ))
+            ) : (
+              <li>No Students added to this measure yet!</li>
+            )}
           </ul>
-          <br />
-          <p>
-            Rubric Associated with this measure: <strong>{Rubric_Name}</strong>
-          </p>
         </div>
-      </Container>
-    );
+      );
+    }
+    return <Container className="single-measure">{measure}</Container>;
   }
 }
 
