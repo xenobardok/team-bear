@@ -596,7 +596,39 @@ router.get(
                               if (result.length > 0) {
                                 Measure.Rubric_Name = result[0].Rubric_Name;
                               }
-                              res.status(200).json(Measure);
+
+                              sql =
+                                "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_Measure_ID=" +
+                                Rubric_Measure_ID +
+                                " ORDER BY A.Evaluator_Email ASC";
+
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                Measure.Unevaluated = [];
+                                result.forEach(row => {
+                                  let Student_Name = row.Student_Name;
+                                  let Evaluator_Name = row.Evaluator_Name;
+
+                                  let isFound = false;
+
+                                  Measure.Unevaluated.forEach(Evaluator => {
+                                    if (
+                                      Evaluator.Evaluator_Name == Evaluator_Name
+                                    ) {
+                                      Evaluator.Student_List.push(Student_Name);
+                                      isFound = true;
+                                    }
+                                  });
+                                  if (!isFound) {
+                                    Evaluator = {
+                                      Evaluator_Name: Evaluator_Name,
+                                      Student_List: [Student_Name]
+                                    };
+                                    Measure.Unevaluated.push(Evaluator);
+                                  }
+                                });
+                                res.status(200).json(Measure);
+                              });
                             });
                           });
                         });
