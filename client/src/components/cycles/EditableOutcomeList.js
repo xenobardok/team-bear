@@ -128,8 +128,8 @@ class EditableOutcomeList extends Component {
 }
 
 EditableOutcomeList.propTypes = {
-  updateOutcome: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired
+  updateOutcome: PropTypes.func.isRequired
+  // errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
