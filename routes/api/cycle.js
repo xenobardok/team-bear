@@ -625,8 +625,6 @@ router.get(
                             "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
                             Rubric_Measure_ID;
 
-                          Measure.Students = [];
-
                           db.query(sql, (err, result) => {
                             if (err) res.status(400).json(err);
                             result.forEach(row => {
@@ -1082,8 +1080,8 @@ router.post(
                     } else {
                       calculateMeasure(Rubric_Measure_ID);
                       return res.status(200).json({
-                        "Student_Name": Student_Name,
-                        "Student_ID": Student_ID
+                        Student_Name: Student_Name,
+                        Student_ID: Student_ID
                       });
                     }
                   });
@@ -1187,8 +1185,23 @@ router.delete(
                           });
                         } else {
                           calculateMeasure(Rubric_Measure_ID);
-                          return res.status(200).json({
-                            message: "Student has successfully been removed"
+
+                          Students = [];
+
+                          sql =
+                            "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
+                            Rubric_Measure_ID;
+
+                          db.query(sql, (err, result) => {
+                            if (err) res.status(400).json(err);
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
+                            return res.status(200).json(Students);
                           });
                         }
                       });
