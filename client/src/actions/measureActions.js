@@ -112,6 +112,6 @@ export const addStudent = (measureID, student) => dispatch => {
   console.log(student);
   axios
     .post(`/api/cycle/measure/${measureID}/addStudent`, student)
-    .then(res => dispatch({ type: ADD_STUDENT, payload: res.body }))
+    .then(res => dispatch({ type: ADD_STUDENT, payload: res.data }))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };

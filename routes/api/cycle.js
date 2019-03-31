@@ -996,9 +996,6 @@ router.post(
                   return res.status(404).json(errors);
                 }
 
-                Student_ID = db.escape(Student_ID);
-                Student_Name = db.escape(Student_Name);
-
                 sql =
                   "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
                   Rubric_Measure_ID +
@@ -1021,9 +1018,9 @@ router.post(
                     "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES(" +
                     Rubric_Measure_ID +
                     "," +
-                    Student_ID +
+                    db.escape(Student_ID) +
                     "," +
-                    Student_Name +
+                    db.escape(Student_Name) +
                     "," +
                     0 +
                     ")";
