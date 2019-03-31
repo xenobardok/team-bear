@@ -99,13 +99,16 @@ class EditableOutcomeList extends Component {
           </Form>
         ) : (
           <ListGroup key={this.props.value.Outcome_ID} className="edit-post">
-            <ListGroup.Item
-              action
-              name={this.props.value.Outcome_ID}
-              onClick={this.props.onClickHandler}
+            <Link
+              to={`/dashboard/cycles/${this.props.cycleID}/outcome/${
+                this.props.value.Outcome_ID
+              }`}
+              style={{ flexGrow: "1" }}
             >
-              {this.state.textValue}
-            </ListGroup.Item>
+              <ListGroup.Item action name={this.props.value.Outcome_ID}>
+                {this.state.textValue}
+              </ListGroup.Item>
+            </Link>
             <div
               style={{
                 display: "inline",
