@@ -31,6 +31,15 @@ class ShowMeasures extends Component {
         errors: this.props.errors
       });
     }
+
+    if (this.props.match.params.outcomeID) {
+      if (
+        this.props.match.params.outcomeID !== prevProps.match.params.outcomeID
+      ) {
+        this.props.getMeasures(this.props.match.params.outcomeID);
+      }
+      console.log(this.props.match.params.outcomeID);
+    }
   }
 
   componentDidMount() {
@@ -53,6 +62,7 @@ class ShowMeasures extends Component {
       this.props.createMeasure(outcomeID, newMeasure, newMeasureType);
     }
   };
+
   render() {
     let { measure, loading } = this.props.measures;
     let { id, outcomeID } = this.props.match.params;

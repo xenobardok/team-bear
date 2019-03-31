@@ -40,7 +40,13 @@ class Measure extends Component {
   }
 
   componentDidUpdate = prevProps => {
-    if (this.props.measures) {
+    if (this.props.measures.singleMeasure) {
+      console.log(
+        this.props.measures.singleMeasure !==
+          prevProps.measures.singleMeasure &&
+          !isEmpty(this.props.measures.singleMeasure)
+      );
+      console.log(this.props.measures.singleMeasure);
       if (
         this.props.measures.singleMeasure !==
           prevProps.measures.singleMeasure &&
@@ -95,6 +101,7 @@ class Measure extends Component {
   getSingleRubricScale = id => {
     this.props.getSingleRubric(id);
   };
+
   addEvaluator = () => {
     this.setState({
       newEvaluator: !this.state.newEvaluator
