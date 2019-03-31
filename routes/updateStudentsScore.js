@@ -21,11 +21,11 @@ let updateStudentsScore = Rubric_Measure_ID => {
 
         let sql =
           "SELECT AVG(Score) AS Average FROM STUDENTS_RUBRIC_ROWS_GRADE G  JOIN RUBRIC_ROW R ON G.Rubric_Row_ID = R.Rubric_Row_ID RIGHT OUTER JOIN RUBRIC_STUDENTS S ON S.Rubric_Student_ID=G.Rubric_Student_ID WHERE S.Student_ID=" +
-          Student_ID +
+          db.escape(Student_ID) +
           " AND R.Rubric_ID=" +
           Rubric_ID;
 
-        console.log(sql);
+        // console.log(sql);
         db.query(sql, (err, result) => {
           if (err) throw err;
           else {
@@ -41,9 +41,9 @@ let updateStudentsScore = Rubric_Measure_ID => {
               " WHERE Rubric_Measure_ID =" +
               Rubric_Measure_ID +
               " AND Student_ID=" +
-              Student_ID;
+              db.escape(Student_ID);
 
-            console.log(sql);
+            // console.log(sql);
             db.query(sql, (err, result) => {
               if (err) throw err;
             });
