@@ -17,6 +17,12 @@ class EditableStudentList extends Component {
       edit: !this.state.edit
     });
   };
+
+  onChangeHandler = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
   render() {
     let { Student_Name, Student_ID, edit } = this.state;
     let student;
@@ -35,6 +41,7 @@ class EditableStudentList extends Component {
               aria-label="Student name"
               aria-describedby="basic-addon2"
               value={Student_Name}
+              onChange={this.onChangeHandler}
             />
             <FormControl
               placeholder="ID"

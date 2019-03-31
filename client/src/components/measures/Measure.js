@@ -56,7 +56,7 @@ class Measure extends Component {
           prevProps.measures.singleMeasure &&
           !isEmpty(this.props.measures.singleMeasure)
       );
-      console.log(this.props.measures.singleMeasure);
+      // console.log(this.props.measures.singleMeasure);
       if (
         this.props.measures.singleMeasure !==
           prevProps.measures.singleMeasure &&
@@ -253,7 +253,9 @@ class Measure extends Component {
             <Col>
               <ol>
                 {!isEmpty(Students) ? (
-                  Students.map(value => <EditableStudentList {...value} />)
+                  Students.map(value => (
+                    <EditableStudentList {...value} key={value.Student_ID} />
+                  ))
                 ) : (
                   <p>No Students added to this measure yet!</p>
                 )}

@@ -186,9 +186,9 @@ svg.fa-bars{
   top: 36px;
   font-size: 1.05em;
 }
-a.dropdown-item {
+/* a.dropdown-item {
   width: 50px !important;
-}
+} */
 
 td {
   padding: 0px !important;
