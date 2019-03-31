@@ -2,7 +2,8 @@ import {
   GET_MEASURES,
   MEASURE_LOADING,
   GET_SINGLE_MEASURE,
-  ADD_EVALUATOR_MEASURE
+  ADD_EVALUATOR_MEASURE,
+  ADD_STUDENT
 } from "../actions/types";
 
 const initialState = {
@@ -38,6 +39,14 @@ export default function(state = initialState, action) {
           Evaluators: [...state.singleMeasure.Evaluators, action.payload]
         },
         loading: false
+      };
+    case ADD_STUDENT:
+      return {
+        ...state,
+        singleMeasure: {
+          ...state.singleMeasure,
+          Students: [...action.payload]
+        }
       };
     default:
       return state;

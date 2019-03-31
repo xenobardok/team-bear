@@ -9,13 +9,19 @@ import {
   Tooltip,
   InputGroup,
   FormControl,
-  Form
+  Form,
+  Button,
+  Col,
+  Row,
+  Dropdown,
+  DropdownButton
 } from "react-bootstrap";
 import { getEvaluators } from "../../actions/profileActions";
 import {
   getSingleMeasure,
   assignEvaluatorToMeasure,
-  defineMeasure
+  defineMeasure,
+  addStudent
 } from "../../actions/measureActions";
 import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -26,6 +32,7 @@ import DefineMeasure from "./DefineMeasure";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import EditableStudentList from "./EditableStudentList";
 library.add(faPlus, faEdit, faUserPlus);
 
 class Measure extends Component {
@@ -35,7 +42,10 @@ class Measure extends Component {
       isEditing: false,
       newEvaluator: false,
       allEvaluators: [],
-      rubricScales: []
+      rubricScales: [],
+      addStudentBox: false,
+      Student_Name: "",
+      Student_ID: ""
     };
   }
 
@@ -46,7 +56,7 @@ class Measure extends Component {
           prevProps.measures.singleMeasure &&
           !isEmpty(this.props.measures.singleMeasure)
       );
-      console.log(this.props.measures.singleMeasure);
+      // console.log(this.props.measures.singleMeasure);
       if (
         this.props.measures.singleMeasure !==
           prevProps.measures.singleMeasure &&
@@ -91,6 +101,12 @@ class Measure extends Component {
     }
   };
 
+  onChangeHandler = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
   componentDidMount() {
     let { outcomeID, measureID } = this.props.match.params;
     this.props.getSingleMeasure(outcomeID, measureID);
@@ -125,6 +141,24 @@ class Measure extends Component {
     // console.log("Reached defineMeasure method");
     this.props.defineMeasure(outcomeID, measureID, defination);
   };
+
+  toggleAddStudentButton = e => {
+    this.setState({
+      addStudentBox: !this.state.addStudentBox
+    });
+  };
+
+  addStudentButton = e => {
+    let student = {
+      Student_Name: this.state.Student_Name,
+      Student_ID: this.state.Student_ID
+    };
+    let { measureID } = this.props.match.params;
+    this.props.addStudent(measureID, student);
+    this.setState({
+      addStudentBox: !this.state.addStudentBox
+    });
+  };
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -142,7 +176,8 @@ class Measure extends Component {
       Total_Students,
       Student_Achieved_Target_Count,
       newEvaluator,
-      Class_Name
+      Class_Name,
+      addStudentBox
     } = this.state;
 
     let measure;
@@ -214,17 +249,72 @@ class Measure extends Component {
           </section>
           <br />
           <h5>Students</h5>
-          <ul>
-            {!isEmpty(Students) ? (
-              Students.map(value => (
-                <li key={value.Student_Name}>
-                  {value.Student_Name} : {value.Student_ID}
-                </li>
-              ))
-            ) : (
-              <li>No Students added to this measure yet!</li>
-            )}
-          </ul>
+          <Row>
+            <Col>
+              <ol>
+                {!isEmpty(Students) ? (
+                  Students.map(value => (
+                    <EditableStudentList {...value} key={value.Student_ID} />
+                  ))
+                ) : (
+                  <p>No Students added to this measure yet!</p>
+                )}
+                {!addStudentBox ? (
+                  <DropdownButton
+                    size="sm"
+                    variant="primary"
+                    title="Add Students"
+                    id="student-add"
+                    key="addStudentDropdown"
+                  >
+                    <Dropdown.Item
+                      eventKey="1"
+                      onClick={this.toggleAddStudentButton}
+                    >
+                      Add a Student
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="2">Upload a file</Dropdown.Item>
+                  </DropdownButton>
+                ) : (
+                  <Form onSubmit={this.addStudentButton}>
+                    <InputGroup className="mb-3">
+                      <FormControl
+                        placeholder="Student name"
+                        aria-label="Student name"
+                        aria-describedby="basic-addon2"
+                        name="Student_Name"
+                        value={this.state.Student_Name}
+                        onChange={this.onChangeHandler}
+                      />
+                      <FormControl
+                        placeholder="ID"
+                        aria-label="ID"
+                        aria-describedby="basic-addon2"
+                        name="Student_ID"
+                        value={this.state.Student_ID}
+                        onChange={this.onChangeHandler}
+                      />
+                      <InputGroup.Append>
+                        <Button
+                          variant="primary"
+                          onClick={this.addStudentButton}
+                        >
+                          Add Student
+                        </Button>
+
+                        <Button
+                          variant="outline-secondary"
+                          onClick={this.toggleAddStudentButton}
+                        >
+                          Cancel
+                        </Button>
+                      </InputGroup.Append>
+                    </InputGroup>
+                  </Form>
+                )}
+              </ol>
+            </Col>
+          </Row>
         </div>
       );
     }
@@ -255,6 +345,7 @@ export default connect(
     assignEvaluatorToMeasure,
     getRubrics,
     getSingleRubric,
-    defineMeasure
+    defineMeasure,
+    addStudent
   }
 )(Measure);

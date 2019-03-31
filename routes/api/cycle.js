@@ -1085,7 +1085,8 @@ router.post(
                     } else {
                       calculateMeasure(Rubric_Measure_ID);
                       return res.status(200).json({
-                        message: "Evaluatee has successfully been added"
+                        "Student_Name": Student_Name,
+                        "Student_ID": Student_ID
                       });
                     }
                   });
