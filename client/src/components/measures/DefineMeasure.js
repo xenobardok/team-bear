@@ -15,6 +15,7 @@ import {
   faCheck,
   faEdit
 } from "@fortawesome/free-solid-svg-icons";
+import PropTypes from "prop-types";
 library.add(faTimesCircle, faCheck, faEdit);
 
 export default class DefineMeasure extends Component {
@@ -39,9 +40,15 @@ export default class DefineMeasure extends Component {
       isEditing: false,
       rubric: "",
       scale: "",
-      inComplete: false
+      complete: true
     };
   }
+
+  componentDidMount = prevProps => {
+    this.setState({
+      status: "editing"
+    });
+  };
 
   checkButtonHandler = e => {
     console.log(this.state.Class_Name);
@@ -76,35 +83,58 @@ export default class DefineMeasure extends Component {
       rubricScales,
       Class_Name
     } = this.props;
-    if (this.props !== prevProps) {
-      if (this.props.Class_Name !== null) {
-        console.log(Class_Name, Threshold);
-        this.setState({
-          Class_Name: Class_Name,
-          Threshold: Threshold
-        });
-      }
-      this.setState({
-        Rubric_Name: Rubric_Name,
-        Target: Target,
-        allRubrics: allRubrics,
-        rubricScales: rubricScales
-      });
-      console.log(isEmpty(Rubric_Name));
-      if (
-        !Threshold ||
-        isEmpty(Rubric_Name) ||
-        !Target ||
-        !isEmpty(Class_Name)
-      ) {
-        this.setState({ inComplete: false });
-      } else {
-        this.setState({ isEditing: true, inComplete: true });
-      }
-    }
-    // if (this.props.Rubric_Name !== prevProps.Rubric_Name) {
-    //   this.setState({ rubric: this.props.Rubric_ID });
+
+    // if (this.props !== prevProps) {
+    //   if (
+    //     isEmpty(Threshold) ||
+    //     isEmpty(Class_Name) ||
+    //     isEmpty(Rubric_Name) ||
+    //     isEmpty(Target)
+    //   ) {
+    //     this.setState({
+    //       isEditing: true,
+    //       complete: false
+    //     });
+    //   } else {
+    //     this.setState({
+    //       isEditing: false,
+    //       complete: true
+    //     });
+    //   }
     // }
+
+    if (
+      this.props.Threshold !== prevProps.Threshold
+      // isEmpty(this.state.Threshold)
+    ) {
+      this.setState({
+        Threshold: this.props.Threshold
+      });
+    }
+
+    if (this.props.Class_Name !== prevProps.Class_Name) {
+      this.setState({
+        Class_Name: this.props.Class_Name
+      });
+    }
+
+    if (this.props.Rubric_Name !== prevProps.Rubric_Name) {
+      this.setState({
+        Rubric_Name: this.props.Rubric_Name
+      });
+    }
+
+    if (this.props.Target !== prevProps.Target) {
+      this.setState({
+        Target: this.props.Target
+      });
+    }
+
+    if (this.props.rubricScales !== prevProps.rubricScales) {
+      this.setState({
+        rubricScales: this.props.rubricScales
+      });
+    }
   };
 
   onChangeHandler = e => {
@@ -120,7 +150,7 @@ export default class DefineMeasure extends Component {
       allRubrics,
       rubricScales,
       Class_Name,
-      inComplete
+      complete
     } = this.state;
     let measureDefination;
     let scaleOptions;
@@ -140,19 +170,17 @@ export default class DefineMeasure extends Component {
         <Form>
           {this.state.isEditing ? (
             <>
-              {Threshold || !isEmpty(Rubric_Name) || Target ? (
-                <OverlayTrigger
-                  key="cancel"
-                  placement="top"
-                  overlay={<Tooltip id="cancel">Cancel</Tooltip>}
-                >
-                  <FontAwesomeIcon
-                    icon="times-circle"
-                    className="crossIcon"
-                    onClick={this.editToggle}
-                  />
-                </OverlayTrigger>
-              ) : null}
+              <OverlayTrigger
+                key="cancel"
+                placement="top"
+                overlay={<Tooltip id="cancel">Cancel</Tooltip>}
+              >
+                <FontAwesomeIcon
+                  icon="times-circle"
+                  className="crossIcon"
+                  onClick={this.editToggle}
+                />
+              </OverlayTrigger>
               <OverlayTrigger
                 key="save"
                 placement="top"
@@ -180,7 +208,7 @@ export default class DefineMeasure extends Component {
           )}
           <h5>
             Measure Definition{" "}
-            {inComplete ? (
+            {!complete ? (
               <Badge variant="warning">
                 <span style={{ fontWeight: "400" }}>Incomplete</span>
               </Badge>
@@ -188,7 +216,7 @@ export default class DefineMeasure extends Component {
           </h5>
 
           <div className="label-defination px-2">
-            {Threshold && !this.state.isEditing ? (
+            {!this.state.isEditing ? (
               <span>
                 <strong>{Threshold}</strong> %
               </span>
@@ -208,7 +236,7 @@ export default class DefineMeasure extends Component {
               </InputGroup>
             )}
             <span> of students </span>
-            {!isEmpty(Class_Name) && !this.state.isEditing ? (
+            {!this.state.isEditing ? (
               <span>
                 <strong>{Class_Name}</strong>
               </span>
@@ -225,7 +253,7 @@ export default class DefineMeasure extends Component {
               </InputGroup>
             )}
             <span> class evaluated on </span>
-            {!isEmpty(Rubric_Name) && !this.state.isEditing ? (
+            {!this.state.isEditing ? (
               <span>
                 <strong>{Rubric_Name}</strong> rubric
               </span>
@@ -253,7 +281,7 @@ export default class DefineMeasure extends Component {
               </InputGroup>
             )}
             <span> of </span>
-            {Target && !this.state.isEditing ? (
+            {!this.state.isEditing ? (
               <span>
                 <strong>{Target}</strong>
               </span>
