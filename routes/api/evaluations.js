@@ -280,7 +280,9 @@ router.post(
                   "SELECT Rubric_Measure_ID, AVG(Score) AS Average FROM RUBRIC_ROW NATURAL JOIN RUBRIC NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_STUDENTS WHERE Rubric_ID=" +
                   Rubric_ID +
                   " AND Student_ID=" +
-                  Student_ID;
+                  Student_ID +
+                  " AND Rubric_ID=" +
+                  Rubric_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) return res.status(400).json(err);

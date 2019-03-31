@@ -8,6 +8,7 @@ const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
 
 const calculateMeasure = require("../calculateMeasure");
+const updateStudentsScore = require("../updateStudentsScore");
 
 const validateUpdateRubric = require("../../validation/rubricMeasure");
 // @route   GET api/cycle
@@ -494,7 +495,6 @@ router.get(
       const Outcome_ID = req.params.outcomeID;
       const Measure_ID = req.params.measureID;
       const Measure = {};
-
       let sql =
         "SELECT * FROM OUTCOMES NATURAL JOIN MEASURES WHERE Outcome_ID =" +
         Outcome_ID +
@@ -532,7 +532,9 @@ router.get(
 
                 sql =
                   "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
-                  Rubric_Measure_ID;
+                  Rubric_Measure_ID +
+                  " AND Rubric_ID=" +
+                  Measure.Rubric_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) throw err;
@@ -598,8 +600,8 @@ router.get(
                               }
 
                               sql =
-                                "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_Measure_ID=" +
-                                Rubric_Measure_ID +
+                                "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_ID=E.Rubric_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_ID=" +
+                                Measure.Rubric_ID +
                                 " ORDER BY A.Evaluator_Email ASC";
 
                               db.query(sql, (err, result) => {
@@ -800,7 +802,8 @@ router.post(
                         .status(400)
                         .json({ error: "There was some problem adding it" });
                     } else {
-                      calculateMeasure(Rubric_Measure_ID);
+                      console.log(Rubric_Measure_ID);
+                      updateStudentsScore(Rubric_Measure_ID);
                       return res.status(200).json({
                         message: "Rubric Measure was successfully updated"
                       });
@@ -889,7 +892,7 @@ router.post(
                       .status(400)
                       .json({ error: "Evaluator not found" });
                   }
-                    let Evaluator_Name = result[0].Fname + " "+ result[0].Lname ;
+                  let Evaluator_Name = result[0].Fname + " " + result[0].Lname;
                   sql =
                     "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
                     Rubric_Measure_ID +
@@ -923,10 +926,9 @@ router.post(
                       } else {
                         return res.status(200).json({
                           // message: "Evaluator has successfully been assigned."
-                          "Evaluator_Email": req.body.Evaluator_Email,
-                          "Evaluator_Name": Evaluator_Name
+                          Evaluator_Email: req.body.Evaluator_Email,
+                          Evaluator_Name: Evaluator_Name
                         });
-                        
                       }
                     });
                   });
@@ -954,7 +956,6 @@ router.post(
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
-    const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Measure_ID = db.escape(req.params.measureID);
 
     const errors = {};
@@ -1036,6 +1037,113 @@ router.post(
                       calculateMeasure(Rubric_Measure_ID);
                       return res.status(200).json({
                         message: "Evaluatee has successfully been added"
+                      });
+                    }
+                  });
+                });
+              }
+            });
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   DELETE api/cycle/removeStudent
+// @desc    Add a student to a Rubric Measure
+// @access  Private
+router.delete(
+  "/measure/:measureID/removeStudent",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Measure_ID = db.escape(req.params.measureID);
+
+    const errors = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          if (result.length < 1) {
+            errors.error = "Measure Not found";
+            return res.status(404).json(errors);
+          }
+          //for rubric Measure Type
+          if (result[0].Measure_type == "rubric") {
+            sql =
+              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                Student_ID = req.body.Student_ID;
+
+                if (isEmpty(Student_ID)) {
+                  errors.Student_ID = "Evaluatee ID cannot be empty";
+                }
+
+                if (!isEmpty(errors)) {
+                  return res.status(404).json(errors);
+                }
+
+                Student_ID = db.escape(Student_ID);
+
+                sql =
+                  "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
+                  Rubric_Measure_ID +
+                  " AND Student_ID=" +
+                  Student_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluatee"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res.status(400).json({ error: "Student not found" });
+                  }
+
+                  let Rubric_Student_ID = result[0].Rubric_Student_ID;
+
+                  sql =
+                    "DELETE FROM STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Student_ID=" +
+                    Rubric_Student_ID;
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem adding the Evaluatee"
+                      });
+                    } else {
+                      sql =
+                        "DELETE FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                        Rubric_Measure_ID +
+                        " AND Student_ID=" +
+                        Student_ID;
+
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json({
+                            error: "There was some problem adding the Evaluatee"
+                          });
+                        } else {
+                          calculateMeasure(Rubric_Measure_ID);
+                          return res.status(200).json({
+                            message: "Student has successfully been removed"
+                          });
+                        }
                       });
                     }
                   });
