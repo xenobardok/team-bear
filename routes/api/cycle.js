@@ -11,10 +11,10 @@ const calculateMeasure = require("../calculateMeasure");
 const updateStudentsScore = require("../updateStudentsScore");
 
 const validateUpdateRubric = require("../../validation/rubricMeasure");
+
 // @route   GET api/cycle
 // @desc    Gets the lists of all rubrics
 // @access  Private
-
 const isEmpty = require("../../validation/isEmpty");
 
 router.get(
@@ -29,6 +29,39 @@ router.get(
       "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = ('" +
       dept +
       "') order by Dept_ID DESC";
+    db.query(sql, (err, result) => {
+      var cycles = [];
+      if (err) return res.send(err);
+      else if (result.length > 0) {
+        result.forEach(row => {
+          aCycle = {
+            Cycle_ID: row.Cycle_ID,
+            Cycle_Name: row.Cycle_Name,
+            Is_Submitted: row.Is_Submitted
+          };
+          cycles.push(aCycle);
+        });
+      }
+      res.json(cycles);
+    });
+  }
+);
+
+// @route   GET api/cycle/active
+// @desc    Gets the lists of all active rubrics
+// @access  Private
+router.get(
+  "/active",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    let sql =
+      "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = " +
+      dept +
+      " AND isSubmitted='false' order by Dept_ID DESC";
     db.query(sql, (err, result) => {
       var cycles = [];
       if (err) return res.send(err);
@@ -184,67 +217,83 @@ router.post(
     let Outcome_Name = req.body.Outcome_Name;
     const errors = {};
     if (type == "Admin") {
-      console.log(isEmpty(Outcome_Name));
-      if (isEmpty(Outcome_Name)) {
-        errors.Outcome_Name = "Outcome Name cannot be empty";
-        return res.status(404).json(errors);
-      }
-      Outcome_Name = db.escape(Outcome_Name);
       let sql =
-        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
-        dept +
-        " AND Cycle_ID=" +
-        Cycle_ID +
-        " AND Outcome_Name =" +
-        Outcome_Name;
+        "SELECT isSubmitted from ASSESSMENT_CYCLE where Cycle_ID=" + Cycle_ID;
 
       db.query(sql, (err, result) => {
-        if (err) res.send(err);
+        if (err) return res.status(400).json(err);
         else {
-          if (result.length > 0) {
-            errors.Cycle_Name = "Outcome with that name already exists.";
-            return res.status(404).json(errors);
-          }
+          let isSubmitted = result[0].isSubmitted;
 
-          sql =
-            "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
-            dept +
-            " AND Cycle_ID=" +
-            Cycle_ID;
-
-          db.query(sql, (err, result) => {
-            if (err) res.send(err);
-            else {
-              if (err) {
-                return res.status(404).json(err);
-              }
-              let Outcome_Index = 0;
-              if (result.length != 0) {
-                Outcome_Index = result[result.length - 1].Outcome_Index + 1;
-              }
-
-              sql =
-                "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name, Outcome_Index) VALUES(" +
-                Cycle_ID +
-                "," +
-                Outcome_Name +
-                "," +
-                Outcome_Index +
-                ")";
-
-              db.query(sql, (err, result) => {
-                if (err)
-                  return res
-                    .status(400)
-                    .json({ error: "There was some problem adding it" });
-                else {
-                  let Outcome_ID = db.escape(result.insertId);
-
-                  res.status(200).json((outcome = { Outcome_ID: Outcome_ID }));
-                }
-              });
+          if (isSubmitted == "true") {
+            return res.status(400).json({ error: "Cycle has been submitted" });
+          } else {
+            if (isEmpty(Outcome_Name)) {
+              errors.Outcome_Name = "Outcome Name cannot be empty";
+              return res.status(404).json(errors);
             }
-          });
+            Outcome_Name = db.escape(Outcome_Name);
+            sql =
+              "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
+              dept +
+              " AND Cycle_ID=" +
+              Cycle_ID +
+              " AND Outcome_Name =" +
+              Outcome_Name;
+
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                if (result.length > 0) {
+                  errors.Cycle_Name = "Outcome with that name already exists.";
+                  return res.status(404).json(errors);
+                }
+
+                sql =
+                  "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
+                  dept +
+                  " AND Cycle_ID=" +
+                  Cycle_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) res.send(err);
+                  else {
+                    if (err) {
+                      return res.status(404).json(err);
+                    }
+                    let Outcome_Index = 0;
+                    if (result.length != 0) {
+                      Outcome_Index =
+                        result[result.length - 1].Outcome_Index + 1;
+                    }
+
+                    sql =
+                      "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name, Outcome_Index) VALUES(" +
+                      Cycle_ID +
+                      "," +
+                      Outcome_Name +
+                      "," +
+                      Outcome_Index +
+                      ")";
+
+                    db.query(sql, (err, result) => {
+                      if (err)
+                        return res
+                          .status(400)
+                          .json({ error: "There was some problem adding it" });
+                      else {
+                        let Outcome_ID = db.escape(result.insertId);
+
+                        res
+                          .status(200)
+                          .json((outcome = { Outcome_ID: Outcome_ID }));
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
         }
       });
     } else {
