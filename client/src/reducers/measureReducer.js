@@ -41,11 +41,12 @@ export default function(state = initialState, action) {
         loading: false
       };
     case ADD_STUDENT:
+      console.log(action.payload);
       return {
         ...state,
         singleMeasure: {
           ...state.singleMeasure,
-          Students: [...action.payload]
+          Students: [...state.singleMeasure.Students, action.payload]
         }
       };
     default:

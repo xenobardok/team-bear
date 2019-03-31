@@ -391,4 +391,7 @@ section#evaluators .singleEvaluator:hover{
     padding: 30px;
 }
 
-.edit{}
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle{
+  background-color: #a04561;
+  border-color: #c36c87
+}

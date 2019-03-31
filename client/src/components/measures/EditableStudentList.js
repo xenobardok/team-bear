@@ -37,6 +37,7 @@ class EditableStudentList extends Component {
         <li>
           <InputGroup className="mb-3">
             <FormControl
+              name="Student_Name"
               placeholder="Student name"
               aria-label="Student name"
               aria-describedby="basic-addon2"
@@ -44,10 +45,12 @@ class EditableStudentList extends Component {
               onChange={this.onChangeHandler}
             />
             <FormControl
-              placeholder="ID"
+              name="Student_ID"
+              placeholder="Student ID"
               aria-label="ID"
               aria-describedby="basic-addon2"
               value={Student_ID}
+              onChange={this.onChangeHandler}
             />
             <InputGroup.Append>
               <Button variant="primary">Update Student</Button>
