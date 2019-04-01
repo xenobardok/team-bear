@@ -114,7 +114,7 @@ router.get(
 
                 var newSql =
                   "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
-                  Rubric_ID +
+                  Rubric.Rubric_ID +
                   " ORDER BY Sort_Index";
 
                 db.query(newSql, (err, result) => {

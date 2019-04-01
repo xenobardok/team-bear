@@ -21,7 +21,8 @@ import {
   getSingleMeasure,
   assignEvaluatorToMeasure,
   defineMeasure,
-  addStudent
+  addStudent,
+  removeStudent
 } from "../../actions/measureActions";
 import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -64,6 +65,7 @@ class Measure extends Component {
       ) {
         let { singleMeasure } = this.props.measures;
         this.setState({
+          Measure_ID: singleMeasure.Measure_ID,
           Measure_Label: singleMeasure.Measure_Label,
           Measure_Type: singleMeasure.Measure_Type,
           Target: singleMeasure.Target,
@@ -159,6 +161,11 @@ class Measure extends Component {
       addStudentBox: !this.state.addStudentBox
     });
   };
+
+  removeStudentButton = Student_ID => {
+    this.props.removeStudent(this.state.Measure_ID, Student_ID);
+  };
+
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -177,7 +184,8 @@ class Measure extends Component {
       Student_Achieved_Target_Count,
       newEvaluator,
       Class_Name,
-      addStudentBox
+      addStudentBox,
+      Measure_ID
     } = this.state;
 
     let measure;
@@ -254,7 +262,12 @@ class Measure extends Component {
               <ol>
                 {!isEmpty(Students) ? (
                   Students.map(value => (
-                    <EditableStudentList {...value} key={value.Student_ID} />
+                    <EditableStudentList
+                      {...value}
+                      key={value.Student_ID}
+                      removeStudentButton={this.removeStudentButton}
+                      Measure_ID={Measure_ID}
+                    />
                   ))
                 ) : (
                   <p>No Students added to this measure yet!</p>
@@ -346,6 +359,7 @@ export default connect(
     getRubrics,
     getSingleRubric,
     defineMeasure,
-    addStudent
+    addStudent,
+    removeStudent
   }
 )(Measure);

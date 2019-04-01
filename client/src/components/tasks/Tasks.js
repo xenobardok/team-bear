@@ -19,7 +19,7 @@ class Tasks extends Component {
       rubricsList = <Spinner />;
     } else {
       rubricsList = allRubrics.map(rubric => (
-        <Link to={`/dashboard/tasks/rubric/${rubric.Rubric_ID}`}>
+        <Link to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}>
           <ListGroup.Item action key={rubric.Rubric_Name}>
             {rubric.Rubric_Name}
           </ListGroup.Item>

@@ -18,6 +18,10 @@ class EditableStudentList extends Component {
     });
   };
 
+  deleteStudent = e => {
+    this.props.removeStudentButton(this.state.Student_ID);
+  };
+
   onChangeHandler = e => {
     this.setState({
       [e.target.name]: e.target.value
@@ -54,7 +58,9 @@ class EditableStudentList extends Component {
             />
             <InputGroup.Append>
               <Button variant="primary">Update Student</Button>
-              <Button variant="primary">Delete Student</Button>
+              <Button variant="primary" onClick={this.deleteStudent}>
+                Delete Student
+              </Button>
               <Button variant="outline-secondary" onClick={this.editStudent}>
                 Cancel
               </Button>

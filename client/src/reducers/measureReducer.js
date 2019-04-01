@@ -3,7 +3,8 @@ import {
   MEASURE_LOADING,
   GET_SINGLE_MEASURE,
   ADD_EVALUATOR_MEASURE,
-  ADD_STUDENT
+  ADD_STUDENT,
+  REMOVE_STUDENT
 } from "../actions/types";
 
 const initialState = {
@@ -47,6 +48,15 @@ export default function(state = initialState, action) {
         singleMeasure: {
           ...state.singleMeasure,
           Students: [...state.singleMeasure.Students, action.payload]
+        }
+      };
+    case REMOVE_STUDENT:
+      console.log(...action.payload);
+      return {
+        ...state,
+        singleMeasure: {
+          ...state.singleMeasure,
+          Students: [...action.payload]
         }
       };
     default:

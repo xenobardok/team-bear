@@ -1,6 +1,7 @@
 import {
   LIST_ASSIGNED_RUBRICS,
-  ASSIGNED_RUBRICS_LOADING
+  ASSIGNED_RUBRICS_LOADING,
+  VIEW_MEASURE_RUBRIC
 } from "../actions/types";
 
 const initialState = {
@@ -20,6 +21,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         allRubrics: action.payload,
+        loading: false
+      };
+    case VIEW_MEASURE_RUBRIC:
+      return {
+        ...state,
+        rubric: action.payload,
         loading: false
       };
     default:

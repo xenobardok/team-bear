@@ -5,7 +5,8 @@ import {
   GET_ERRORS,
   GET_SINGLE_MEASURE,
   ADD_EVALUATOR_MEASURE,
-  ADD_STUDENT
+  ADD_STUDENT,
+  REMOVE_STUDENT
 } from "./types";
 
 export const getMeasures = id => dispatch => {
@@ -113,5 +114,18 @@ export const addStudent = (measureID, student) => dispatch => {
   axios
     .post(`/api/cycle/measure/${measureID}/addStudent`, student)
     .then(res => dispatch({ type: ADD_STUDENT, payload: res.data }))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
+export const removeStudent = (measureID, Student_ID) => dispatch => {
+  console.log(measureID);
+  console.log({ Student_ID: Student_ID });
+  axios
+    .delete(`/api/cycle/measure/${measureID}/removeStudent`, {
+      data: {
+        Student_ID: Student_ID
+      }
+    })
+    .then(res => dispatch({ type: REMOVE_STUDENT, payload: res.data }))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
