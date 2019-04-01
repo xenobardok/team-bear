@@ -52,7 +52,7 @@ router.get(
 // @desc    Returns the details about an assigned Rubric from the Rubric_Measure_ID
 // @access  Private route
 router.get(
-  "/rubric/:RubricMeasureID",
+  "/rubricMeasure/:RubricMeasureID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
