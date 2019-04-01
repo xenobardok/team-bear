@@ -5,6 +5,8 @@ const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
 
+const updateStudentsScore = require("../updateStudentsScore");
+
 // Loading Input Validation
 const validateRubricInput = require("../../validation/rubric");
 
@@ -50,7 +52,7 @@ router.get(
 // @desc    Returns the details about an assigned Rubric from the Rubric_Measure_ID
 // @access  Private route
 router.get(
-  "/rubrics/:RubricMeasureID",
+  "/rubric/:RubricMeasureID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -114,7 +116,7 @@ router.get(
 
                 var newSql =
                   "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
-                  Rubric_ID +
+                  Rubric.Rubric_ID +
                   " ORDER BY Sort_Index";
 
                 db.query(newSql, (err, result) => {
@@ -175,23 +177,23 @@ router.get(
   }
 );
 
-// @route   GET api/evaluations/rubrics/:RubricID/student/:studentID
+// @route   GET api/evaluations/rubricMeasure/:RubricMeasureID/student/:studentID
 // @desc    Returns the grades of the student
 // @access  Private route
 router.get(
-  "/rubrics/:RubricID/student/:studentID",
+  "/rubricMeasure/:RubricMeasuresID/student/:studentID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
-    const Rubric_ID = req.params.RubricID;
+    const Rubric_Measure_ID = req.params.RubricMeasureID;
     const Student_ID = db.escape(req.params.studentID);
 
     const data = [];
 
     let sql =
-      "SELECT * FROM STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_ROW WHERE Rubric_ID=" +
+      "SELECT * FROM STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC_STUDENTS WHERE Rubric_ID=" +
       Rubric_ID +
       " AND Student_ID=" +
       Student_ID +
@@ -221,12 +223,125 @@ router.post(
   "/rubricMeasure/:rubricMeasureID/student/:studentID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const email = db.escape(req.user.email);
+    const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const score = req.body.Score;
     const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Student_ID = db.escape(req.params.studentID);
+
+    // console.log(score);
+    let sql =
+      "SELECT DISTINCT Rubric_ID, Rubric_Student_ID FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Student_ID = " +
+      Student_ID +
+      " AND Rubric_Measure_ID=" +
+      Rubric_Measure_ID;
+
+    db.query(sql, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ error: "Rubric Measure Not Assigned to this Student" });
+        }
+
+        let Rubric_ID = result[0].Rubric_ID;
+        let Rubric_Student_ID = db.escape(result[0].Rubric_Student_ID);
+
+        sql =
+          "SELECT DISTINCT Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID=" +
+          Rubric_ID +
+          " ORDER BY Rubric_Row_ID";
+
+        db.query(sql, (err, result) => {
+          if (err) return res.status(400).json(err);
+          else {
+            Rubric_Row_ID = [];
+
+            result.forEach(row => {
+              Rubric_Row_ID.push(row.Rubric_Row_ID);
+            });
+
+            sql =
+              "SELECT * FROM STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Student_ID=" +
+              Rubric_Student_ID +
+              " AND Evaluator_Email=" +
+              db.escape(email);
+
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+
+              //if data already exists, procceed with updating
+              if (result.length > 0) {
+                let done = false;
+                let index = 0;
+                sql = "";
+                Rubric_Row_ID.forEach(row => {
+                  sql +=
+                    "UPDATE STUDENTS_RUBRIC_ROWS_GRADE SET Score=" +
+                    score[index] +
+                    " WHERE Rubric_Student_ID = " +
+                    db.escape(Rubric_Student_ID) +
+                    " AND Evaluator_Email=" +
+                    db.escape(email) +
+                    " AND Rubric_Row_ID=" +
+                    row +
+                    "; ";
+
+                  index++;
+                });
+
+                //console.log(sql);
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json(err);
+                  } else {
+                    // console.log(sql);
+                    updateStudentsScore(Rubric_Measure_ID);
+                    return res
+                      .status(200)
+                      .json({ message: "successfully updated" });
+                  }
+                });
+              } else {
+                //new insert
+
+                sql =
+                  "INSERT INTO STUDENTS_RUBRIC_ROWS_GRADE (Rubric_Student_ID,Evaluator_Email,Rubric_Row_ID,Score) VALUES ?";
+
+                let sqlValues = [];
+                index = 0;
+
+                Rubric_Row_ID.forEach(row => {
+                  value = [];
+
+                  value.push(Rubric_Student_ID);
+
+                  value.push(email);
+                  value.push(row);
+                  value.push(score[index]);
+
+                  sqlValues.push(value);
+
+                  index++;
+                });
+
+                db.query(sql, [sqlValues], (err, result) => {
+                  if (err) return res.status(400).json(err);
+                  else {
+                    updateStudentsScore(Rubric_Measure_ID);
+                    return res
+                      .status(200)
+                      .json({ message: "successfully updated" });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
   }
 );
 
