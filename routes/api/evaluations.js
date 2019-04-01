@@ -181,7 +181,7 @@ router.get(
 // @desc    Returns the grades of the student
 // @access  Private route
 router.get(
-  "/rubricMeasure/:RubricMeasuresID/student/:studentID",
+  "/rubricMeasure/:RubricMeasureID/student/:studentID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -193,22 +193,26 @@ router.get(
     const data = [];
 
     let sql =
-      "SELECT * FROM STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC_STUDENTS WHERE Rubric_ID=" +
-      Rubric_ID +
+      "SELECT DISTINCT * FROM RUBRIC_STUDENTS S NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN  RUBRIC_ROW  R LEFT OUTER JOIN STUDENTS_RUBRIC_ROWS_GRADE G ON R.Rubric_Row_ID = G.Rubric_Row_ID AND S.Rubric_Student_ID = G.Rubric_Student_ID WHERE Rubric_Measure_ID=" +
+      Rubric_Measure_ID +
       " AND Student_ID=" +
       Student_ID +
       " AND Evaluator_Email =" +
-      email;
+      email +
+      " ORDER BY R.Rubric_Row_ID";
 
+    console.log(sql);
     db.query(sql, (err, result) => {
       if (err) throw err;
       else {
         result.forEach(row => {
-          scores = {
-            Rubric_Row_ID: row.Rubric_Row_ID,
-            Score: row.Score
-          };
-          data.push(scores);
+          let score = row.Score;
+
+          if (score == null) {
+            score = 0;
+          }
+
+          data.push(score);
         });
         return res.status(200).json(data);
       }
