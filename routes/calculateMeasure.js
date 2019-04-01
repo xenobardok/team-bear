@@ -7,19 +7,22 @@ const secret = require("../config/secret");
 let calculateMeasure = Rubric_Measure_ID => {
   //sql to get the target and threshold
   sql =
-    "SELECT Target,Threshold FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+    "SELECT Rubric_ID, Target,Threshold FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
     Rubric_Measure_ID;
 
   db.query(sql, (err, result) => {
     if (err) throw err;
     else {
+      const Rubric_ID = result[0].Rubric_ID;
       const Target = result[0].Target;
       const Threshold = result[0].Threshold;
 
       //sql to find total no of students evaluated
       sql =
-        "SELECT Count(*) AS Total FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
-        Rubric_Measure_ID;
+        "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
+        Rubric_Measure_ID +
+        " AND Rubric_ID=" +
+        Rubric_ID;
       db.query(sql, (err, result) => {
         if (err) throw err;
         else {

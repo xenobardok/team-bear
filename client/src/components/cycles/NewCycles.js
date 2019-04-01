@@ -7,7 +7,7 @@ import { getCycles, getSingleCycle } from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
 import CreateCycle from "./CreateCycle";
-
+import EditableCycleList from "../../common/EditableCycleList";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -20,11 +20,15 @@ class Cycles extends Component {
       selectedOption: ""
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
+    if (this.props.errors === "unauthorized") {
+      this.props.history.push("/login");
+    }
+
     this.props.getCycles();
     this.props.getSingleCycle(this.props.cycles.activeCycle);
     console.log(this.props.cycles);
-  }
+  };
 
   onSelectChange = e => {
     this.props.getSingleCycle(e.target.value);
@@ -87,13 +91,14 @@ class Cycles extends Component {
         }
 
         newCycle = (
-          <Card.Footer
-            onClick={() => this.setState({ modalShow: true })}
-            style={{ cursor: "pointer" }}
-          >
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;&nbsp;&nbsp;Create a new cycle
-          </Card.Footer>
+          <></>
+          // <Card.Footer
+          //   onClick={() => this.setState({ modalShow: true })}
+          //   style={{ cursor: "pointer" }}
+          // >
+          //   <FontAwesomeIcon icon="plus" />
+          //   &nbsp;&nbsp;&nbsp;Create a new cycle
+          // </Card.Footer>
         );
       }
     }

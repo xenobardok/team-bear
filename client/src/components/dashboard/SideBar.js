@@ -11,9 +11,18 @@ import {
   faHome,
   faTasks,
   faFileAlt,
-  faEnvelope
+  faEnvelope,
+  faCircleNotch
 } from "@fortawesome/free-solid-svg-icons";
-library.add(faBars, faTimes, faHome, faTasks, faFileAlt, faEnvelope);
+library.add(
+  faBars,
+  faTimes,
+  faHome,
+  faTasks,
+  faFileAlt,
+  faEnvelope,
+  faCircleNotch
+);
 
 class SideBar extends Component {
   constructor() {
@@ -43,6 +52,10 @@ class SideBar extends Component {
         <Link className="menu-item" to="/dashboard">
           <FontAwesomeIcon icon="home" />
           &nbsp;&nbsp;Home
+        </Link>
+        <Link className="menu-item" to="/dashboard/cycles">
+          <FontAwesomeIcon icon="circle-notch" />
+          &nbsp;&nbsp;My Cycle
         </Link>
         <Link className="menu-item" to="/dashboard/tasks">
           <FontAwesomeIcon icon="tasks" />

@@ -186,9 +186,9 @@ svg.fa-bars{
   top: 36px;
   font-size: 1.05em;
 }
-a.dropdown-item {
+/* a.dropdown-item {
   width: 50px !important;
-}
+} */
 
 td {
   padding: 0px !important;
@@ -319,4 +319,86 @@ textarea {
 .label-defination .input-group.target {
   width: 200px;
   display: inline-flex;
+}
+
+.evaluators{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.evaluators .singleEvaluator {
+  justify-content: left;
+  height: auto;
+  border: 1px solid #9e9898;
+  padding: 10px 10px 10px 10px;
+  border-radius: 5px;
+  margin: 0px 10px 10px 0px;
+  transition: 0.2s all;
+}
+.evaluators .singleEvaluator:hover{
+  background-color: #f8f8f8;
+  cursor: default;
+
+}
+
+section#evaluators{
+  padding: 10px 10px 10px 0px;
+  border-radius: 5px;
+  /* border: 2px solid black; */
+}
+
+section#evaluators .singleEvaluator:hover{
+  box-shadow:1px 2px 3px #ada7a7;
+  cursor: pointer;
+}
+
+.crossIcon, .checkIcon, .edit {
+  cursor: pointer;
+  position: relative;
+  float: right;
+  color: #9e9898;
+  transition: 0.2s all;  
+  margin: 0px 5px;
+}
+
+.crossIcon:hover{
+  color:#dc3545
+}
+
+.checkIcon:hover {
+  color: green;
+}
+
+.addEvaluatorIcon:hover, .edit:hover {
+  color: black;
+}
+
+
+
+
+.addEvaluatorIcon{
+  cursor: pointer;
+  color: #9e9898;
+  transition: 0.2s all;
+}
+
+.single-measure{
+  background: white;
+    border: 2px solid aliceblue;
+    /* background-color: white; */
+    box-shadow: 3px 3px 13px 0px #2b1717;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.btn-primary.disabled, .btn-primary:disabled,.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle{
+  background-color: #a04561;
+  border-color: #c36c87
+}
+
+.list-group-item-action:focus, .list-group-item-action:hover, .list-group-item-action:active{
+  color: #ffffff;
+    text-decoration: none;
+    background-color: #7b3449;
+    cursor: pointer;
 }

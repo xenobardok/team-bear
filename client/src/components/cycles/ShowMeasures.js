@@ -25,6 +25,23 @@ class ShowMeasures extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.errors !== prevProps.errors) {
+      this.setState({
+        errors: this.props.errors
+      });
+    }
+
+    if (this.props.match.params.outcomeID) {
+      if (
+        this.props.match.params.outcomeID !== prevProps.match.params.outcomeID
+      ) {
+        this.props.getMeasures(this.props.match.params.outcomeID);
+      }
+      console.log(this.props.match.params.outcomeID);
+    }
+  }
+
   componentDidMount() {
     if (this.props.match.params.outcomeID) {
       console.log(this.props.match.params.outcomeID);
@@ -41,10 +58,11 @@ class ShowMeasures extends Component {
   saveButtonHandler = () => {
     let { newMeasure, newMeasureType } = this.state;
     let { outcomeID } = this.props.match.params;
-    if (newMeasureType === "rubric") {
+    if (newMeasureType) {
       this.props.createMeasure(outcomeID, newMeasure, newMeasureType);
     }
   };
+
   render() {
     let { measure, loading } = this.props.measures;
     let { id, outcomeID } = this.props.match.params;
@@ -93,7 +111,7 @@ class ShowMeasures extends Component {
                   })}
                 />
                 <FormControl.Feedback type="invalid">
-                  {this.state.errors.Outcome_Name}
+                  {this.state.errors.Measure_Name}
                 </FormControl.Feedback>
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlSelect1">
@@ -116,8 +134,7 @@ class ShowMeasures extends Component {
               <Button
                 variant="primary"
                 onClick={() => {
-                  this.setState({ showNewMeasure: false });
-                  this.setState({ errors: "" });
+                  this.setState({ showNewMeasure: false, errors: "" });
                 }}
               >
                 Cancel

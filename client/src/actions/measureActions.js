@@ -3,7 +3,10 @@ import {
   GET_MEASURES,
   MEASURE_LOADING,
   GET_ERRORS,
-  GET_SINGLE_MEASURE
+  GET_SINGLE_MEASURE,
+  ADD_EVALUATOR_MEASURE,
+  ADD_STUDENT,
+  REMOVE_STUDENT
 } from "./types";
 
 export const getMeasures = id => dispatch => {
@@ -11,7 +14,6 @@ export const getMeasures = id => dispatch => {
   axios
     .get(`/api/cycle/outcome/${id}`)
     .then(res => {
-      console.log(res.data);
       dispatch({
         type: GET_MEASURES,
         payload: res.data
@@ -30,7 +32,7 @@ export const createMeasure = (
   Measure_Name,
   Measure_Type
 ) => dispatch => {
-  console.log(Measure_Name);
+  console.log(Measure_Name, Measure_Type);
   axios
     .post(`/api/cycle/outcome/${Outcome_ID}/measure/create`, {
       Measure_Name: Measure_Name,
@@ -69,4 +71,61 @@ export const getSingleMeasure = (outcomeID, measureID) => dispatch => {
         payload: null
       });
     });
+};
+
+export const assignEvaluatorToMeasure = (
+  measureID,
+  Evaluator_Email
+) => dispatch => {
+  console.log(
+    "Doing axios request with measureID " +
+      measureID +
+      " and email " +
+      Evaluator_Email
+  );
+  axios
+    .post(`/api/cycle/measure/${measureID}/addEvaluator`, {
+      Evaluator_Email: Evaluator_Email
+    })
+    .then(res =>
+      dispatch({
+        type: ADD_EVALUATOR_MEASURE,
+        payload: res.data
+      })
+    );
+};
+
+export const defineMeasure = (
+  outcomeID,
+  measureID,
+  measureData
+) => dispatch => {
+  console.log(measureID);
+  console.log(measureData);
+  axios
+    .post(`/api/cycle/measure/${measureID}/update`, measureData)
+    .then(res => dispatch(getSingleMeasure(outcomeID, measureID)))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
+export const addStudent = (measureID, student) => dispatch => {
+  console.log(measureID);
+  console.log(student);
+  axios
+    .post(`/api/cycle/measure/${measureID}/addStudent`, student)
+    .then(res => dispatch({ type: ADD_STUDENT, payload: res.data }))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
+export const removeStudent = (measureID, Student_ID) => dispatch => {
+  console.log(measureID);
+  console.log({ Student_ID: Student_ID });
+  axios
+    .delete(`/api/cycle/measure/${measureID}/removeStudent`, {
+      data: {
+        Student_ID: Student_ID
+      }
+    })
+    .then(res => dispatch({ type: REMOVE_STUDENT, payload: res.data }))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };

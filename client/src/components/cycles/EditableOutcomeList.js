@@ -39,7 +39,7 @@ class EditableOutcomeList extends Component {
       //     isEditable: false
       //   });
       // }
-      console.log(this.props.errors);
+      // console.log(this.props.errors);
     }
 
     if (this.props.value !== prevProps.value) {
@@ -99,13 +99,16 @@ class EditableOutcomeList extends Component {
           </Form>
         ) : (
           <ListGroup key={this.props.value.Outcome_ID} className="edit-post">
-            <ListGroup.Item
-              action
-              name={this.props.value.Outcome_ID}
-              onClick={this.props.onClickHandler}
+            <Link
+              to={`/dashboard/cycles/${this.props.cycleID}/outcome/${
+                this.props.value.Outcome_ID
+              }`}
+              style={{ flexGrow: "1" }}
             >
-              {this.state.textValue}
-            </ListGroup.Item>
+              <ListGroup.Item action name={this.props.value.Outcome_ID}>
+                {this.state.textValue}
+              </ListGroup.Item>
+            </Link>
             <div
               style={{
                 display: "inline",
@@ -125,8 +128,8 @@ class EditableOutcomeList extends Component {
 }
 
 EditableOutcomeList.propTypes = {
-  updateOutcome: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired
+  updateOutcome: PropTypes.func.isRequired
+  // errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

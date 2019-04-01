@@ -1,36 +1,44 @@
 import React, { Component } from "react";
-import { ListGroup, Row, Col } from "react-bootstrap";
+import { ListGroup, Row, Col, Card } from "react-bootstrap";
+import { listAssignedRubrics } from "../../actions/evaluationsActions";
+import { Link } from "react-router-dom";
+import Spinner from "../../common/Spinner";
+import isEmpty from "../../validation/isEmpty";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 class Tasks extends Component {
+  componentDidMount() {
+    this.props.listAssignedRubrics();
+  }
+
   render() {
+    let { loading, allRubrics } = this.props.evaluations;
+    let rubricsList;
+    if (loading) {
+      rubricsList = <Spinner />;
+    } else {
+      rubricsList = allRubrics.map(rubric => (
+        <Link to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}>
+          <ListGroup.Item action key={rubric.Rubric_Name}>
+            {rubric.Rubric_Name}
+          </ListGroup.Item>
+        </Link>
+      ));
+    }
+
     return (
       <div>
         <h1>Tasks</h1>
         <br />
         <Row>
           <Col>
-            <h3>List of rubrics I have assigned others</h3>
-            <br />
-            <ListGroup>
-              <ListGroup.Item action href="#link1">
-                Rubric 1
-              </ListGroup.Item>
-              <ListGroup.Item action href="#link2">
-                Rubric 2
-              </ListGroup.Item>
-            </ListGroup>
-          </Col>
-          <Col>
-            <h3>List of rubrics I have assigned others</h3>
-            <br />
-            <ListGroup>
-              <ListGroup.Item action href="#link1">
-                Link 1
-              </ListGroup.Item>
-              <ListGroup.Item action href="#link2">
-                Link 2
-              </ListGroup.Item>
-            </ListGroup>
+            <Card className="text-center">
+              <Card.Header>Rubrics assigned to me</Card.Header>
+              <Card.Body style={{ padding: "0px" }}>
+                <ListGroup variant="flush">{rubricsList}</ListGroup>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </div>
@@ -38,4 +46,19 @@ class Tasks extends Component {
   }
 }
 
-export default Tasks;
+Tasks.propTypes = {
+  auth: PropTypes.object.isRequired,
+  evaluations: PropTypes.object.isRequired,
+  listAssignedRubrics: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors,
+  evaluations: state.evaluations
+});
+
+export default connect(
+  mapStateToProps,
+  { listAssignedRubrics }
+)(Tasks);

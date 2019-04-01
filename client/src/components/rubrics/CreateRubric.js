@@ -96,6 +96,8 @@ class CreateRubric extends Component {
   }
 
   onScaleChange(index, value) {
+    console.log(index);
+    console.log(value);
     this.setState(state => {
       const Scale = state.Scale.map((v, i) => {
         if (index === "Scale[" + i + "].label") {
@@ -116,8 +118,6 @@ class CreateRubric extends Component {
         }
       });
 
-      // console.log(value);
-      // console.log(Scale);
       return {
         ...state,
         Scale

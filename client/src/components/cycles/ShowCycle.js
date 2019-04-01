@@ -37,7 +37,12 @@ class ShowCycle extends Component {
 
   onClickHandler = e => {
     console.log(e.target.name);
-    this.props.getMeasures(e.target.name);
+    this.props.history.push(
+      "/dashboard/cycles/" +
+        this.props.cycles.cycle.Cycle_ID +
+        "/outcome/" +
+        this.props.measures.measure.Outcome_ID
+    );
   };
 
   createNewOutcome = e => {
@@ -57,20 +62,6 @@ class ShowCycle extends Component {
       this.setState({
         errors: ""
       });
-    }
-    if (this.props.cycles.cycle) {
-      if (
-        !isEmpty(this.props.measures.measure) &&
-        this.props.measures !== prevProps.measures
-      ) {
-        this.props.history.push(
-          "/dashboard/cycles/" +
-            this.props.cycles.cycle.Cycle_ID +
-            "/outcome/" +
-            this.props.measures.measure.Outcome_ID
-        );
-        console.log(this.props.measures.measure);
-      }
     }
 
     if (this.props.cycles.cycle !== prevProps.cycles.cycle) {
@@ -114,7 +105,6 @@ class ShowCycle extends Component {
         outcomes = this.state.allOutcomes.data.map(value => (
           <EditableOutcomeList
             value={value}
-            onClickHandler={this.onClickHandler}
             key={value.Outcome_ID}
             cycleID={this.props.cycles.cycle.Cycle_ID}
           />
