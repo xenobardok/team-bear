@@ -28,6 +28,7 @@ class ViewRubric extends Component {
     this.state = {
       Student_ID: "",
       Student_Name: "",
+      gradeEdit: false,
       Student_Grades: []
     };
   }
@@ -38,7 +39,66 @@ class ViewRubric extends Component {
     }
   }
 
-  componentDidUpdate = prevProps => {};
+  componentDidUpdate = (prevProps, prevState) => {
+    // console.log(this.props.evaluations.rubric.data);
+    if (!isEmpty(this.props.evaluations.rubric)) {
+      if (
+        this.props.evaluations.rubric.data.length !==
+        this.state.Student_Grades.length
+      ) {
+        console.log("Adding empty array");
+        let length = this.props.evaluations.rubric.data.length;
+        let emptyArray = [];
+        for (let i = 0; i < length; i++) {
+          emptyArray.push(0);
+        }
+        this.setState({
+          Student_Grades: emptyArray
+        });
+      }
+    }
+
+    if (!isEmpty(this.state.Student_ID)) {
+      if (this.state.Student_ID !== prevState.Student_ID) {
+        console.log(
+          this.props.match.params.rubricMeasureId,
+          this.state.Student_ID
+        );
+        this.props.viewStudentGradeRubricMeasure(
+          this.props.match.params.rubricMeasureId,
+          this.state.Student_ID
+        );
+      }
+    }
+
+    if (this.props.evaluations.studentGrade) {
+      if (
+        this.props.evaluations.studentGrade !==
+        prevProps.evaluations.studentGrade
+      ) {
+        this.setState({
+          Student_Grades: this.props.evaluations.studentGrade
+        });
+      }
+    }
+  };
+
+  onChangeHandlerArray(index, e) {
+    // console.log(e.target.value);
+    // this.setState(state => {
+    //   let Student_Grades = state.Student_Grades.map((v, i) => {
+    //     if (index === i) {
+    //       return e.target.value;
+    //     } else {
+    //       return v;
+    //     }
+    //   });
+    //   return {
+    //     ...state,
+    //     Student_Grades
+    //   };
+    // });
+  }
 
   studentClickHandler = (student, e) => {
     console.log(e);
@@ -46,11 +106,6 @@ class ViewRubric extends Component {
       Student_ID: student.Student_ID,
       Student_Name: student.Student_Name
     });
-    console.log(this.props.match.params.rubricMeasureId, this.state.Student_ID);
-    this.props.viewStudentGradeRubricMeasure(
-      this.props.match.params.rubricMeasureId,
-      this.state.Student_ID
-    );
   };
   render() {
     let { rubric, loading } = this.props.evaluations;
@@ -66,7 +121,7 @@ class ViewRubric extends Component {
           </th>
         ));
 
-        dataRow = rubric.data.map(singleRow => (
+        dataRow = rubric.data.map((singleRow, index) => (
           <tr key={singleRow.Rubric_Row_ID}>
             <td className="borderedCell">
               <FormControl
@@ -88,15 +143,30 @@ class ViewRubric extends Component {
                 />
               </td>
             ))}
+            {/* {console.log(this.state.Student_Grades[index])} */}
+            {/* {!isEmpty(this.state.Student_Grades[index]) ? ( */}
             <td className="borderedCell">
               <FormControl
-                name={singleRow.Rubric_Row_ID}
+                name={"Student_Grades[" + index + "]"}
                 as="textarea"
                 aria-label="With textarea"
-                defaultValue=""
+                value={this.state.Student_Grades[index]}
                 className="measureTitle centerAlign cells"
+                onChange={this.onChangeHandlerArray.bind(this, index)}
               />
             </td>
+            {/* ) : ( */}
+            {/* <td className="borderedCell">
+              <FormControl
+                name={"Student_Grades[" + index + "]"}
+                as="textarea"
+                aria-label="With textarea"
+                value="0"
+                className="measureTitle centerAlign cells"
+                onChange={this.onChangeHandler}
+              />
+            </td> */}
+            {/* )} */}
           </tr>
         ));
         displayRubric = (
