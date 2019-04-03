@@ -5,7 +5,9 @@ const passport = require("passport");
 const secret = require("../config/secret");
 const calculateMeasure = require("./calculateMeasure");
 
-let updateStudentsScore = Rubric_Measure_ID => {
+var async = require("async");
+
+async function updateStudentsScore(Rubric_Measure_ID) {
   console.log(Rubric_Measure_ID);
 
   let sql =
@@ -53,6 +55,6 @@ let updateStudentsScore = Rubric_Measure_ID => {
       calculateMeasure(Rubric_Measure_ID);
     }
   });
-};
+}
 
 module.exports = updateStudentsScore;
