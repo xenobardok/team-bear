@@ -866,9 +866,39 @@ router.post(
                             Measure.Class_Name = result[0].Class_Name;
                             Measure.Score = result[0].Score;
 
-                            // console.log(Measure);
+                            calculateMeasure(Rubric_Measure_ID);
 
-                            return res.status(200).json(Measure);
+                            sql =
+                              "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
+                              Rubric_Measure_ID +
+                              " AND Rubric_ID=" +
+                              Measure.Rubric_ID;
+
+                            db.query(sql, (err, result) => {
+                              if (err) throw err;
+                              else {
+                                const Total_Students = result[0].Total;
+                                Measure.Total_Students = Total_Students;
+
+                                //sql to find the count of students with required or better grade
+                                sql =
+                                  "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                                  Rubric_Measure_ID +
+                                  " AND Student_Avg_Grade>=" +
+                                  Measure.Target;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) throw err;
+                                  else {
+                                    Measure.Student_Achieved_Target_Count =
+                                      result[0].Success_Count;
+
+                                    // console.log(Measure);
+                                    return res.status(200).json(Measure);
+                                  }
+                                });
+                              }
+                            });
                           }
                         });
                       });
