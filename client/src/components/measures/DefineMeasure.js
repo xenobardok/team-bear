@@ -59,6 +59,9 @@ export default class DefineMeasure extends Component {
       Target: this.state.scale.toString()
     };
     console.log(measureValue);
+    this.setState({
+      isEditing: false
+    });
     this.props.measureDefination(measureValue);
   };
 

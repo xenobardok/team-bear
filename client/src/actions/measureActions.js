@@ -6,7 +6,8 @@ import {
   GET_SINGLE_MEASURE,
   ADD_EVALUATOR_MEASURE,
   ADD_STUDENT,
-  REMOVE_STUDENT
+  REMOVE_STUDENT,
+  UPDATE_MEASURE_DEFINITION
 } from "./types";
 
 export const getMeasures = id => dispatch => {
@@ -104,10 +105,13 @@ export const defineMeasure = (
   console.log(measureData);
   axios
     .post(`/api/cycle/measure/${measureID}/update`, measureData)
-    .then(res => dispatch(getSingleMeasure(outcomeID, measureID)))
+    .then(res =>
+      dispatch({ type: UPDATE_MEASURE_DEFINITION, payload: res.data })
+    )
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
-
+// { type: UPDATE_MEASURE_DEFINITION, payload: res.data }
+// dispatch(getSingleMeasure(outcomeID, measureID))
 export const addStudent = (measureID, student) => dispatch => {
   console.log(measureID);
   console.log(student);
