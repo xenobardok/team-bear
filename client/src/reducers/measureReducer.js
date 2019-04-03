@@ -4,7 +4,8 @@ import {
   GET_SINGLE_MEASURE,
   ADD_EVALUATOR_MEASURE,
   ADD_STUDENT,
-  REMOVE_STUDENT
+  REMOVE_STUDENT,
+  UPDATE_MEASURE_DEFINITION
 } from "../actions/types";
 
 const initialState = {
@@ -31,6 +32,14 @@ export default function(state = initialState, action) {
         ...state,
         singleMeasure: action.payload,
         loading: false
+      };
+    case UPDATE_MEASURE_DEFINITION:
+      return {
+        ...state,
+        singleMeasure: {
+          ...state.singleMeasure,
+          ...action.payload
+        }
       };
     case ADD_EVALUATOR_MEASURE:
       return {
@@ -59,6 +68,7 @@ export default function(state = initialState, action) {
           Students: [...action.payload]
         }
       };
+
     default:
       return state;
   }

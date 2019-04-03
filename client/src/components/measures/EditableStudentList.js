@@ -1,5 +1,16 @@
 import React, { Component } from "react";
-import { InputGroup, FormControl, Button } from "react-bootstrap";
+import {
+  InputGroup,
+  FormControl,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
+
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+library.add(faEdit);
 
 class EditableStudentList extends Component {
   constructor(props) {
@@ -8,7 +19,8 @@ class EditableStudentList extends Component {
     this.state = {
       Student_Name: Student_Name,
       Student_ID: Student_ID,
-      edit: false
+      edit: false,
+      showEdit: false
     };
   }
 
@@ -27,14 +39,50 @@ class EditableStudentList extends Component {
       [e.target.name]: e.target.value
     });
   };
+
+  onMouseEnterHandler = e => {
+    this.setState({
+      showEdit: true
+    });
+  };
+
+  onMouseExitHandler = e => {
+    this.setState({
+      showEdit: false
+    });
+  };
   render() {
     let { Student_Name, Student_ID, edit } = this.state;
     let student;
     if (!edit) {
       student = (
-        <li key={Student_Name} onClick={this.editStudent}>
-          {Student_Name} : {Student_ID}
-        </li>
+        <div
+          onMouseEnter={this.onMouseEnterHandler}
+          onMouseLeave={this.onMouseExitHandler}
+        >
+          {this.state.showEdit ? (
+            <OverlayTrigger
+              key="top"
+              placement="right"
+              overlay={
+                <Tooltip id="add-evaluator">
+                  Edit {this.state.Student_Name}
+                </Tooltip>
+              }
+            >
+              <FontAwesomeIcon
+                icon="edit"
+                className="edit"
+                onClick={this.editStudent}
+              />
+            </OverlayTrigger>
+          ) : null}
+          {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
+
+          <li key={Student_Name}>
+            {Student_Name} : {Student_ID}
+          </li>
+        </div>
       );
     } else {
       student = (
@@ -57,9 +105,9 @@ class EditableStudentList extends Component {
               onChange={this.onChangeHandler}
             />
             <InputGroup.Append>
-              <Button variant="primary">Update Student</Button>
+              <Button variant="primary">Update</Button>
               <Button variant="primary" onClick={this.deleteStudent}>
-                Delete Student
+                Delete
               </Button>
               <Button variant="outline-secondary" onClick={this.editStudent}>
                 Cancel

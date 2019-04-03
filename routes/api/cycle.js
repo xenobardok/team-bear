@@ -849,10 +849,58 @@ router.post(
                         .status(400)
                         .json({ error: "There was some problem adding it" });
                     } else {
-                      console.log(Rubric_Measure_ID);
-                      updateStudentsScore(Rubric_Measure_ID);
-                      return res.status(200).json({
-                        message: "Rubric Measure was successfully updated"
+                      updateStudentsScore(Rubric_Measure_ID, () => {
+                        Measure = {};
+                        sql =
+                          " SELECT * FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+                          Rubric_Measure_ID;
+                        db.query(sql, (err, result) => {
+                          if (err) return res.status(200).json(err);
+                          else {
+                            Measure.Rubric_ID = result[0].Rubric_ID;
+                            Measure.End_Date = result[0].End_Date;
+                            Measure.Target = result[0].Target;
+                            Measure.Threshold = result[0].Threshold;
+                            Measure.Achieved_Threshold = result[0].Score;
+                            Measure.Is_Success = result[0].Is_Success;
+                            Measure.Class_Name = result[0].Class_Name;
+                            Measure.Score = result[0].Score;
+
+                            calculateMeasure(Rubric_Measure_ID);
+
+                            sql =
+                              "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
+                              Rubric_Measure_ID +
+                              " AND Rubric_ID=" +
+                              Measure.Rubric_ID;
+
+                            db.query(sql, (err, result) => {
+                              if (err) throw err;
+                              else {
+                                const Total_Students = result[0].Total;
+                                Measure.Total_Students = Total_Students;
+
+                                //sql to find the count of students with required or better grade
+                                sql =
+                                  "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                                  Rubric_Measure_ID +
+                                  " AND Student_Avg_Grade>=" +
+                                  Measure.Target;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) throw err;
+                                  else {
+                                    Measure.Student_Achieved_Target_Count =
+                                      result[0].Success_Count;
+
+                                    // console.log(Measure);
+                                    return res.status(200).json(Measure);
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
                       });
                     }
                   });
@@ -1047,7 +1095,7 @@ router.post(
                   "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Student_ID=" +
-                  Student_ID;
+                  db.escape(Student_ID);
 
                 db.query(sql, (err, result) => {
                   if (err) {

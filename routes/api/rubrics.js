@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require("../../config/connection");
 const passport = require("passport");
 const secret = require("../../config/secret");
-var async = require("async");
 
 // Loading Input Validation
 const validateRubricInput = require("../../validation/rubric");

@@ -34,6 +34,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import EditableStudentList from "./EditableStudentList";
+import "./measure.css";
 library.add(faPlus, faEdit, faUserPlus);
 
 class Measure extends Component {
@@ -272,6 +273,7 @@ class Measure extends Component {
                 ) : (
                   <p>No Students added to this measure yet!</p>
                 )}
+                <br />
                 {!addStudentBox ? (
                   <DropdownButton
                     size="sm"
@@ -327,6 +329,7 @@ class Measure extends Component {
                 )}
               </ol>
             </Col>
+            <Col />
           </Row>
         </div>
       );

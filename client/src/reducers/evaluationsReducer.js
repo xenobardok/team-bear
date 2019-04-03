@@ -2,7 +2,8 @@ import {
   LIST_ASSIGNED_RUBRICS,
   ASSIGNED_RUBRICS_LOADING,
   VIEW_MEASURE_RUBRIC,
-  VIEW_STUDENT_GRADE_RUBRIC_MEASURE
+  VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
+  GRADE_STUDENT_RUBRIC_MEASURE
 } from "../actions/types";
 
 const initialState = {
@@ -35,6 +36,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         studentGrade: action.payload,
+        loading: false
+      };
+    case GRADE_STUDENT_RUBRIC_MEASURE:
+      return {
+        ...state,
         loading: false
       };
     default:

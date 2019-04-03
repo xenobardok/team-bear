@@ -16,6 +16,8 @@ import {
   ListGroup,
   Button
 } from "react-bootstrap";
+
+import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 // import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
@@ -29,7 +31,8 @@ class ViewRubric extends Component {
       Student_ID: "",
       Student_Name: "",
       gradeEdit: false,
-      Student_Grades: []
+      Student_Grades: [],
+      SubmitGrade: false
     };
   }
 
@@ -40,6 +43,12 @@ class ViewRubric extends Component {
   }
 
   componentDidUpdate = (prevProps, prevState) => {
+    if (this.state.Student_Name !== prevState.Student_Name) {
+      this.setState({
+        SubmitGrade: true
+      });
+    }
+
     // console.log(this.props.evaluations.rubric.data);
     if (!isEmpty(this.props.evaluations.rubric)) {
       if (
@@ -85,19 +94,13 @@ class ViewRubric extends Component {
 
   onChangeHandlerArray(index, e) {
     // console.log(e.target.value);
-    // this.setState(state => {
-    //   let Student_Grades = state.Student_Grades.map((v, i) => {
-    //     if (index === i) {
-    //       return e.target.value;
-    //     } else {
-    //       return v;
-    //     }
-    //   });
-    //   return {
-    //     ...state,
-    //     Student_Grades
-    //   };
-    // });
+
+    const gradeIndex = index;
+    const allGrades = [...this.state.Student_Grades];
+    const updatedGrade = e.target.value;
+    allGrades[gradeIndex] = updatedGrade;
+    this.setState({ Student_Grades: allGrades });
+    // console.log(gradeIndex);
   }
 
   studentClickHandler = (student, e) => {
@@ -106,6 +109,15 @@ class ViewRubric extends Component {
       Student_ID: student.Student_ID,
       Student_Name: student.Student_Name
     });
+  };
+
+  onSubmitGradeHandler = e => {
+    let { rubricMeasureId } = this.props.match.params;
+    this.props.gradeStudentRubricMeasure(
+      rubricMeasureId,
+      this.state.Student_ID,
+      this.state.Student_Grades
+    );
   };
   render() {
     let { rubric, loading } = this.props.evaluations;
@@ -155,23 +167,16 @@ class ViewRubric extends Component {
                 onChange={this.onChangeHandlerArray.bind(this, index)}
               />
             </td>
-            {/* ) : ( */}
-            {/* <td className="borderedCell">
-              <FormControl
-                name={"Student_Grades[" + index + "]"}
-                as="textarea"
-                aria-label="With textarea"
-                value="0"
-                className="measureTitle centerAlign cells"
-                onChange={this.onChangeHandler}
-              />
-            </td> */}
-            {/* )} */}
           </tr>
         ));
         displayRubric = (
           <div>
             <h2>{rubric.Rubric_Name}</h2>
+            <h4 className="text-center">
+              {isEmpty(this.state.Student_Name)
+                ? "Please select a Student to grade:"
+                : "Grading: " + this.state.Student_Name}
+            </h4>
             <br />
             <Row>
               <Col md={9}>
@@ -219,9 +224,20 @@ class ViewRubric extends Component {
                     </ListGroup>
                   </Card.Body>
                   <Card.Footer>
-                    <Button variant="primary" size="lg" block disabled>
-                      Submit Grade
-                    </Button>
+                    {this.state.SubmitGrade ? (
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        block
+                        onClick={this.onSubmitGradeHandler}
+                      >
+                        Submit Grade
+                      </Button>
+                    ) : (
+                      <Button variant="primary" size="lg" block disabled>
+                        Submit Grade
+                      </Button>
+                    )}
                   </Card.Footer>
                 </Card>
               </Col>

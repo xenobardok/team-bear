@@ -66,6 +66,7 @@ export const gradeStudentRubricMeasure = (
   studentID,
   Score
 ) => dispatch => {
+  console.log(RubricMeasureID, studentID, Score);
   dispatch(setRubricsLoading());
   axios
     .post(
