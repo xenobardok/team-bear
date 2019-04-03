@@ -849,32 +849,28 @@ router.post(
                         .status(400)
                         .json({ error: "There was some problem adding it" });
                     } else {
-                      console.log(Rubric_Measure_ID);
-                      updateStudentsScore(Rubric_Measure_ID);
-                      calculateMeasure(Rubric_Measure_ID);
+                      updateStudentsScore(Rubric_Measure_ID, () => {
+                        Measure = {};
+                        sql =
+                          " SELECT * FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+                          Rubric_Measure_ID;
+                        db.query(sql, (err, result) => {
+                          if (err) return res.status(200).json(err);
+                          else {
+                            Measure.Rubric_ID = result[0].Rubric_ID;
+                            Measure.End_Date = result[0].End_Date;
+                            Measure.Target = result[0].Target;
+                            Measure.Threshold = result[0].Threshold;
+                            Measure.Achieved_Threshold = result[0].Score;
+                            Measure.Is_Success = result[0].Is_Success;
+                            Measure.Class_Name = result[0].Class_Name;
+                            Measure.Score = result[0].Score;
 
-                      Measure = {};
-                      sql =
-                        " SELECT * FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
-                        Rubric_Measure_ID;
-                      db.query(sql, (err, result) => {
-                        if (err) return res.status(200).json(err);
-                        else {
-                          Measure.Rubric_ID = result[0].Rubric_ID;
-                          Measure.End_Date = result[0].End_Date;
-                          Measure.Target = result[0].Target;
-                          Measure.Threshold = result[0].Threshold;
-                          Measure.Achieved_Threshold = result[0].Score;
-                          Measure.Is_Success = result[0].Is_Success;
-                          Measure.Class_Name = result[0].Class_Name;
-                          Measure.Score = result[0].Score;
+                            // console.log(Measure);
 
-                          console.log(Measure);
-
-                          return res.status(200).json({
-                            message: "Rubric Measure was successfully updated"
-                          });
-                        }
+                            return res.status(200).json(Measure);
+                          }
+                        });
                       });
                     }
                   });

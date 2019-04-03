@@ -67,7 +67,7 @@ router.get(
       " AND Rubric_Measure_ID =" +
       Rubric_Measure_ID;
 
-    console.log(sql);
+    // console.log(sql);
     db.query(sql, (err, result) => {
       var Rubrics = {};
       if (err) throw err;
@@ -201,7 +201,7 @@ router.get(
       email +
       " ORDER BY R.Rubric_Row_ID";
 
-    console.log(sql);
+    // console.log(sql);
     db.query(sql, (err, result) => {
       if (err) throw err;
       else {
@@ -302,7 +302,7 @@ router.post(
                     return res.status(400).json(err);
                   } else {
                     // console.log(sql);
-                    updateStudentsScore(Rubric_Measure_ID);
+                    updateStudentsScore(Rubric_Measure_ID, () => {});
                     return res
                       .status(200)
                       .json({ message: "successfully updated" });
@@ -334,7 +334,7 @@ router.post(
                 db.query(sql, [sqlValues], (err, result) => {
                   if (err) return res.status(400).json(err);
                   else {
-                    updateStudentsScore(Rubric_Measure_ID);
+                    updateStudentsScore(Rubric_Measure_ID, () => {});
                     return res
                       .status(200)
                       .json({ message: "successfully updated" });
