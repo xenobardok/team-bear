@@ -1047,7 +1047,7 @@ router.post(
                   "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Student_ID=" +
-                  Student_ID;
+                  db.escape(Student_ID);
 
                 db.query(sql, (err, result) => {
                   if (err) {
