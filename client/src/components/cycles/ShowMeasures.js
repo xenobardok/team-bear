@@ -60,6 +60,10 @@ class ShowMeasures extends Component {
     let { outcomeID } = this.props.match.params;
     if (newMeasureType) {
       this.props.createMeasure(outcomeID, newMeasure, newMeasureType);
+      this.setState({
+        showNewMeasure: false,
+        newMeasure: ""
+      });
     }
   };
 

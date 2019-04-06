@@ -22,7 +22,8 @@ import {
   assignEvaluatorToMeasure,
   defineMeasure,
   addStudent,
-  removeStudent
+  removeStudent,
+  addStudentsFromCSV
 } from "../../actions/measureActions";
 import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -47,7 +48,9 @@ class Measure extends Component {
       rubricScales: [],
       addStudentBox: false,
       Student_Name: "",
-      Student_ID: ""
+      Student_ID: "",
+      fileUpload: false,
+      uploadedFile: null
     };
   }
 
@@ -151,6 +154,13 @@ class Measure extends Component {
     });
   };
 
+  toggleAddStudentsFromFileButton = e => {
+    this.setState({
+      addStudentBox: !this.state.addStudentBox,
+      fileUpload: true
+    });
+  };
+
   addStudentButton = e => {
     let student = {
       Student_Name: this.state.Student_Name,
@@ -163,6 +173,15 @@ class Measure extends Component {
     });
   };
 
+  fileUploadHandler = e => {
+    const data = new FormData();
+    data.append("students", this.state.uploadedFile);
+    this.props.addStudentsFromCSV(this.state.Measure_ID, data);
+    this.setState({
+      fileUpload: false,
+      uploadedFile: null
+    });
+  };
   removeStudentButton = Student_ID => {
     this.props.removeStudent(this.state.Measure_ID, Student_ID);
   };
@@ -186,7 +205,8 @@ class Measure extends Component {
       newEvaluator,
       Class_Name,
       addStudentBox,
-      Measure_ID
+      Measure_ID,
+      fileUpload
     } = this.state;
 
     let measure;
@@ -261,17 +281,23 @@ class Measure extends Component {
           <Row>
             <Col>
               <ol>
-                {!isEmpty(Students) ? (
-                  Students.map(value => (
-                    <EditableStudentList
-                      {...value}
-                      key={value.Student_ID}
-                      removeStudentButton={this.removeStudentButton}
-                      Measure_ID={Measure_ID}
-                    />
-                  ))
+                {this.props.measures.studentsLoading ? (
+                  <Spinner />
                 ) : (
-                  <p>No Students added to this measure yet!</p>
+                  <>
+                    {!isEmpty(Students) ? (
+                      Students.map(value => (
+                        <EditableStudentList
+                          {...value}
+                          key={value.Student_ID}
+                          removeStudentButton={this.removeStudentButton}
+                          Measure_ID={Measure_ID}
+                        />
+                      ))
+                    ) : (
+                      <p>No Students added to this measure yet!</p>
+                    )}
+                  </>
                 )}
                 <br />
                 {!addStudentBox ? (
@@ -288,44 +314,72 @@ class Measure extends Component {
                     >
                       Add a Student
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey="2">Upload a file</Dropdown.Item>
+                    <Dropdown.Item
+                      eventKey="2"
+                      onClick={this.toggleAddStudentsFromFileButton}
+                    >
+                      Upload a file
+                    </Dropdown.Item>
                   </DropdownButton>
                 ) : (
-                  <Form onSubmit={this.addStudentButton}>
-                    <InputGroup className="mb-3">
-                      <FormControl
-                        placeholder="Student name"
-                        aria-label="Student name"
-                        aria-describedby="basic-addon2"
-                        name="Student_Name"
-                        value={this.state.Student_Name}
-                        onChange={this.onChangeHandler}
-                      />
-                      <FormControl
-                        placeholder="ID"
-                        aria-label="ID"
-                        aria-describedby="basic-addon2"
-                        name="Student_ID"
-                        value={this.state.Student_ID}
-                        onChange={this.onChangeHandler}
-                      />
-                      <InputGroup.Append>
+                  <>
+                    {fileUpload ? (
+                      <Form
+                        onSubmit={this.fileUploadHandler}
+                        encType="multipart/form-data"
+                      >
+                        <input
+                          type="file"
+                          name="students"
+                          onChange={e =>
+                            this.setState({ uploadedFile: e.target.files[0] })
+                          }
+                        />
                         <Button
                           variant="primary"
-                          onClick={this.addStudentButton}
+                          onClick={this.fileUploadHandler}
                         >
-                          Add Student
+                          Submit
                         </Button>
+                      </Form>
+                    ) : (
+                      <Form onSubmit={this.addStudentButton}>
+                        <InputGroup className="mb-3">
+                          <FormControl
+                            placeholder="Student name"
+                            aria-label="Student name"
+                            aria-describedby="basic-addon2"
+                            name="Student_Name"
+                            value={this.state.Student_Name}
+                            onChange={this.onChangeHandler}
+                          />
+                          <FormControl
+                            placeholder="ID"
+                            aria-label="ID"
+                            aria-describedby="basic-addon2"
+                            name="Student_ID"
+                            value={this.state.Student_ID}
+                            onChange={this.onChangeHandler}
+                          />
+                          <InputGroup.Append>
+                            <Button
+                              variant="primary"
+                              onClick={this.addStudentButton}
+                            >
+                              Add Student
+                            </Button>
 
-                        <Button
-                          variant="outline-secondary"
-                          onClick={this.toggleAddStudentButton}
-                        >
-                          Cancel
-                        </Button>
-                      </InputGroup.Append>
-                    </InputGroup>
-                  </Form>
+                            <Button
+                              variant="outline-secondary"
+                              onClick={this.toggleAddStudentButton}
+                            >
+                              Cancel
+                            </Button>
+                          </InputGroup.Append>
+                        </InputGroup>
+                      </Form>
+                    )}
+                  </>
                 )}
               </ol>
             </Col>
@@ -363,6 +417,7 @@ export default connect(
     getSingleRubric,
     defineMeasure,
     addStudent,
-    removeStudent
+    removeStudent,
+    addStudentsFromCSV
   }
 )(Measure);

@@ -402,3 +402,8 @@ section#evaluators .singleEvaluator:hover{
     background-color: #7b3449;
     cursor: pointer;
 }
+
+a:hover {
+  color: transparent;
+  text-decoration: none;
+}

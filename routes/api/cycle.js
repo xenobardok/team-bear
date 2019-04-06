@@ -6,6 +6,22 @@ const secret = require("../../config/secret");
 var async = require("async");
 const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "/uploads" });
+const csv = require("fast-csv");
+const path = require("path");
+
+// var upload = multer({
+//   dest: "uploads/",
+//   fileFilter: function(req, file, cb) {
+//     if (file.mimetype !== "text/csv") {
+//       req.fileValidationError = "goes wrong on the mimetype";
+//       cb(new Error("goes wrong on the mimetype"));
+//     }
+//     cb(null, true);
+//   }
+// }).single("students");
 
 const calculateMeasure = require("../calculateMeasure");
 const updateStudentsScore = require("../updateStudentsScore");
@@ -1142,6 +1158,106 @@ router.post(
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
+  }
+);
+
+// @route   POST api/cycle//measure/:measureID/addStudent/fileUpload
+// @desc    Add a student to a Rubric Measure using file upload
+// @access  Private
+router.post(
+  "/measure/:measureID/addStudent/fileUpload",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("students"),
+  (req, res) => {
+    const fileRows = [];
+
+    // open uploaded file
+    csv
+      .fromPath(req.file.path)
+      .on("data", function(data) {
+        fileRows.push(data); // push each row
+      })
+      .on("end", function() {
+        // console.log(fileRows); //contains array of arrays.
+        fs.unlinkSync(req.file.path); // remove temp file
+        //process "fileRows" and respond
+        const email = db.escape(req.user.email);
+        const type = req.user.type;
+        const dept = db.escape(req.user.dept);
+        const Measure_ID = db.escape(req.params.measureID);
+
+        const errors = {};
+        if (type == "Admin") {
+          let sql =
+            "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " +
+            Measure_ID;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            else {
+              if (result.length < 1) {
+                errors.error = "Measure Not found";
+                return res.status(404).json(errors);
+              }
+              //for rubric Measure Type
+              if (result[0].Measure_type == "rubric") {
+                sql =
+                  "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" +
+                  Measure_ID;
+
+                // console.log(sql);
+                db.query(sql, (err, result) => {
+                  if (err) res.send(err);
+                  else {
+                    let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                    // Validation
+
+                    let newStudents = [];
+                    let output = [];
+                    fileRows.forEach(function(element) {
+                      newStudents.push(
+                        new Array(Rubric_Measure_ID, element[0], element[1], 0)
+                      );
+                    });
+                    // console.log(newStudents);
+
+                    sql =
+                      "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+
+                    db.query(sql, [newStudents], (err, result) => {
+                      if (err) {
+                        errors.students =
+                          "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                        return res.status(400).json(errors);
+                      } else {
+                        calculateMeasure(Rubric_Measure_ID);
+                        sql =
+                          "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID= " +
+                          Rubric_Measure_ID;
+
+                        db.query(sql, (err, result) => {
+                          if (err) res.status(400).json(err);
+                          result.forEach(row => {
+                            student = {
+                              Student_ID: row.Student_ID,
+                              Student_Name: row.Student_Name
+                            };
+                            output.push(student);
+                          });
+                          return res.status(200).json(output);
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          });
+        } else {
+          res.status(404).json({ error: "Not an Admin" });
+        }
+      });
   }
 );
 
