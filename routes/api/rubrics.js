@@ -84,7 +84,7 @@ router.post(
 
       let isVisible = "true";
       let sql =
-        "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
+        "SELECT Rubric_ID FROM RUBRIC WHERE isVisible='true' AND Dept_ID =" +
         dept +
         " AND Rubric_Name=" +
         rubricFields.name;
