@@ -407,3 +407,9 @@ a:hover {
   color: transparent;
   text-decoration: none;
 }
+
+.custom-control-input:checked~.custom-control-label::before{
+  color: #fff;
+  border-color: #7b344a;
+  background-color: #7b344a;
+}
