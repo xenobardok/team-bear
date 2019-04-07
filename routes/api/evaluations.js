@@ -100,8 +100,8 @@ router.get(
             });
 
             sql =
-              "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_ID=" +
-              Rubric.Rubric_ID;
+              "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+              Rubric_Measure_ID;
 
             db.query(sql, (err, result) => {
               if (err) return res.status(400).json(err);
