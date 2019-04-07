@@ -6,6 +6,7 @@ import { clearCurrentProfile } from "./actions/profileActions";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
+import ReduxToastr from "react-redux-toastr";
 import "./App.css";
 import NavBar from "./components/layouts/NavBar";
 import Landing from "./components/layouts/Landing";
@@ -49,6 +50,16 @@ class App extends Component {
             <Route exact path="/register" component={Register} />
           </div>
         </Router>
+        <ReduxToastr
+          timeOut={4000}
+          newestOnTop={false}
+          preventDuplicates
+          position="bottom-right"
+          transitionIn="fadeIn"
+          transitionOut="fadeOut"
+          progressBar
+          closeOnToastrClick
+        />
       </Provider>
     );
   }

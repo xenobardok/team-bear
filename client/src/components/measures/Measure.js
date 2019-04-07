@@ -35,6 +35,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import EditableStudentList from "./EditableStudentList";
+import { toastr } from "react-redux-toastr";
 import "./measure.css";
 library.add(faPlus, faEdit, faUserPlus);
 
@@ -171,6 +172,10 @@ class Measure extends Component {
     this.setState({
       addStudentBox: !this.state.addStudentBox
     });
+    toastr.success(
+      "Student added!",
+      this.state.Student_Name + " added successfully!"
+    );
   };
 
   fileUploadHandler = e => {
