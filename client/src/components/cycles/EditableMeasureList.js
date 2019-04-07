@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 library.add(faPlus, faEdit);
 
-class Editable extends Component {
+class EditableMeasureList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +31,7 @@ class Editable extends Component {
           <Form>
             <Form.Control
               type="text"
-              defaultValue={this.props.value.Cycle_Name}
+              defaultValue={this.props.value.Measure_Name}
             />
             <Button variant="primary">Update</Button>
             <Button variant="secondary" onClick={this.editHandler}>
@@ -39,13 +39,20 @@ class Editable extends Component {
             </Button>
           </Form>
         ) : (
-          <ListGroup key={this.props.value.Cycle_ID} className="edit-post">
+          <ListGroup key={this.props.value.Measure_ID} className="edit-post">
             <Link
-              to={"/dashboard/cycles/" + this.props.value.Cycle_ID}
+              to={
+                "/dashboard/cycles/" +
+                this.props.id +
+                "/outcome/" +
+                this.props.outcomeID +
+                "/" +
+                this.props.value.Measure_ID
+              }
               style={{ flexGrow: "1" }}
             >
-              <ListGroup.Item action key={this.props.value.Cycle_ID}>
-                {this.props.value.Cycle_Name}
+              <ListGroup.Item action key={this.props.value.Measure_ID}>
+                {this.props.value.Measure_Name}
               </ListGroup.Item>
             </Link>
             <div
@@ -57,7 +64,7 @@ class Editable extends Component {
               }}
               onClick={this.editHandler}
             >
-              <FontAwesomeIcon icon="edit" />
+              <FontAwesomeIcon icon="edit" className="edit" />
             </div>
           </ListGroup>
         )}
@@ -66,4 +73,4 @@ class Editable extends Component {
   }
 }
 
-export default Editable;
+export default EditableMeasureList;

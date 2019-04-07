@@ -14,6 +14,7 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./common/PrivateRoute";
+import FourOFour from "./common/FourOFour";
 
 // Code that checks for token
 if (localStorage.jwtToken) {
@@ -43,6 +44,7 @@ class App extends Component {
             <Route exact path="/register" component={NavBar} />
             <Switch>
               <PrivateRoute path="/dashboard" component={Dashboard} />
+              <Route component={FourOFour} />
             </Switch>
             {/* <Route path="/rubrics" component={Rubrics} /> */}
             <Route exact path="/" component={Landing} />

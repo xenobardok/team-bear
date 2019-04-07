@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 import CreateCycle from "./CreateCycle";
 import isEmpty from "../../validation/isEmpty";
-import EditableCycleList from "../../common/EditableCycleList";
+import EditableCycleList from "./EditableCycleList";
 library.add(faPlus, faEdit);
 
 class Cycles extends Component {

@@ -9,6 +9,7 @@ import Spinner from "../../common/Spinner";
 import { getMeasures } from "../../actions/measureActions";
 import classnames from "classnames";
 import isEmpty from "../../validation/isEmpty";
+import EditableMeasureList from "./EditableMeasureList";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -75,20 +76,12 @@ class ShowMeasures extends Component {
       measures = <Spinner />;
     } else if (measure.data) {
       measures = measure.data.map(value => (
-        <ListGroup key={value.Measure_ID}>
-          <Link
-            to={
-              "/dashboard/cycles/" +
-              id +
-              "/outcome/" +
-              outcomeID +
-              "/" +
-              value.Measure_ID
-            }
-          >
-            <ListGroup.Item>{value.Measure_Name}</ListGroup.Item>
-          </Link>
-        </ListGroup>
+        <EditableMeasureList
+          value={value}
+          key={value.Measure_ID}
+          id={id}
+          outcomeID={outcomeID}
+        />
       ));
     } else {
       measures = <ListGroup.Item>This measure does not exist</ListGroup.Item>;
