@@ -21,7 +21,7 @@ router.get(
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM Evaluators natural join Department natural join RUBRIC where Admin_Email = Email and Email =  ('" +
+        "SELECT * FROM Evaluators natural join Department natural join RUBRIC where isVisible = 'true' AND Admin_Email = Email and Email =  ('" +
         email +
         "') order by Rubric_ID";
 
@@ -35,6 +35,7 @@ router.get(
               Rubrics_Name: row.Rubric_Name,
               Rows_Num: row.Rows_Num,
               Column_Num: row.Column_Num,
+              isWeighted: row.isWeighted,
               Scale: row.Scale
             };
             Rubrics.push(aRubric);
@@ -81,6 +82,7 @@ router.post(
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
       }
 
+      let isVisible = "true";
       let sql =
         "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
         dept +
@@ -95,7 +97,7 @@ router.post(
             return res.status(404).json(errors);
           }
           sql =
-            "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID,isWeighted) VALUES(" +
+            "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID,isWeighted,isVisible) VALUES(" +
             rubricFields.name +
             "," +
             rubricFields.Rows_Num +
@@ -107,6 +109,8 @@ router.post(
             dept +
             "," +
             rubricFields.isWeighted +
+            "," +
+            isVisible +
             ")";
           //console.log(sql);
 
@@ -227,7 +231,7 @@ router.get(
     const Rubric = {};
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM RUBRIC where Rubric_ID =" +
+        "SELECT * FROM RUBRIC where isVisible='true' AND Rubric_ID =" +
         Rubric_ID +
         " AND DEPT_ID = " +
         dept;
