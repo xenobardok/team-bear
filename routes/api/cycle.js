@@ -8,7 +8,7 @@ const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({ dest: "/uploads" });
+const upload = multer({ dest: "../../uploads" });
 const csv = require("fast-csv");
 const path = require("path");
 
@@ -1212,41 +1212,65 @@ router.post(
                     let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
 
                     // Validation
-
+                    let newCWID = [];
                     let newStudents = [];
                     let output = [];
                     fileRows.forEach(function(element) {
                       newStudents.push(
                         new Array(Rubric_Measure_ID, element[0], element[1], 0)
                       );
+                      newCWID.push(element[0]);
                     });
                     // console.log(newStudents);
 
                     sql =
-                      "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
-
-                    db.query(sql, [newStudents], (err, result) => {
+                      "SELECT Student_ID FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                      Rubric_Measure_ID;
+                    db.query(sql, (err, result) => {
                       if (err) {
-                        errors.students =
-                          "There was some problem adding the evaluatees. Please check your csv file and try again.";
-                        return res.status(400).json(errors);
+                        return res.status(400).json(err);
                       } else {
-                        calculateMeasure(Rubric_Measure_ID);
-                        sql =
-                          "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID= " +
-                          Rubric_Measure_ID;
+                        let regCWID = [];
 
-                        db.query(sql, (err, result) => {
-                          if (err) res.status(400).json(err);
-                          result.forEach(row => {
-                            student = {
-                              Student_ID: row.Student_ID,
-                              Student_Name: row.Student_Name
-                            };
-                            output.push(student);
-                          });
-                          return res.status(200).json(output);
+                        result.forEach(row => {
+                          let value = row.Student_ID;
+                          regCWID.push(value);
                         });
+
+                        //get the intersection and newCWID contains the duplicate values
+                        newCWID.filter(value => regCWID.includes(value));
+
+                        if (newCWID.length > 0) {
+                          return res.status(400).json(newCWID);
+                        } else {
+                          sql =
+                            "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+
+                          db.query(sql, [newStudents], (err, result) => {
+                            if (err) {
+                              errors.students =
+                                "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                              return res.status(400).json(errors);
+                            } else {
+                              calculateMeasure(Rubric_Measure_ID);
+                              sql =
+                                "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID= " +
+                                Rubric_Measure_ID;
+
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                result.forEach(row => {
+                                  student = {
+                                    Student_ID: row.Student_ID,
+                                    Student_Name: row.Student_Name
+                                  };
+                                  output.push(student);
+                                });
+                                return res.status(200).json(output);
+                              });
+                            }
+                          });
+                        }
                       }
                     });
                   }
