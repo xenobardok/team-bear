@@ -190,7 +190,8 @@ router.get(
     const Rubric_Measure_ID = req.params.RubricMeasureID;
     const Student_ID = db.escape(req.params.studentID);
 
-    const data = [];
+    const data = {};
+    const score = [];
 
     let sql =
       "SELECT DISTINCT * FROM RUBRIC_STUDENTS S NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN  RUBRIC_ROW  R LEFT OUTER JOIN STUDENTS_RUBRIC_ROWS_GRADE G ON R.Rubric_Row_ID = G.Rubric_Row_ID AND S.Rubric_Student_ID = G.Rubric_Student_ID WHERE Rubric_Measure_ID=" +
@@ -205,15 +206,25 @@ router.get(
     db.query(sql, (err, result) => {
       if (err) throw err;
       else {
+        Overall_Score = 0;
         result.forEach(row => {
-          let score = row.Score;
+          let row_score = row.Score;
+          let weighted_Score = row.Weighted_Score;
 
           if (score == null) {
             score = 0;
           }
+          if (weighted_Score == null) {
+            weighted_Score = 0;
+          }
 
-          data.push(score);
+          Overall_Score += weighted_Score;
+
+          score.push(row_score);
+          // data.push(weighted_Score);
         });
+        data.score = score;
+        data.Overall_Score = Overall_Score;
         return res.status(200).json(data);
       }
     });
@@ -233,8 +244,9 @@ router.post(
     const score = req.body.Score;
     const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Student_ID = db.escape(req.params.studentID);
-
+    const Weighted_Score = [];
     // console.log(score);
+
     let sql =
       "SELECT DISTINCT Rubric_ID, Rubric_Student_ID FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Student_ID = " +
       Student_ID +
@@ -253,18 +265,22 @@ router.post(
         let Rubric_ID = result[0].Rubric_ID;
         let Rubric_Student_ID = db.escape(result[0].Rubric_Student_ID);
 
+        //getting the rubric rows of the rubric
         sql =
-          "SELECT DISTINCT Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID=" +
+          "SELECT DISTINCT Rubric_Row_ID, Rubric_Row_Weight FROM RUBRIC_ROW WHERE Rubric_ID=" +
           Rubric_ID +
           " ORDER BY Rubric_Row_ID";
 
         db.query(sql, (err, result) => {
           if (err) return res.status(400).json(err);
           else {
-            Rubric_Row_ID = [];
+            Rubric_Rows = [];
 
             result.forEach(row => {
-              Rubric_Row_ID.push(row.Rubric_Row_ID);
+              Rubric_Rows.push({
+                Rubric_Row_ID: row.Rubric_Row_ID,
+                Rubric_Row_Weight: row.Rubric_Row_Weight
+              });
             });
 
             sql =
@@ -273,30 +289,42 @@ router.post(
               " AND Evaluator_Email=" +
               db.escape(email);
 
+            console.log(sql);
             db.query(sql, (err, result) => {
               if (err) return res.status(400).json(err);
+
+              console.log(result);
 
               //if data already exists, procceed with updating
               if (result.length > 0) {
                 let done = false;
                 let index = 0;
                 sql = "";
-                Rubric_Row_ID.forEach(row => {
+
+                Rubric_Rows.forEach(row => {
+                  // console.log(row);
+
+                  let weight = row.Rubric_Row_Weight;
+                  let Rubric_Row_ID = row.Rubric_Row_ID;
+
+                  let Weighted_Score = (score[index] * weight) / 100;
                   sql +=
                     "UPDATE STUDENTS_RUBRIC_ROWS_GRADE SET Score=" +
                     score[index] +
+                    ", Weighted_Score=" +
+                    Weighted_Score +
                     " WHERE Rubric_Student_ID = " +
                     db.escape(Rubric_Student_ID) +
                     " AND Evaluator_Email=" +
                     db.escape(email) +
                     " AND Rubric_Row_ID=" +
-                    row +
+                    Rubric_Row_ID +
                     "; ";
 
                   index++;
                 });
 
-                //console.log(sql);
+                // console.log(sql);
                 db.query(sql, (err, result) => {
                   if (err) {
                     return res.status(400).json(err);
@@ -312,24 +340,32 @@ router.post(
                 //new insert
 
                 sql =
-                  "INSERT INTO STUDENTS_RUBRIC_ROWS_GRADE (Rubric_Student_ID,Evaluator_Email,Rubric_Row_ID,Score) VALUES ?";
+                  "INSERT INTO STUDENTS_RUBRIC_ROWS_GRADE (Rubric_Student_ID,Evaluator_Email,Rubric_Row_ID,Score, Weighted_Score) VALUES ?";
 
                 let sqlValues = [];
                 index = 0;
 
-                Rubric_Row_ID.forEach(row => {
+                Rubric_Rows.forEach(row => {
+                  let Rubric_Row_ID = row.Rubric_Row_ID;
+                  let weight = row.Rubric_Row_Weight;
+
+                  let Weighted_Score = (score[index] * weight) / 100;
+
+                  //values for a sql query
                   value = [];
 
                   value.push(Rubric_Student_ID);
 
                   value.push(email);
-                  value.push(row);
+                  value.push(Rubric_Row_ID);
                   value.push(score[index]);
+                  value.push(Weighted_Score);
 
                   sqlValues.push(value);
 
                   index++;
                 });
+                // console.log(sqlValues);
 
                 db.query(sql, [sqlValues], (err, result) => {
                   if (err) return res.status(400).json(err);
