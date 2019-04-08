@@ -172,10 +172,6 @@ class Measure extends Component {
     this.setState({
       addStudentBox: !this.state.addStudentBox
     });
-    toastr.success(
-      "Student added!",
-      this.state.Student_Name + " added successfully!"
-    );
   };
 
   fileUploadHandler = e => {

@@ -207,6 +207,14 @@ textarea {
   padding: 6px 3px;
 }
 
+.weight {
+  font-weight: bold;
+  font-size: 18px !important;
+  vertical-align: middle !important;
+  width: 130px !important;
+  padding: 6px 3px;
+}
+
 .centerAlign {
   text-align: center;
 }
@@ -268,6 +276,7 @@ textarea {
 #page-wrap div.special-container .card {
   min-width: 400px;
   max-width: 500px;
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75)
 }
 
 .shrinkSize{
@@ -386,7 +395,8 @@ section#evaluators .singleEvaluator:hover{
   background: white;
     border: 2px solid aliceblue;
     /* background-color: white; */
-    box-shadow: 3px 3px 13px 0px #2b1717;
+    /* box-shadow: 3px 3px 13px 0px #2b1717;*/
+    box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75) ;
     border-radius: 10px;
     padding: 30px;
 }
@@ -413,3 +423,8 @@ a:hover {
   border-color: #7b344a;
   background-color: #7b344a;
 }
+
+.cycles-list {
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75)
+}
+

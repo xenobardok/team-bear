@@ -11,7 +11,7 @@ import {
   ADD_STUDENT_LOADING,
   ADD_STUDENT_FROM_FILE
 } from "./types";
-
+import { toastr } from "react-redux-toastr";
 export const getMeasures = id => dispatch => {
   dispatch(setMeasureLoading());
   axios
@@ -118,8 +118,17 @@ export const addStudent = (measureID, student) => dispatch => {
   console.log(student);
   axios
     .post(`/api/cycle/measure/${measureID}/addStudent`, student)
-    .then(res => dispatch({ type: ADD_STUDENT, payload: res.data }))
-    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+    .then(res => {
+      toastr.success(
+        "Student added!",
+        student.Student_Name + " added successfully!"
+      );
+      dispatch({ type: ADD_STUDENT, payload: res.data });
+    })
+    .catch(err => {
+      toastr.error("Student not added!", err.response.data.error);
+      dispatch({ type: GET_ERRORS, payload: err.response.data });
+    });
 };
 
 export const addStudentsFromCSV = (measureID, file) => dispatch => {

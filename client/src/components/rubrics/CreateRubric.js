@@ -194,7 +194,7 @@ class CreateRubric extends Component {
                 checked={this.state.weighted === "true"}
                 onChange={this.handleOptionChange}
               />
-              <label className="custom-control-label" for="customRadio1">
+              <label className="custom-control-label" htmlFor="customRadio1">
                 Yes
               </label>
             </div>
@@ -208,7 +208,7 @@ class CreateRubric extends Component {
                 checked={this.state.weighted === "false"}
                 onChange={this.handleOptionChange}
               />
-              <label className="custom-control-label" for="customRadio2">
+              <label className="custom-control-label" htmlFor="customRadio2">
                 No
               </label>
             </div>

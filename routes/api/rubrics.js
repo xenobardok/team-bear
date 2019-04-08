@@ -387,7 +387,7 @@ router.put(
       const { errors, isValid } = rubricWeightValidate(data);
 
       if (!isValid) {
-        return res.status(404).json(errors);
+        return res.status(422).json(errors);
       }
 
       let sql = "";
