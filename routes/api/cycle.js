@@ -716,7 +716,7 @@ router.get(
 );
 
 // @route   POST api/cycle/outcome/:outcomeID/measure/:MeasureID/edit
-// @desc    Create a new Rubric Measure
+// @desc    Update a new Rubric Measure
 // @access  Private
 router.post(
   "/outcome/:outcomeID/measure/:MeasureID/edit",
@@ -909,8 +909,19 @@ router.post(
                                     Measure.Student_Achieved_Target_Count =
                                       result[0].Success_Count;
 
-                                    // console.log(Measure);
-                                    return res.status(200).json(Measure);
+                                    sql =
+                                      " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
+                                      Measure_ID;
+
+                                    db.query(sql, (err, result) => {
+                                      if (err) res.status(400).json(err);
+                                      if (result.length > 0) {
+                                        Measure.Rubric_Name =
+                                          result[0].Rubric_Name;
+                                      }
+                                      // console.log(Measure);
+                                      return res.status(200).json(Measure);
+                                    });
                                   }
                                 });
                               }
