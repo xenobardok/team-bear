@@ -4,13 +4,14 @@ const isEmpty = require("./isEmpty");
 module.exports = function validateRubricInput(arrays) {
   let errors = {};
 
+  // console.log(arrays);
   let sum = 0;
   arrays.forEach(row => {
-    let weight = row.weight;
+    let weight = row.Rubric_Row_Weight;
     if (weight < 0 && weight > 100) {
       errors.weight = "Weight must be between 0 - 100";
     } else {
-      sum += weight;
+      sum += parseInt(weight);
     }
 
     if (!Validator.isFloat(weight)) {

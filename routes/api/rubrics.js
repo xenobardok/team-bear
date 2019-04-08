@@ -380,8 +380,9 @@ router.put(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const Rubric_ID = req.params.handle;
-    const data = db.escape(req.body);
+    const data = req.body;
 
+    // console.log(req.body);
     if (type == "Admin") {
       const { errors, isValid } = rubricWeightValidate(data);
 
