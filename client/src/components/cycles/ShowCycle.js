@@ -158,16 +158,20 @@ class ShowCycle extends Component {
                   <FormControl.Feedback type="invalid">
                     {this.state.errors.Outcome_Name}
                   </FormControl.Feedback>
-                  <Button variant="primary" onClick={this.saveButtonHandler}>
-                    Save
-                  </Button>
-                  &nbsp;
                   <Button
                     variant="primary"
+                    onClick={this.saveButtonHandler}
+                    size="sm"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="secondary"
                     onClick={() => {
                       this.setState({ showNewOutcome: false });
                       this.setState({ errors: "" });
                     }}
+                    size="sm"
                   >
                     Cancel
                   </Button>
