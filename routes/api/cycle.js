@@ -621,7 +621,7 @@ router.get(
                           result[0].Success_Count;
 
                         sql =
-                          " SELECT Evaluator_Email,CONCAT( Fname, Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
+                          " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
                           Rubric_Measure_ID;
                         // console.log(sql);
                         Measure.Evaluators = [];

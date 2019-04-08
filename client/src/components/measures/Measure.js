@@ -51,7 +51,8 @@ class Measure extends Component {
       Student_Name: "",
       Student_ID: "",
       fileUpload: false,
-      uploadedFile: null
+      uploadedFile: null,
+      unevaluatedStudents: null
     };
   }
 
@@ -187,6 +188,19 @@ class Measure extends Component {
     this.props.removeStudent(this.state.Measure_ID, Student_ID);
   };
 
+  getUnevaluatedStudents = (name, e) => {
+    let newStudentList = {};
+    this.props.measures.singleMeasure.Unevaluated.forEach(element => {
+      if (element.Evaluator_Name === name) {
+        newStudentList.Evaluator_Name = name;
+        newStudentList.students = [...element.Student_List];
+      }
+    });
+    this.setState({
+      unevaluatedStudents: newStudentList
+    });
+  };
+
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -270,7 +284,11 @@ class Measure extends Component {
             <div className="evaluators">
               {Evaluators
                 ? Evaluators.map(value => (
-                    <EvaluatorBox key={value.Evaluator_Name} {...value} />
+                    <EvaluatorBox
+                      key={value.Evaluator_Name}
+                      {...value}
+                      getUnevaluatedStudents={this.getUnevaluatedStudents}
+                    />
                   ))
                 : null}
 
@@ -280,7 +298,8 @@ class Measure extends Component {
           <br />
           <h5>Students</h5>
           <Row>
-            <Col>
+            <Col sm={6}>
+              <p>List of students:</p>
               <ol>
                 {this.props.measures.studentsLoading ? (
                   <Spinner />
@@ -384,7 +403,26 @@ class Measure extends Component {
                 )}
               </ol>
             </Col>
-            <Col />
+            <Col sm={6}>
+              {this.state.unevaluatedStudents === null ? (
+                <p>
+                  Click on a evaluator to see the list of unevaluated students
+                </p>
+              ) : (
+                <div>
+                  <p>
+                    Students yet to be evaluated by{" "}
+                    {this.state.unevaluatedStudents.Evaluator_Name}
+                    {": "}
+                  </p>
+                  <ol>
+                    {this.state.unevaluatedStudents.students.map(student => (
+                      <li>{student}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+            </Col>
           </Row>
         </div>
       );
