@@ -8,7 +8,8 @@ const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({ dest: "../../uploads" });
+// const upload = multer({ dest: "../../uploads" });
+const upload = multer();
 const csv = require("fast-csv");
 const path = require("path");
 
