@@ -14,7 +14,8 @@ import {
   Col,
   Row,
   Dropdown,
-  DropdownButton
+  DropdownButton,
+  Alert
 } from "react-bootstrap";
 import { getEvaluators } from "../../actions/profileActions";
 import {
@@ -201,6 +202,11 @@ class Measure extends Component {
     });
   };
 
+  closeUnevaluated = () => {
+    this.setState({
+      unevaluatedStudents: null
+    });
+  };
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -405,12 +411,23 @@ class Measure extends Component {
             </Col>
             <Col sm={6}>
               {this.state.unevaluatedStudents === null ? (
-                <p>
+                <Alert variant="warning">
                   Click on a evaluator to see the list of unevaluated students
-                </p>
+                </Alert>
               ) : (
                 <div>
                   <p>
+                    <OverlayTrigger
+                      key="c"
+                      placement="top"
+                      overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
+                    >
+                      <FontAwesomeIcon
+                        icon="times-circle"
+                        className="crossIcon"
+                        onClick={this.closeUnevaluated}
+                      />
+                    </OverlayTrigger>
                     Students yet to be evaluated by{" "}
                     {this.state.unevaluatedStudents.Evaluator_Name}
                     {": "}
