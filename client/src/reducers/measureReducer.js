@@ -5,13 +5,16 @@ import {
   ADD_EVALUATOR_MEASURE,
   ADD_STUDENT,
   REMOVE_STUDENT,
-  UPDATE_MEASURE_DEFINITION
+  UPDATE_MEASURE_DEFINITION,
+  ADD_STUDENT_LOADING,
+  ADD_STUDENT_FROM_FILE
 } from "../actions/types";
 
 const initialState = {
   measure: null,
   singleMeasure: null,
-  loading: true
+  loading: true,
+  studentsLoading: false
 };
 
 export default function(state = initialState, action) {
@@ -54,9 +57,20 @@ export default function(state = initialState, action) {
       console.log(action.payload);
       return {
         ...state,
+        studentsLoading: false,
         singleMeasure: {
           ...state.singleMeasure,
           Students: [...state.singleMeasure.Students, action.payload]
+        }
+      };
+    case ADD_STUDENT_FROM_FILE:
+      console.log(action.payload);
+      return {
+        ...state,
+        studentsLoading: false,
+        singleMeasure: {
+          ...state.singleMeasure,
+          Students: action.payload
         }
       };
     case REMOVE_STUDENT:
@@ -68,7 +82,12 @@ export default function(state = initialState, action) {
           Students: [...action.payload]
         }
       };
-
+    case ADD_STUDENT_LOADING: {
+      return {
+        ...state,
+        studentsLoading: true
+      };
+    }
     default:
       return state;
   }

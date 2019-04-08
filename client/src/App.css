@@ -203,19 +203,35 @@ textarea {
   font-weight: bold;
   font-size: 18px !important;
   vertical-align: middle !important;
-  width: 200px !important;
+  /* width: 200px !important; */
+  padding: 6px 3px;
+}
+
+.weight {
+  font-weight: bold;
+  font-size: 18px !important;
+  vertical-align: middle !important;
+  width: 130px !important;
   padding: 6px 3px;
 }
 
 .centerAlign {
   text-align: center;
 }
+tr th,tr td{
+  max-width: 200px;
+}
 
 .cells {
   border-radius: 0px;
   height: 150px !important;
   margin: none;
+  /* width: 200px; */
 }
+.table {
+  margin: 0px auto;
+}
+
 .cells:hover {
   border: 1.5px solid black !important;
   border-radius: 5px !important;
@@ -239,6 +255,7 @@ textarea {
 #page-wrap .card{
   margin: 0px auto;
   max-width: 700px;
+  border-radius: 10px;
 }
 
 #page-wrap {
@@ -263,11 +280,13 @@ textarea {
 
 #page-wrap div.special-container{
   margin-top: 100px;
+  margin-bottom: 100px;
 }
 
 #page-wrap div.special-container .card {
   min-width: 400px;
   max-width: 500px;
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75)
 }
 
 .shrinkSize{
@@ -281,6 +300,10 @@ textarea {
 
 .cycle-view h2 {
   margin: 0px 0px 50px 0px;
+}
+
+.cycle-view .btn{
+  margin: 10px;
 }
 
 .login-register a{
@@ -384,9 +407,10 @@ section#evaluators .singleEvaluator:hover{
 
 .single-measure{
   background: white;
-    border: 2px solid aliceblue;
+    border: 2px solid #7b344a2e;
     /* background-color: white; */
-    box-shadow: 3px 3px 13px 0px #2b1717;
+    /* box-shadow: 3px 3px 13px 0px #2b1717;*/
+    box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75) ;
     border-radius: 10px;
     padding: 30px;
 }
@@ -402,3 +426,38 @@ section#evaluators .singleEvaluator:hover{
     background-color: #7b3449;
     cursor: pointer;
 }
+
+a:hover {
+  color: transparent;
+  text-decoration: none;
+}
+
+.custom-control-input:checked~.custom-control-label::before{
+  color: #fff;
+  border-color: #7b344a;
+  background-color: #7b344a;
+}
+
+.cycles-list {
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75)
+}
+
+.grade {
+  font-weight: bold;
+  font-size: 18px !important;
+  vertical-align: middle !important;
+  width: 100px !important;
+  padding: 40px 3px;
+  /* font-size: 30px !important; */
+}
+
+.students {
+  max-width: 400px!important; 
+}
+
+.jumbotron {
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75);
+  border-radius: 10px;
+  padding: 20px
+}
+

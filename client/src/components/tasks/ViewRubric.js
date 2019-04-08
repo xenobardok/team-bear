@@ -14,7 +14,8 @@ import {
   Col,
   Card,
   ListGroup,
-  Button
+  Button,
+  Container
 } from "react-bootstrap";
 
 import classnames from "classnames";
@@ -32,7 +33,8 @@ class ViewRubric extends Component {
       Student_Name: "",
       gradeEdit: false,
       Student_Grades: [],
-      SubmitGrade: false
+      SubmitGrade: false,
+      rubricScale: []
     };
   }
 
@@ -86,21 +88,41 @@ class ViewRubric extends Component {
         prevProps.evaluations.studentGrade
       ) {
         this.setState({
-          Student_Grades: this.props.evaluations.studentGrade
+          Student_Grades: this.props.evaluations.studentGrade.score
+        });
+      }
+    }
+
+    if (!isEmpty(this.props.evaluations.rubric)) {
+      if (this.props.evaluations.rubric !== prevProps.evaluations.rubric) {
+        console.log("creating new scales array");
+        let newScale = [];
+        this.props.evaluations.rubric.Scale.forEach(element => {
+          newScale.push(element.value);
+        });
+        this.setState({
+          rubricScale: newScale
         });
       }
     }
   };
 
   onChangeHandlerArray(index, e) {
+    const re = /^[0-9\b]+$/;
+    console.log(e.target.value);
+    let value = Number(e.target.value);
     // console.log(e.target.value);
-
-    const gradeIndex = index;
-    const allGrades = [...this.state.Student_Grades];
-    const updatedGrade = e.target.value;
-    allGrades[gradeIndex] = updatedGrade;
-    this.setState({ Student_Grades: allGrades });
-    // console.log(gradeIndex);
+    if (
+      value === 0 ||
+      (re.test(value) && this.state.rubricScale.includes(value))
+    ) {
+      const gradeIndex = index;
+      const allGrades = [...this.state.Student_Grades];
+      const updatedGrade = value;
+      allGrades[gradeIndex] = updatedGrade;
+      this.setState({ Student_Grades: allGrades });
+      // console.log(gradeIndex);
+    }
   }
 
   studentClickHandler = (student, e) => {
@@ -163,14 +185,14 @@ class ViewRubric extends Component {
                 as="textarea"
                 aria-label="With textarea"
                 value={this.state.Student_Grades[index]}
-                className="measureTitle centerAlign cells"
+                className="grade centerAlign cells"
                 onChange={this.onChangeHandlerArray.bind(this, index)}
               />
             </td>
           </tr>
         ));
         displayRubric = (
-          <div>
+          <div style={{ margin: "0px auto", maxWidth: "1200px" }}>
             <h2>{rubric.Rubric_Name}</h2>
             <h4 className="text-center">
               {isEmpty(this.state.Student_Name)
@@ -179,7 +201,7 @@ class ViewRubric extends Component {
             </h4>
             <br />
             <Row>
-              <Col md={9}>
+              <Col sm={9}>
                 <Table bordered striped>
                   <thead>
                     <tr className="header">
@@ -192,7 +214,7 @@ class ViewRubric extends Component {
                       {scalesRow}
                       <th
                         key="Score"
-                        className="measureTitle centerAlign borderedCell"
+                        className="grade centerAlign borderedCell"
                       >
                         Score
                       </th>
@@ -202,7 +224,7 @@ class ViewRubric extends Component {
                 </Table>
               </Col>
               <Col>
-                <Card className="text-center">
+                <Card className="text-center students">
                   <Card.Header>List of Students</Card.Header>
                   <Card.Body
                     style={{
@@ -248,7 +270,7 @@ class ViewRubric extends Component {
         displayRubric = <h2>Rubric not found!</h2>;
       }
     }
-    return <div>{displayRubric}</div>;
+    return <div style={{ margin: "0px auto" }}>{displayRubric}</div>;
   }
 }
 

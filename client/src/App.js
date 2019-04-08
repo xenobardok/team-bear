@@ -6,6 +6,7 @@ import { clearCurrentProfile } from "./actions/profileActions";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
+import ReduxToastr from "react-redux-toastr";
 import "./App.css";
 import NavBar from "./components/layouts/NavBar";
 import Landing from "./components/layouts/Landing";
@@ -13,6 +14,8 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./common/PrivateRoute";
+import FourOFour from "./common/FourOFour";
+import Admin from "./components/admin/Admin";
 
 // Code that checks for token
 if (localStorage.jwtToken) {
@@ -37,19 +40,30 @@ class App extends Component {
       <Provider store={store}>
         <Router>
           <div>
-            {console.log(process.env.NODE_ENV)}
-            <Route exact path="/" component={NavBar} />
             <Route exact path="/login" component={NavBar} />
             <Route exact path="/register" component={NavBar} />
+            <Route exact path="/admin" component={NavBar} />
             <Switch>
+              <Route exact path="/" component={Landing} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/register" component={Register} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
+              <Route path="/admin" component={Admin} />
+              <Route component={FourOFour} />
             </Switch>
             {/* <Route path="/rubrics" component={Rubrics} /> */}
-            <Route exact path="/" component={Landing} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/register" component={Register} />
           </div>
         </Router>
+        <ReduxToastr
+          timeOut={4000}
+          newestOnTop={false}
+          preventDuplicates
+          position="bottom-right"
+          transitionIn="fadeIn"
+          transitionOut="fadeOut"
+          progressBar
+          closeOnToastrClick
+        />
       </Provider>
     );
   }

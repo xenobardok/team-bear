@@ -53,7 +53,8 @@ class CreateRubric extends Component {
           value: ""
         }
       ],
-      errors: {}
+      errors: {},
+      weighted: "false"
       // rubric: {}
     };
   }
@@ -95,6 +96,12 @@ class CreateRubric extends Component {
     }
   }
 
+  handleOptionChange = e => {
+    this.setState({
+      weighted: e.target.value
+    });
+  };
+
   onScaleChange(index, value) {
     console.log(index);
     console.log(value);
@@ -130,7 +137,8 @@ class CreateRubric extends Component {
       Rubric_Name: this.state.Rubric_Name,
       Rows_Num: this.state.Rows_Num,
       Column_Num: this.state.Column_Num,
-      Scale: this.state.Scale
+      Scale: this.state.Scale,
+      isWeighted: this.state.weighted
     };
     console.log(rubric);
     this.props.createRubric(rubric);
@@ -169,6 +177,41 @@ class CreateRubric extends Component {
             <Form.Control.Feedback type="invalid">
               {errors.Rubric_Name}
             </Form.Control.Feedback>
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row} controlId="weightedRubric">
+          <Form.Label column sm={4}>
+            Is this a weighted rubric?
+          </Form.Label>
+          <Col sm={8}>
+            <div className="custom-control custom-radio">
+              <input
+                type="radio"
+                id="customRadio1"
+                name="weighted"
+                className="custom-control-input"
+                value="true"
+                checked={this.state.weighted === "true"}
+                onChange={this.handleOptionChange}
+              />
+              <label className="custom-control-label" htmlFor="customRadio1">
+                Yes
+              </label>
+            </div>
+            <div className="custom-control custom-radio">
+              <input
+                type="radio"
+                id="customRadio2"
+                name="weighted"
+                className="custom-control-input"
+                value="false"
+                checked={this.state.weighted === "false"}
+                onChange={this.handleOptionChange}
+              />
+              <label className="custom-control-label" htmlFor="customRadio2">
+                No
+              </label>
+            </div>
           </Col>
         </Form.Group>
         <Form.Group as={Row} controlId="formHorizontalRows">

@@ -16,22 +16,29 @@ class EvaluatorBox extends Component {
   addEvaluator = () => {
     this.props.addButtonEvaluator(this.state.Evaluator);
   };
+
+  evaluatorBoxClickHandler = () => {
+    this.props.getUnevaluatedStudents(this.props.Evaluator_Name);
+  };
   render() {
     let { Evaluator_Name, Evaluator_Email } = this.props;
     let content = "";
     if (!isEmpty(this.props.Evaluator_Name)) {
       content = (
-        <>
+        <div
+          className="singleEvaluator"
+          onClick={this.evaluatorBoxClickHandler}
+        >
           <FontAwesomeIcon icon="times-circle" className="crossIcon" />
           <div style={{ paddingRight: "30px" }}>
             <div>{Evaluator_Name}</div>
             <div>{Evaluator_Email}</div>
           </div>
-        </>
+        </div>
       );
     } else {
       content = (
-        <>
+        <div className="singleEvaluator">
           <Form onSubmit={this.addEvaluator}>
             <OverlayTrigger
               key="c"
@@ -89,10 +96,10 @@ class EvaluatorBox extends Component {
               </Form.Group>
             </div>
           </Form>
-        </>
+        </div>
       );
     }
-    return <div className="singleEvaluator">{content}</div>;
+    return <>{content}</>;
   }
 }
 

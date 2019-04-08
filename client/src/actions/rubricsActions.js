@@ -5,8 +5,11 @@ import {
   GET_ERRORS,
   GET_SINGLE_RUBRIC,
   SET_DATA_VALUE,
-  SET_MEASURE_VALUE
+  SET_MEASURE_VALUE,
+  RUBRICS_BUTTON_LOADING,
+  CHANGE_RUBRIC_WEIGHT
 } from "./types";
+import { toastr } from "react-redux-toastr";
 
 export const getRubrics = () => dispatch => {
   dispatch(setRubricsLoading());
@@ -48,6 +51,30 @@ export const setRubricsLoading = () => {
   return {
     type: LOADING
   };
+};
+
+export const setRubricsButtonLoading = () => {
+  return {
+    type: RUBRICS_BUTTON_LOADING
+  };
+};
+
+export const changeRubricWeight = (Rubric_ID, data) => dispatch => {
+  console.log(Rubric_ID, data);
+  dispatch(setRubricsButtonLoading());
+  axios
+    .put(`/api/rubrics/${Rubric_ID}/weight`, data)
+    .then(res => {
+      toastr.success(
+        "Rubric Weight Changed!",
+        "Successfully changed rubric weight!"
+      );
+    })
+    .catch(err => {
+      if (err.response.status === 422) {
+        toastr.error("Rubric weight must equal 100");
+      }
+    });
 };
 
 export const createRubric = rubric => dispatch => {

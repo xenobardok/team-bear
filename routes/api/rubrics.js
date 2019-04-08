@@ -7,6 +7,9 @@ const secret = require("../../config/secret");
 // Loading Input Validation
 const validateRubricInput = require("../../validation/rubric");
 
+//Loading weight update validation
+const rubricWeightValidate = require("../../validation/rubricWeight");
+
 // @route   GET api/rubrics
 // @desc    Gets the lists of all rubrics
 // @access  Private
@@ -18,7 +21,7 @@ router.get(
     const type = req.user.type;
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM Evaluators natural join Department natural join RUBRIC where Admin_Email = Email and Email =  ('" +
+        "SELECT * FROM Evaluators natural join Department natural join RUBRIC where isVisible = 'true' AND Admin_Email = Email and Email =  ('" +
         email +
         "') order by Rubric_ID";
 
@@ -32,6 +35,7 @@ router.get(
               Rubrics_Name: row.Rubric_Name,
               Rows_Num: row.Rows_Num,
               Column_Num: row.Column_Num,
+              isWeighted: row.isWeighted,
               Scale: row.Scale
             };
             Rubrics.push(aRubric);
@@ -72,13 +76,15 @@ router.post(
         rubricFields.name = db.escape(req.body.Rubric_Name);
       if (req.body.Rows_Num) rubricFields.Rows_Num = req.body.Rows_Num;
       if (req.body.Column_Num) rubricFields.Column_Num = req.body.Column_Num;
+      if (req.body.isWeighted) rubricFields.isWeighted = req.body.isWeighted;
       if (req.body.Scale) {
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
       }
 
+      let isVisible = "true";
       let sql =
-        "SELECT Rubric_ID FROM RUBRIC WHERE Dept_ID =" +
+        "SELECT Rubric_ID FROM RUBRIC WHERE isVisible='true' AND Dept_ID =" +
         dept +
         " AND Rubric_Name=" +
         rubricFields.name;
@@ -91,7 +97,7 @@ router.post(
             return res.status(404).json(errors);
           }
           sql =
-            "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID) VALUES(" +
+            "INSERT INTO RUBRIC(Rubric_Name, Rows_Num, Column_Num,Scale,Dept_ID,isWeighted,isVisible) VALUES(" +
             rubricFields.name +
             "," +
             rubricFields.Rows_Num +
@@ -101,6 +107,10 @@ router.post(
             rubricFields.ScaleSize +
             "," +
             dept +
+            "," +
+            rubricFields.isWeighted +
+            "," +
+            isVisible +
             ")";
           //console.log(sql);
 
@@ -134,12 +144,16 @@ router.post(
               });
 
               let empty_var = "";
-              console.log(empty_var);
-              console.log(rubricFields.Rows_Num);
+              // console.log(empty_var);
+              // console.log(rubricFields.Rows_Num);
+
+              //adding equal weight to all the rows
+              let weight = 100 / rubricFields.Rows_Num;
+
               let row = 1;
 
               let newSql1 =
-                "INSERT INTO RUBRIC_ROW(Rubric_ID,Measure_Factor,Sort_Index) VALUES ?";
+                "INSERT INTO RUBRIC_ROW(Rubric_ID,Measure_Factor,Sort_Index,Rubric_Row_Weight) VALUES ?";
 
               let sqls = [];
 
@@ -148,6 +162,7 @@ router.post(
                 value.push(Rubric_ID);
                 value.push(empty_var);
                 value.push(i);
+                value.push(weight);
 
                 sqls.push(value);
               }
@@ -216,7 +231,7 @@ router.get(
     const Rubric = {};
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM RUBRIC where Rubric_ID =" +
+        "SELECT * FROM RUBRIC where isVisible='true' AND Rubric_ID =" +
         Rubric_ID +
         " AND DEPT_ID = " +
         dept;
@@ -232,6 +247,7 @@ router.get(
           Rubric.Rubric_Name = result[0].Rubric_Name;
           Rubric.Rows_Num = result[0].Rows_Num;
           Rubric.Column_Num = result[0].Column_Num;
+          Rubric.isWeighted = result[0].isWeighted;
           Rubric.Scale = [];
           Rubric.data = [];
 
@@ -263,6 +279,9 @@ router.get(
                   const totalRows = result.length;
                   result.forEach(row => {
                     var Rubric_Row_ID = row.Rubric_Row_ID;
+
+                    var Rubric_Row_Weight = row.Rubric_Row_Weight;
+
                     var Sort_Index = row.Sort_Index;
                     var Measure_Factor = row.Measure_Factor;
                     var Column_values = [];
@@ -288,6 +307,7 @@ router.get(
 
                         var eachRow = {
                           Rubric_Row_ID: Rubric_Row_ID,
+                          Rubric_Row_Weight: Rubric_Row_Weight,
                           Measure_Factor: Measure_Factor,
                           Column_values: Column_values
                         };
@@ -315,7 +335,7 @@ router.get(
 );
 
 // @route   POST api/rubrics/measures/update/:handle
-// @desc    update the changes in  a measure
+// @desc    update the changes in  a measure factor of a rubric
 // @access  Private route
 router.post(
   "/measure/update/:handle",
@@ -339,6 +359,55 @@ router.post(
         if (err) throw err;
         else {
           res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   UPDATE api/rubrics/:rubricsID/weight
+// @desc    update the changes in  a measure factor of a rubric
+// @access  Private route
+router.put(
+  "/:rubricsID/weight",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_ID = req.params.handle;
+    const data = req.body;
+
+    // console.log(req.body);
+    if (type == "Admin") {
+      const { errors, isValid } = rubricWeightValidate(data);
+
+      if (!isValid) {
+        return res.status(422).json(errors);
+      }
+
+      let sql = "";
+
+      data.forEach(row => {
+        let Rubric_Row_ID = row.Rubric_Row_ID;
+        let Rubric_Row_Weight = row.Rubric_Row_Weight;
+
+        sql +=
+          "UPDATE  RUBRIC_ROW SET Rubric_Row_Weight = " +
+          Rubric_Row_Weight +
+          " WHERE Rubric_Row_ID = " +
+          Rubric_Row_ID +
+          ";";
+      });
+
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        else {
+          res.status(200).json({ message: "Successfully updated the weight" });
         }
       });
     } else {

@@ -2,7 +2,8 @@ const express = require("express"),
   db = require("./config/connection"),
   bodyParser = require("body-parser"),
   passport = require("passport"),
-  path = require("path");
+  path = require("path"),
+  multer = require("multer");
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));

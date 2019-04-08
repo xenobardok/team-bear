@@ -7,9 +7,11 @@ import {
   ADD_EVALUATOR_MEASURE,
   ADD_STUDENT,
   REMOVE_STUDENT,
-  UPDATE_MEASURE_DEFINITION
+  UPDATE_MEASURE_DEFINITION,
+  ADD_STUDENT_LOADING,
+  ADD_STUDENT_FROM_FILE
 } from "./types";
-
+import { toastr } from "react-redux-toastr";
 export const getMeasures = id => dispatch => {
   dispatch(setMeasureLoading());
   axios
@@ -40,8 +42,7 @@ export const createMeasure = (
       Measure_Type: Measure_Type
     })
     .then(res => {
-      console.log(res.data);
-      console.log("Create new measure");
+      dispatch(getMeasures(Outcome_ID));
     })
     .catch(err => {
       dispatch({
@@ -117,7 +118,28 @@ export const addStudent = (measureID, student) => dispatch => {
   console.log(student);
   axios
     .post(`/api/cycle/measure/${measureID}/addStudent`, student)
-    .then(res => dispatch({ type: ADD_STUDENT, payload: res.data }))
+    .then(res => {
+      toastr.success(
+        "Student added!",
+        student.Student_Name + " added successfully!"
+      );
+      dispatch({ type: ADD_STUDENT, payload: res.data });
+    })
+    .catch(err => {
+      toastr.error("Student not added!", err.response.data.error);
+      dispatch({ type: GET_ERRORS, payload: err.response.data });
+    });
+};
+
+export const addStudentsFromCSV = (measureID, file) => dispatch => {
+  dispatch(addStudentLoading());
+  axios
+    .post(`/api/cycle/measure/${measureID}/addStudent/fileUpload`, file, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    .then(res => dispatch({ type: ADD_STUDENT_FROM_FILE, payload: res.data }))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
 
@@ -133,3 +155,7 @@ export const removeStudent = (measureID, Student_ID) => dispatch => {
     .then(res => dispatch({ type: REMOVE_STUDENT, payload: res.data }))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
+
+export const addStudentLoading = () => ({
+  type: ADD_STUDENT_LOADING
+});

@@ -118,7 +118,7 @@ class EditableOutcomeList extends Component {
               }}
               onClick={this.editHandler}
             >
-              <FontAwesomeIcon icon="edit" />
+              <FontAwesomeIcon icon="edit" className="edit" />
             </div>
           </ListGroup>
         )}
