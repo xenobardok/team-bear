@@ -11,7 +11,7 @@ module.exports = function validateRubricInput(arrays) {
     if (weight < 0 && weight > 100) {
       errors.weight = "Weight must be between 0 - 100";
     } else {
-      sum += parseInt(weight);
+      sum += parseFloat(weight);
     }
 
     if (!Validator.isFloat(weight)) {
