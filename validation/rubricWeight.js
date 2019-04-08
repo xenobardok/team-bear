@@ -8,19 +8,17 @@ module.exports = function validateRubricInput(arrays) {
   let sum = 0;
   arrays.forEach(row => {
     let weight = row.Rubric_Row_Weight;
-    if (weight < 0 && weight > 100) {
+    // console.log(weight);
+    if (weight < 0 || weight > 100) {
       errors.weight = "Weight must be between 0 - 100";
     } else {
-      sum += parseFloat(weight);
-    }
-
-    if (!Validator.isFloat(weight)) {
-      errors.weight = "Weight must be a number.";
+      sum += weight;
     }
 
     if (isEmpty(weight)) {
       errors.weight = "Weight cannot be empty.";
     }
+    // console.log(errors);
   });
 
   if (sum != 100) {
