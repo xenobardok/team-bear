@@ -279,9 +279,8 @@ router.get(
                   const totalRows = result.length;
                   result.forEach(row => {
                     var Rubric_Row_ID = row.Rubric_Row_ID;
-                    if (Rubric.isWeighted) {
-                      var Rubric_Row_Weight = result.Rubric_Row_Weight;
-                    }
+
+                    var Rubric_Row_Weight = row.Rubric_Row_Weight;
 
                     var Sort_Index = row.Sort_Index;
                     var Measure_Factor = row.Measure_Factor;
@@ -308,6 +307,7 @@ router.get(
 
                         var eachRow = {
                           Rubric_Row_ID: Rubric_Row_ID,
+                          Rubric_Row_Weight: Rubric_Row_Weight,
                           Measure_Factor: Measure_Factor,
                           Column_values: Column_values
                         };
