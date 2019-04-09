@@ -7,7 +7,8 @@ import {
   REMOVE_STUDENT,
   UPDATE_MEASURE_DEFINITION,
   ADD_STUDENT_LOADING,
-  ADD_STUDENT_FROM_FILE
+  ADD_STUDENT_FROM_FILE,
+  ERROR_FILE_UPLOAD
 } from "../actions/types";
 
 const initialState = {
@@ -86,6 +87,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         studentsLoading: true
+      };
+    }
+    case ERROR_FILE_UPLOAD: {
+      return {
+        ...state,
+        studentsLoading: false,
+        singleMeasure: {
+          ...state.singleMeasure,
+          Students: [...state.singleMeasure.Students]
+        }
       };
     }
     default:

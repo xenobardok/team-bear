@@ -37,10 +37,10 @@ class Rubrics extends Component {
             <br />
 
             <h4>There is no rubrics to view for you!</h4>
-            <Link to="/dashboard">
+            {/* <Link to="/dashboard">
               <Button variant="info">Return to Dashboard</Button>
-            </Link>
-            <br />
+            </Link> */}
+            {/* <br /> */}
             <br />
           </div>
         );
