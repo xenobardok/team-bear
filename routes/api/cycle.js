@@ -9,20 +9,8 @@ const Validator = require("validator");
 const fs = require("fs");
 const multer = require("multer");
 const upload = multer({ dest: "uploads" });
-// const upload = multer();
 const csv = require("fast-csv");
 const path = require("path");
-
-// var upload = multer({
-//   dest: "uploads/",
-//   fileFilter: function(req, file, cb) {
-//     if (file.mimetype !== "text/csv") {
-//       req.fileValidationError = "goes wrong on the mimetype";
-//       cb(new Error("goes wrong on the mimetype"));
-//     }
-//     cb(null, true);
-//   }
-// }).single("students");
 
 const calculateMeasure = require("../calculateMeasure");
 const updateStudentsScore = require("../updateStudentsScore");
