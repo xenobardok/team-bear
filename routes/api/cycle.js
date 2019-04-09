@@ -8,20 +8,9 @@ const validateCycleInput = require("../../validation/cycle");
 const Validator = require("validator");
 const fs = require("fs");
 const multer = require("multer");
-const upload = multer({ dest: "../../uploads" });
+const upload = multer({ dest: "uploads" });
 const csv = require("fast-csv");
 const path = require("path");
-
-// var upload = multer({
-//   dest: "uploads/",
-//   fileFilter: function(req, file, cb) {
-//     if (file.mimetype !== "text/csv") {
-//       req.fileValidationError = "goes wrong on the mimetype";
-//       cb(new Error("goes wrong on the mimetype"));
-//     }
-//     cb(null, true);
-//   }
-// }).single("students");
 
 const calculateMeasure = require("../calculateMeasure");
 const updateStudentsScore = require("../updateStudentsScore");
@@ -1249,10 +1238,13 @@ router.post(
                         });
 
                         //get the intersection and newCWID contains the duplicate values
-                        newCWID.filter(value => regCWID.includes(value));
+                        let newArray = newCWID.filter(value =>
+                          regCWID.includes(value)
+                        );
+                        console.log(newArray);
 
-                        if (newCWID.length > 0) {
-                          return res.status(400).json(newCWID);
+                        if (newArray.length > 0) {
+                          return res.status(400).json(newArray);
                         } else {
                           sql =
                             "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";

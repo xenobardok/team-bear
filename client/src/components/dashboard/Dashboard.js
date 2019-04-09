@@ -41,7 +41,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div id="outer-container">
-        <SideBar />
+        <SideBar auth={this.props.auth} />
         <main id="page-wrap">
           <Route path={"/dashboard"} component={NavBar} />
           <Container>

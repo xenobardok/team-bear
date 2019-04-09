@@ -9,7 +9,8 @@ import {
   REMOVE_STUDENT,
   UPDATE_MEASURE_DEFINITION,
   ADD_STUDENT_LOADING,
-  ADD_STUDENT_FROM_FILE
+  ADD_STUDENT_FROM_FILE,
+  ERROR_FILE_UPLOAD
 } from "./types";
 import { toastr } from "react-redux-toastr";
 export const getMeasures = id => dispatch => {
@@ -140,7 +141,10 @@ export const addStudentsFromCSV = (measureID, file) => dispatch => {
       }
     })
     .then(res => dispatch({ type: ADD_STUDENT_FROM_FILE, payload: res.data }))
-    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+    .catch(err => {
+      dispatch({ type: ERROR_FILE_UPLOAD, payload: [] });
+      toastr.error("Duplicate ID(s) found", "Students not added!");
+    });
 };
 
 export const removeStudent = (measureID, Student_ID) => dispatch => {

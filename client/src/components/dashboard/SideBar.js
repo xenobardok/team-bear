@@ -53,10 +53,13 @@ class SideBar extends Component {
           <FontAwesomeIcon icon="home" />
           &nbsp;&nbsp;Home
         </Link>
-        <Link className="menu-item" to="/dashboard/cycles">
-          <FontAwesomeIcon icon="circle-notch" />
-          &nbsp;&nbsp;My Cycle
-        </Link>
+        {this.props.auth.user.type === "Admin" ? (
+          <Link className="menu-item" to="/dashboard/cycles">
+            <FontAwesomeIcon icon="circle-notch" />
+            &nbsp;&nbsp;My Cycle
+          </Link>
+        ) : null}
+
         <Link className="menu-item" to="/dashboard/tasks">
           <FontAwesomeIcon icon="tasks" />
           &nbsp;&nbsp;My Tasks
@@ -70,16 +73,20 @@ class SideBar extends Component {
           &nbsp;&nbsp;Reports [NW]
         </Link>
         <hr className="label" />
-        <Link to="/dashboard/rubrics">Rubrics</Link>
-        <div className="label" style={{ display: "flex" }}>
-          <div style={{ display: "inline" }}>
-            <p style={{ display: "inline" }}>Edit mode: &nbsp;&nbsp;</p>
+        {this.props.auth.user.type === "Admin" ? (
+          <Link to="/dashboard/rubrics">Rubrics</Link>
+        ) : null}
+        {this.props.auth.user.type === "Admin" ? (
+          <div className="label" style={{ display: "flex" }}>
+            <div style={{ display: "inline" }}>
+              <p style={{ display: "inline" }}>Edit mode: &nbsp;&nbsp;</p>
+            </div>
+            <Toggle
+              defaultChecked={this.state.editMode}
+              onChange={this.onToggle}
+            />
           </div>
-          <Toggle
-            defaultChecked={this.state.editMode}
-            onChange={this.onToggle}
-          />
-        </div>
+        ) : null}
       </Menu>
     );
   }

@@ -177,13 +177,18 @@ class Measure extends Component {
   };
 
   fileUploadHandler = e => {
-    const data = new FormData();
-    data.append("students", this.state.uploadedFile);
-    this.props.addStudentsFromCSV(this.state.Measure_ID, data);
-    this.setState({
-      fileUpload: false,
-      uploadedFile: null
-    });
+    if (this.state.uploadedFile !== null) {
+      const data = new FormData();
+      data.append("students", this.state.uploadedFile);
+      this.props.addStudentsFromCSV(this.state.Measure_ID, data);
+      this.setState({
+        fileUpload: false,
+        addStudentBox: false,
+        uploadedFile: null
+      });
+    } else {
+      toastr.error("File Not Found!", "Please upload a csv file");
+    }
   };
   removeStudentButton = Student_ID => {
     this.props.removeStudent(this.state.Measure_ID, Student_ID);
@@ -360,11 +365,15 @@ class Measure extends Component {
                           onChange={e =>
                             this.setState({ uploadedFile: e.target.files[0] })
                           }
+                          className="invalid"
                         />
                         <Button
                           variant="primary"
                           onClick={this.fileUploadHandler}
                         >
+                          <Form.Control.Feedback type="invalid">
+                            {this.props.errors.fileUpload}
+                          </Form.Control.Feedback>
                           Submit
                         </Button>
                       </Form>
