@@ -24,7 +24,8 @@ import {
   defineMeasure,
   addStudent,
   removeStudent,
-  addStudentsFromCSV
+  addStudentsFromCSV,
+  removeEvaluatorMeasure
 } from "../../actions/measureActions";
 import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -212,6 +213,7 @@ class Measure extends Component {
       unevaluatedStudents: null
     });
   };
+
   render() {
     let newEvaluatorBox;
     let { loading, singleMeasure } = this.props.measures;
@@ -293,12 +295,15 @@ class Measure extends Component {
             </span>
             <h5>Evaluators</h5>
             <div className="evaluators">
-              {Evaluators
+              {console.log(isEmpty(Evaluators))}
+              {!isEmpty(Evaluators)
                 ? Evaluators.map(value => (
                     <EvaluatorBox
                       key={value.Evaluator_Name}
                       {...value}
                       getUnevaluatedStudents={this.getUnevaluatedStudents}
+                      Measure_ID={this.state.Measure_ID}
+                      removeEvaluatorMeasure={this.props.removeEvaluatorMeasure}
                     />
                   ))
                 : null}
@@ -483,6 +488,7 @@ export default connect(
     defineMeasure,
     addStudent,
     removeStudent,
-    addStudentsFromCSV
+    addStudentsFromCSV,
+    removeEvaluatorMeasure
   }
 )(Measure);

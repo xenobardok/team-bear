@@ -8,7 +8,8 @@ import {
   UPDATE_MEASURE_DEFINITION,
   ADD_STUDENT_LOADING,
   ADD_STUDENT_FROM_FILE,
-  ERROR_FILE_UPLOAD
+  ERROR_FILE_UPLOAD,
+  REMOVE_EVALUATOR_MEASURE
 } from "../actions/types";
 
 const initialState = {
@@ -99,6 +100,16 @@ export default function(state = initialState, action) {
         }
       };
     }
+    case REMOVE_EVALUATOR_MEASURE:
+      return {
+        ...state,
+        singleMeasure: {
+          ...state.singleMeasure,
+          Evaluators: state.singleMeasure.Evaluators.filter(
+            value => value.Evaluator_Email !== action.payload.Evaluator_Email
+          )
+        }
+      };
     default:
       return state;
   }
