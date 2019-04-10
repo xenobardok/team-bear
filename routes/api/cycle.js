@@ -15,7 +15,11 @@ const path = require("path");
 const calculateMeasure = require("../calculateMeasure");
 const updateStudentsScore = require("../updateStudentsScore");
 
+const calculateTestMeasure = require("../calculateTestMeasure");
+const updateStudentsTestScore = require("../updateStudentsTestScore");
+
 const validateUpdateRubric = require("../../validation/rubricMeasure");
+const validateUpdateTest = require("../../validation/testMeasure");
 
 // @route   GET api/cycle
 // @desc    Gets the lists of all rubrics
@@ -521,6 +525,28 @@ router.post(
                     });
                   } else {
                     //Create a Test Measure
+                    sql =
+                      "INSERT INTO TEST_MEASURES(Measure_ID,Is_Success ) VALUES(" +
+                      Measure_ID +
+                      "," +
+                      isSuccess +
+                      ")";
+
+                    db.query(sql, (err, result) => {
+                      if (err)
+                        return res
+                          .status(400)
+                          .json({ error: "There was some problem adding it" });
+                      else {
+                        Test_Measure_ID = db.escape(result.insertId);
+
+                        Test_Measure = {
+                          Measure_ID: Measure_ID,
+                          Test_Measure_ID: Test_Measure_ID
+                        };
+                        return res.status(200).json(Test_Measure);
+                      }
+                    });
                   }
                 }
               });
@@ -698,6 +724,7 @@ router.get(
             });
           } else {
             // for test measure
+
             res.status(200).json(Measure);
           }
         }
@@ -930,6 +957,97 @@ router.post(
           }
           //for Test Measure Type
           else {
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                //Threshold is %  of total students
+                //Target is target score
+                //Test_Name is the name of Test
+                //add date later
+
+                const { errors, isValid } = validateUpdateTest(req.body);
+
+                if (!isValid) {
+                  return res.status(404).json(errors);
+                }
+
+                Threshold = req.body.Threshold;
+                Target = req.body.Target;
+                const Exam_Name = db.escape(req.body.Test_Name);
+
+                sql =
+                  "UPDATE TEST_MEASURES SET Threshold=" +
+                  Threshold +
+                  ", Target =" +
+                  Target +
+                  ", Exam_Name=" +
+                  Exam_Name +
+                  " WHERE Test_Measure_ID=" +
+                  Test_Measure_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res
+                      .status(400)
+                      .json({ error: "There was some problem adding it" });
+                  } else {
+                    updateStudentsTestScore(Test_Measure_ID, () => {
+                      Measure = {};
+                      sql =
+                        " SELECT * FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+                        Test_Measure_ID;
+                      db.query(sql, (err, result) => {
+                        if (err) return res.status(200).json(err);
+                        else {
+                          Measure.End_Date = result[0].End_Date;
+                          Measure.Target = result[0].Target;
+                          Measure.Threshold = result[0].Threshold;
+                          Measure.Achieved_Threshold = result[0].Score;
+                          Measure.Is_Success = result[0].Is_Success;
+                          Measure.Test_Name = result[0].Test_Name;
+
+                          calculateTestMeasure(Test_Measure_ID);
+                          sql =
+                            "SELECT Count(DISTINCT(Student_ID)) AS Total FROM TEST_STUDENTS NATURAL JOIN STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+                            Test_Measure_ID;
+
+                          db.query(sql, (err, result) => {
+                            if (err) throw err;
+                            else {
+                              const Total_Students = result[0].Total;
+                              Measure.Total_Students = Total_Students;
+
+                              //sql to find the count of students with required or better grade
+                              sql =
+                                "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Student_Avg_Grade>=" +
+                                Measure.Target;
+
+                              db.query(sql, (err, result) => {
+                                if (err) throw err;
+                                else {
+                                  Measure.Student_Achieved_Target_Count =
+                                    result[0].Success_Count;
+
+                                  // console.log(Measure);
+                                  return res.status(200).json(Measure);
+                                }
+                              });
+                            }
+                          });
+                        }
+                      });
+                    });
+                  }
+                });
+              }
+            });
           }
         }
       });
