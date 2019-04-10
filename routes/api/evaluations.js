@@ -192,6 +192,7 @@ router.get(
 
     const data = {};
     const score = [];
+    const weighted_Score_list = [];
 
     let sql =
       "SELECT DISTINCT * FROM RUBRIC_STUDENTS S NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN  RUBRIC_ROW  R LEFT OUTER JOIN STUDENTS_RUBRIC_ROWS_GRADE G ON R.Rubric_Row_ID = G.Rubric_Row_ID AND S.Rubric_Student_ID = G.Rubric_Student_ID WHERE Rubric_Measure_ID=" +
@@ -202,7 +203,6 @@ router.get(
       email +
       " ORDER BY R.Rubric_Row_ID";
 
-    // console.log(sql);
     db.query(sql, (err, result) => {
       if (err) throw err;
       else {
@@ -221,9 +221,10 @@ router.get(
           Overall_Score += weighted_Score;
 
           score.push(row_score);
-          // data.push(weighted_Score);
+          weighted_Score_list.push(weighted_Score);
         });
         data.score = score;
+        data.weighted_Score = weighted_Score_list;
         data.Overall_Score = Overall_Score;
         return res.status(200).json(data);
       }
