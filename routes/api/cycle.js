@@ -1057,6 +1057,126 @@ router.post(
   }
 );
 
+// @route   DELETE api/cycle/measures/:measureID/removeEvaluator
+// @desc    Removes an evaluator to a Rubric Measure
+// @access  Private
+router.delete(
+  "/measure/:measureID/removeEvaluator",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
+    const Measure_ID = db.escape(req.params.measureID);
+    Evaluator_Email = req.body.Evaluator_Email;
+
+    const errors = {};
+
+    if (type == "Admin") {
+      let sql =
+        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          if (result.length < 1) {
+            errors.error = "Measure Not found";
+            return res.status(404).json(errors);
+          }
+          //for rubric Measure Type
+          if (result[0].Measure_type == "rubric") {
+            sql =
+              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                if (isEmpty(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email cannot be empty";
+                  return res.status(404).json(errors);
+                }
+
+                if (!Validator.isEmail(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email is not valid";
+                  return res.status(404).json(errors);
+                }
+
+                //Threshold is %  of total students
+                //Target is target score
+                //Rubric_ID is the assigned Rubric ID
+                //add date later
+
+                sql =
+                  "SELECT * FROM Evaluators WHERE Email = " +
+                  db.escape(Evaluator_Email);
+                console.log(sql);
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem removing the Evaluator"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res
+                      .status(400)
+                      .json({ error: "Evaluator not found" });
+                  }
+                  let Evaluator_Name = result[0].Fname + " " + result[0].Lname;
+                  sql =
+                    "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
+                    Rubric_Measure_ID +
+                    " AND Evaluator_Email=" +
+                    db.escape(Evaluator_Email);
+                  console.log(sql);
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem removing the Evaluator"
+                      });
+                    }
+
+                    if (result.length > 0) {
+                      sql =
+                        "DELETE FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID= " +
+                        Rubric_Measure_ID +
+                        " AND Evaluator_Email =" +
+                        db.escape(Evaluator_Email);
+
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json({
+                            error:
+                              "There was some problem removing the evaluator"
+                          });
+                        } else {
+                          return res.status(200).json({
+                            // message: "Evaluator has successfully been assigned."
+                            Evaluator_Email: Evaluator_Email,
+                            Evaluator_Name: Evaluator_Name
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
+              }
+            });
+          } else {
+            //for test
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/cycle/addStudent
 // @desc    Add a student to a Rubric Measure
 // @access  Private

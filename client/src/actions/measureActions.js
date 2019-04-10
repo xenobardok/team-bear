@@ -10,7 +10,8 @@ import {
   UPDATE_MEASURE_DEFINITION,
   ADD_STUDENT_LOADING,
   ADD_STUDENT_FROM_FILE,
-  ERROR_FILE_UPLOAD
+  ERROR_FILE_UPLOAD,
+  REMOVE_EVALUATOR_MEASURE
 } from "./types";
 import { toastr } from "react-redux-toastr";
 export const getMeasures = id => dispatch => {
@@ -163,3 +164,26 @@ export const removeStudent = (measureID, Student_ID) => dispatch => {
 export const addStudentLoading = () => ({
   type: ADD_STUDENT_LOADING
 });
+
+export const removeEvaluatorMeasure = (
+  measureID,
+  Evaluator_Email
+) => dispatch => {
+  console.log(measureID, Evaluator_Email);
+  axios
+    .delete(`/api/cycle/measure/${measureID}/removeEvaluator`, {
+      data: { Evaluator_Email: Evaluator_Email }
+    })
+    .then(res =>
+      dispatch({
+        type: REMOVE_EVALUATOR_MEASURE,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
