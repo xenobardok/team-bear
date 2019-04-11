@@ -1181,11 +1181,6 @@ router.post(
                 }
                 Evaluator_Email = db.escape(Evaluator_Email);
 
-                //Threshold is %  of total students
-                //Target is target score
-                //Rubric_ID is the assigned Rubric ID
-                //add date later
-
                 sql =
                   "SELECT * FROM Evaluators WHERE Email = " + Evaluator_Email;
                 db.query(sql, (err, result) => {
@@ -1245,6 +1240,87 @@ router.post(
             });
           } else {
             //for test
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                sql =
+                  "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID = " +
+                  Test_Measure_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res
+                      .status(400)
+                      .json({ error: "There was message adding an evaluator" });
+                  } else {
+                    if (result.length > 0) {
+                      return res.status(400).json({
+                        error: "An evaluator has already been assigned."
+                      });
+                    } else {
+                      if (isEmpty(Evaluator_Email)) {
+                        errors.Evaluator_Email =
+                          "Evaluator email cannot be empty";
+                        return res.status(404).json(errors);
+                      }
+
+                      if (!Validator.isEmail(Evaluator_Email)) {
+                        errors.Evaluator_Email = "Evaluator email is not valid";
+                        return res.status(404).json(errors);
+                      }
+                      Evaluator_Email = db.escape(Evaluator_Email);
+
+                      sql =
+                        "SELECT * FROM Evaluators WHERE Email = " +
+                        Evaluator_Email;
+
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json({
+                            error: "There was some problem adding the Evaluator"
+                          });
+                        }
+
+                        if (result.length < 1) {
+                          return res
+                            .status(400)
+                            .json({ error: "Evaluator not found" });
+                        }
+                        let Evaluator_Name =
+                          result[0].Fname + " " + result[0].Lname;
+
+                        sql =
+                          "INSERT INTO TEST_MEASURE_EVALUATOR (Test_Measure_ID,Evaluator_Email) VALUES(" +
+                          Test_Measure_ID +
+                          "," +
+                          Evaluator_Email +
+                          ")";
+
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding  the evaluator"
+                            });
+                          } else {
+                            return res.status(200).json({
+                              // message: "Evaluator has successfully been assigned."
+                              Evaluator_Email: req.body.Evaluator_Email,
+                              Evaluator_Name: Evaluator_Name
+                            });
+                          }
+                        });
+                      });
+                    }
+                  }
+                });
+              }
+            });
           }
         }
       });
