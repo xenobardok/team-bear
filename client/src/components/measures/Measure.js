@@ -86,7 +86,8 @@ class Measure extends Component {
           Evaluators: singleMeasure.Evaluators,
           Students: singleMeasure.Students,
           Rubric_Name: singleMeasure.Rubric_Name,
-          Class_Name: singleMeasure.Class_Name
+          Class_Name: singleMeasure.Class_Name,
+          Test_Name: singleMeasure.Test_Name
         });
       }
     }
@@ -269,6 +270,8 @@ class Measure extends Component {
             rubricScales={this.state.rubricScales}
             Class_Name={Class_Name}
             measureDefination={this.measureDefination}
+            Measure_Type={this.state.Measure_Type}
+            Test_Name={this.state.Test_Name}
           />
           <br />
           <Stats
