@@ -4,8 +4,10 @@ const db = require("../../config/connection");
 const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
+const Validator = require("validator");
 
 const updateStudentsScore = require("../updateStudentsScore");
+const updateStudentsTestScore = require("../updateStudentsTestScore");
 
 // Loading Input Validation
 const validateRubricInput = require("../../validation/rubric");
@@ -70,11 +72,11 @@ router.get(
       else {
         result.forEach(row => {
           id = row.Test_Measure_ID;
-          name = row.Test_Name;
+          name = row.Exam_Name;
 
           test = {
-            Rubric_Measure_ID: id,
-            Rubric_Name: name
+            Test_Measure_ID: id,
+            Test_Name: name
           };
           Tests.push(test);
         });
@@ -244,10 +246,10 @@ router.get(
         Test.StudentsData = [];
 
         sql =
-          "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE Test_Measure_ID=" +
+          "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
           Test_Measure_ID;
 
-        console.log(sql);
+        // console.log(sql);
         db.query(sql, (err, result) => {
           if (err) return res.status(400).json(err);
           else {
@@ -255,6 +257,10 @@ router.get(
               let Student_ID = student.Student_ID;
               let Student_Name = student.Student_Name;
               let Grade = student.Score;
+
+              if (Grade == null) {
+                Grade = 0;
+              }
 
               let astudent = {
                 Student_ID: Student_ID,
@@ -471,6 +477,108 @@ router.post(
                       .json({ message: "successfully updated" });
                   }
                 });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+);
+
+// @route   POST api/evaluations/testMeasure/:TestMeasureID/student/:studentID
+// @desc    Adds a grade to a student for a particular Test
+// @access  Private route
+router.post(
+  "/testMeasure/:testMeasureID/student/:studentID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const score = req.body.Score;
+    const Test_Measure_ID = db.escape(req.params.testMeasureID);
+    const Student_ID = db.escape(req.params.studentID);
+
+    // console.log(score);
+
+    let sql =
+      "SELECT DISTINCT Test_Student_ID FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Student_ID = " +
+      Student_ID +
+      " AND Test_Measure_ID=" +
+      Test_Measure_ID;
+
+    db.query(sql, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ error: "Test Measure Not Assigned to this Student" });
+        }
+
+        let Test_Student_ID = result[0].Test_Student_ID;
+
+        sql =
+          "SELECT * FROM STUDENTS_TEST_GRADE WHERE Test_Student_ID=" +
+          Test_Student_ID +
+          " AND Evaluator_Email=" +
+          db.escape(email);
+
+        if (!Validator.isFloat(score)) {
+          return res.status(400).json({ error: "Score  must be  a number" });
+        }
+
+        db.query(sql, (err, result) => {
+          if (err) return res.status(400).json(err);
+
+          // console.log(result);
+
+          //if data already exists, procceed with updating
+          if (result.length > 0) {
+            sql =
+              "UPDATE STUDENTS_TEST_GRADE SET Score=" +
+              score +
+              " WHERE Test_Student_ID = " +
+              db.escape(Test_Student_ID) +
+              " AND Evaluator_Email=" +
+              db.escape(email) +
+              " AND Test_Measure_ID=" +
+              Test_Measure_ID +
+              "; ";
+
+            db.query(sql, (err, result) => {
+              if (err) {
+                return res.status(400).json(err);
+              } else {
+                // console.log(sql);
+                updateStudentsTestScore(Test_Measure_ID, () => {});
+                return res
+                  .status(200)
+                  .json({ message: "successfully updated" });
+              }
+            });
+          } else {
+            //new insert
+
+            sql =
+              "INSERT INTO STUDENTS_TEST_GRADE (Test_Student_ID,Evaluator_Email,Test_Measure_ID,Score) VALUES (" +
+              db.escape(Test_Student_ID) +
+              "," +
+              db.escape(email) +
+              "," +
+              Test_Measure_ID +
+              "," +
+              score +
+              ")";
+
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+              else {
+                updateStudentsTestScore(Test_Measure_ID, () => {});
+                return res
+                  .status(200)
+                  .json({ message: "successfully updated" });
               }
             });
           }
