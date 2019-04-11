@@ -4,8 +4,10 @@ const db = require("../../config/connection");
 const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
+const Validator = require("validator");
 
 const updateStudentsScore = require("../updateStudentsScore");
+const updateStudentsTestScore = require("../updateStudentsTestScore");
 
 // Loading Input Validation
 const validateRubricInput = require("../../validation/rubric");
@@ -43,6 +45,42 @@ router.get(
           Rubrics.push(rubric);
         });
         return res.status(200).json(Rubrics);
+      }
+    });
+  }
+);
+
+// @route   GET api/evaluations/tests
+// @desc    Returns the list of all the assigned Tests
+// @access  Private route
+router.get(
+  "/tests",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    Tests = [];
+    let sql =
+      "SELECT Test_Measure_ID, Exam_Name  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR WHERE Evaluator_Email =" +
+      email;
+
+    db.query(sql, (err, result) => {
+      if (err)
+        res.status(404).json({ error: "There was a problem loading it" });
+      else {
+        result.forEach(row => {
+          id = row.Test_Measure_ID;
+          name = row.Exam_Name;
+
+          test = {
+            Test_Measure_ID: id,
+            Test_Name: name
+          };
+          Tests.push(test);
+        });
+        return res.status(200).json(Tests);
       }
     });
   }
@@ -177,6 +215,68 @@ router.get(
   }
 );
 
+// @route   GET api/evaluations/tests/:TestMeasureID
+// @desc    Returns the details about an assigned Test from the Test_Measure_ID
+// @access  Private route
+router.get(
+  "/testMeasure/:TestMeasureID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Test_Measure_ID = req.params.TestMeasureID;
+    const Test = {};
+
+    let sql =
+      "SELECT * FROM TEST_MEASURE_EVALUATOR NATURAL JOIN TEST_MEASURES WHERE Evaluator_Email =" +
+      email +
+      " AND Test_Measure_ID =" +
+      Test_Measure_ID;
+
+    // console.log(sql);
+    db.query(sql, (err, result) => {
+      var Test = {};
+      if (err) throw err;
+      else {
+        if (result.length < 1) {
+          return res.status(404).json({ error: "Test Not Found" });
+        }
+        Test.Test_Name = result[0].Exam_Name;
+        Test.StudentsData = [];
+
+        sql =
+          "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
+          Test_Measure_ID;
+
+        // console.log(sql);
+        db.query(sql, (err, result) => {
+          if (err) return res.status(400).json(err);
+          else {
+            result.forEach(student => {
+              let Student_ID = student.Student_ID;
+              let Student_Name = student.Student_Name;
+              let Grade = student.Score;
+
+              if (Grade == null) {
+                Grade = 0;
+              }
+
+              let astudent = {
+                Student_ID: Student_ID,
+                Student_Name: Student_Name,
+                Grade: Grade
+              };
+              Test.StudentsData.push(astudent);
+            });
+            res.status(200).json(Test);
+          }
+        });
+      }
+    });
+  }
+);
+
 // @route   GET api/evaluations/rubricMeasure/:RubricMeasureID/student/:studentID
 // @desc    Returns the grades of the student
 // @access  Private route
@@ -192,6 +292,7 @@ router.get(
 
     const data = {};
     const score = [];
+    const weighted_Score_list = [];
 
     let sql =
       "SELECT DISTINCT * FROM RUBRIC_STUDENTS S NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN  RUBRIC_ROW  R LEFT OUTER JOIN STUDENTS_RUBRIC_ROWS_GRADE G ON R.Rubric_Row_ID = G.Rubric_Row_ID AND S.Rubric_Student_ID = G.Rubric_Student_ID WHERE Rubric_Measure_ID=" +
@@ -202,7 +303,6 @@ router.get(
       email +
       " ORDER BY R.Rubric_Row_ID";
 
-    // console.log(sql);
     db.query(sql, (err, result) => {
       if (err) throw err;
       else {
@@ -221,9 +321,10 @@ router.get(
           Overall_Score += weighted_Score;
 
           score.push(row_score);
-          // data.push(weighted_Score);
+          weighted_Score_list.push(weighted_Score);
         });
         data.score = score;
+        data.weighted_Score = weighted_Score_list;
         data.Overall_Score = Overall_Score;
         return res.status(200).json(data);
       }
@@ -376,6 +477,108 @@ router.post(
                       .json({ message: "successfully updated" });
                   }
                 });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+);
+
+// @route   POST api/evaluations/testMeasure/:TestMeasureID/student/:studentID
+// @desc    Adds a grade to a student for a particular Test
+// @access  Private route
+router.post(
+  "/testMeasure/:testMeasureID/student/:studentID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const score = req.body.Score;
+    const Test_Measure_ID = db.escape(req.params.testMeasureID);
+    const Student_ID = db.escape(req.params.studentID);
+
+    // console.log(score);
+
+    let sql =
+      "SELECT DISTINCT Test_Student_ID FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Student_ID = " +
+      Student_ID +
+      " AND Test_Measure_ID=" +
+      Test_Measure_ID;
+
+    db.query(sql, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ error: "Test Measure Not Assigned to this Student" });
+        }
+
+        let Test_Student_ID = result[0].Test_Student_ID;
+
+        sql =
+          "SELECT * FROM STUDENTS_TEST_GRADE WHERE Test_Student_ID=" +
+          Test_Student_ID +
+          " AND Evaluator_Email=" +
+          db.escape(email);
+
+        if (!Validator.isFloat(score)) {
+          return res.status(400).json({ error: "Score  must be  a number" });
+        }
+
+        db.query(sql, (err, result) => {
+          if (err) return res.status(400).json(err);
+
+          // console.log(result);
+
+          //if data already exists, procceed with updating
+          if (result.length > 0) {
+            sql =
+              "UPDATE STUDENTS_TEST_GRADE SET Score=" +
+              score +
+              " WHERE Test_Student_ID = " +
+              db.escape(Test_Student_ID) +
+              " AND Evaluator_Email=" +
+              db.escape(email) +
+              " AND Test_Measure_ID=" +
+              Test_Measure_ID +
+              "; ";
+
+            db.query(sql, (err, result) => {
+              if (err) {
+                return res.status(400).json(err);
+              } else {
+                // console.log(sql);
+                updateStudentsTestScore(Test_Measure_ID, () => {});
+                return res
+                  .status(200)
+                  .json({ message: "successfully updated" });
+              }
+            });
+          } else {
+            //new insert
+
+            sql =
+              "INSERT INTO STUDENTS_TEST_GRADE (Test_Student_ID,Evaluator_Email,Test_Measure_ID,Score) VALUES (" +
+              db.escape(Test_Student_ID) +
+              "," +
+              db.escape(email) +
+              "," +
+              Test_Measure_ID +
+              "," +
+              score +
+              ")";
+
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+              else {
+                updateStudentsTestScore(Test_Measure_ID, () => {});
+                return res
+                  .status(200)
+                  .json({ message: "successfully updated" });
               }
             });
           }

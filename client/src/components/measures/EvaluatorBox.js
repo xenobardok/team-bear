@@ -20,17 +20,28 @@ class EvaluatorBox extends Component {
   evaluatorBoxClickHandler = () => {
     this.props.getUnevaluatedStudents(this.props.Evaluator_Name);
   };
+
+  removeEvaluatorMeasureButton = () => {
+    this.props.removeEvaluatorMeasure(
+      this.props.Measure_ID,
+      this.props.Evaluator_Email
+    );
+  };
   render() {
     let { Evaluator_Name, Evaluator_Email } = this.props;
     let content = "";
     if (!isEmpty(this.props.Evaluator_Name)) {
       content = (
-        <div
-          className="singleEvaluator"
-          onClick={this.evaluatorBoxClickHandler}
-        >
-          <FontAwesomeIcon icon="times-circle" className="crossIcon" />
-          <div style={{ paddingRight: "30px" }}>
+        <div className="singleEvaluator">
+          <FontAwesomeIcon
+            icon="times-circle"
+            className="crossIcon"
+            onClick={this.removeEvaluatorMeasureButton}
+          />
+          <div
+            style={{ paddingRight: "30px" }}
+            onClick={this.evaluatorBoxClickHandler}
+          >
             <div>{Evaluator_Name}</div>
             <div>{Evaluator_Email}</div>
           </div>

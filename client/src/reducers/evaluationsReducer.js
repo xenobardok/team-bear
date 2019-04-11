@@ -3,14 +3,17 @@ import {
   ASSIGNED_RUBRICS_LOADING,
   VIEW_MEASURE_RUBRIC,
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
-  GRADE_STUDENT_RUBRIC_MEASURE
+  GRADE_STUDENT_RUBRIC_MEASURE,
+  LIST_ASSIGNED_TESTS
 } from "../actions/types";
 
 const initialState = {
   allRubrics: [],
   rubric: null,
   loading: true,
-  studentGrade: []
+  studentGrade: [],
+  allTests: [],
+  test: null
 };
 
 export default function(state = initialState, action) {
@@ -41,6 +44,12 @@ export default function(state = initialState, action) {
     case GRADE_STUDENT_RUBRIC_MEASURE:
       return {
         ...state,
+        loading: false
+      };
+    case LIST_ASSIGNED_TESTS:
+      return {
+        ...state,
+        allTests: action.payload,
         loading: false
       };
     default:
