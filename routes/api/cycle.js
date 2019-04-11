@@ -1117,7 +1117,6 @@ router.delete(
                 sql =
                   "SELECT * FROM Evaluators WHERE Email = " +
                   db.escape(Evaluator_Email);
-                console.log(sql);
                 db.query(sql, (err, result) => {
                   if (err) {
                     return res.status(400).json({
@@ -1136,7 +1135,6 @@ router.delete(
                     Rubric_Measure_ID +
                     " AND Evaluator_Email=" +
                     db.escape(Evaluator_Email);
-                  console.log(sql);
                   db.query(sql, (err, result) => {
                     if (err) {
                       return res.status(400).json({
