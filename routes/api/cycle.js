@@ -1378,11 +1378,6 @@ router.delete(
                   return res.status(404).json(errors);
                 }
 
-                //Threshold is %  of total students
-                //Target is target score
-                //Rubric_ID is the assigned Rubric ID
-                //add date later
-
                 sql =
                   "SELECT * FROM Evaluators WHERE Email = " +
                   db.escape(Evaluator_Email);
@@ -1427,6 +1422,7 @@ router.delete(
                               "There was some problem removing the evaluator"
                           });
                         } else {
+                          updateStudentsScore(Rubric_Measure_ID, () => {});
                           return res.status(200).json({
                             // message: "Evaluator has successfully been assigned."
                             Evaluator_Email: Evaluator_Email,
@@ -1441,6 +1437,83 @@ router.delete(
             });
           } else {
             //for test
+
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                if (isEmpty(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email cannot be empty";
+                  return res.status(404).json(errors);
+                }
+
+                if (!Validator.isEmail(Evaluator_Email)) {
+                  errors.Evaluator_Email = "Evaluator email is not valid";
+                  return res.status(404).json(errors);
+                }
+
+                sql =
+                  "SELECT * FROM Evaluators WHERE Email = " +
+                  db.escape(Evaluator_Email);
+                // console.log(sql);
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem removing the Evaluator"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res
+                      .status(400)
+                      .json({ error: "Evaluator not found" });
+                  }
+                  let Evaluator_Name = result[0].Fname + " " + result[0].Lname;
+                  sql =
+                    "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID=" +
+                    Test_Measure_ID +
+                    " AND Evaluator_Email=" +
+                    db.escape(Evaluator_Email);
+                  // console.log(sql);
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem removing the Evaluator"
+                      });
+                    }
+
+                    if (result.length > 0) {
+                      sql =
+                        "DELETE FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID= " +
+                        Test_Measure_ID +
+                        " AND Evaluator_Email =" +
+                        db.escape(Evaluator_Email);
+
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json({
+                            error:
+                              "There was some problem removing the evaluator"
+                          });
+                        } else {
+                          updateStudentsTestScore(Test_Measure_ID, () => {});
+
+                          return res.status(200).json({
+                            // message: "Evaluator has successfully been assigned."
+                            Evaluator_Email: Evaluator_Email,
+                            Evaluator_Name: Evaluator_Name
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
+              }
+            });
           }
         }
       });
@@ -1536,6 +1609,77 @@ router.post(
                       });
                     } else {
                       calculateMeasure(Rubric_Measure_ID);
+                      return res.status(200).json({
+                        Student_Name: Student_Name,
+                        Student_ID: Student_ID
+                      });
+                    }
+                  });
+                });
+              }
+            });
+          }
+          //for test Measure
+          else {
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                Student_ID = req.body.Student_ID;
+                Student_Name = req.body.Student_Name;
+
+                if (isEmpty(Student_ID)) {
+                  errors.Student_ID = "Evaluatee ID cannot be empty";
+                }
+
+                if (isEmpty(Student_Name)) {
+                  errors.Student_Name = "Evaluatee Name cannot be empty";
+                }
+
+                if (!isEmpty(errors)) {
+                  return res.status(404).json(errors);
+                }
+
+                sql =
+                  "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                  Test_Measure_ID +
+                  " AND Student_ID=" +
+                  db.escape(Student_ID);
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluatee"
+                    });
+                  }
+
+                  if (result.length > 0) {
+                    return res
+                      .status(400)
+                      .json({ error: "Evaluatee is already added" });
+                  }
+                  sql =
+                    "INSERT INTO TEST_STUDENTS (Test_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES(" +
+                    Test_Measure_ID +
+                    "," +
+                    db.escape(Student_ID) +
+                    "," +
+                    db.escape(Student_Name) +
+                    "," +
+                    0 +
+                    ")";
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem adding  the Evaluatee"
+                      });
+                    } else {
+                      calculateTestMeasure(Test_Measure_ID);
                       return res.status(200).json({
                         Student_Name: Student_Name,
                         Student_ID: Student_ID
@@ -1737,7 +1881,7 @@ router.delete(
                 db.query(sql, (err, result) => {
                   if (err) {
                     return res.status(400).json({
-                      error: "There was some problem adding the Evaluatee"
+                      error: "There was some problem removing the Evaluatee"
                     });
                   }
 
@@ -1753,7 +1897,7 @@ router.delete(
                   db.query(sql, (err, result) => {
                     if (err) {
                       return res.status(400).json({
-                        error: "There was some problem adding the Evaluatee"
+                        error: "There was some problem removing the Evaluatee"
                       });
                     } else {
                       sql =
@@ -1768,7 +1912,7 @@ router.delete(
                             error: "There was some problem adding the Evaluatee"
                           });
                         } else {
-                          calculateMeasure(Rubric_Measure_ID);
+                          updateStudentsScore(Rubric_Measure_ID, () => {});
 
                           Students = [];
 

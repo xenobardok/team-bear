@@ -8,7 +8,7 @@ const calculateMeasure = require("./calculateMeasure");
 var async = require("async");
 
 async function updateStudentsScore(Rubric_Measure_ID, callback) {
-  console.log(Rubric_Measure_ID);
+  // console.log(Rubric_Measure_ID);
 
   let sql =
     "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES  WHERE Rubric_Measure_ID =" +
@@ -22,11 +22,11 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
         let Rubric_ID = result[0].Rubric_ID;
 
         let sql =
-          "SELECT SUM(Weighted_Score) AS Overall_Score FROM STUDENTS_RUBRIC_ROWS_GRADE G  JOIN RUBRIC_ROW R ON G.Rubric_Row_ID = R.Rubric_Row_ID RIGHT OUTER JOIN RUBRIC_STUDENTS S ON S.Rubric_Student_ID=G.Rubric_Student_ID WHERE S.Student_ID=" +
+          "SELECT SUM(Weighted_Score) AS Overall_Score FROM STUDENTS_RUBRIC_ROWS_GRADE G  JOIN RUBRIC_ROW R ON G.Rubric_Row_ID = R.Rubric_Row_ID  RIGHT OUTER JOIN RUBRIC_STUDENTS S ON S.Rubric_Student_ID=G.Rubric_Student_ID JOIN RUBRIC_MEASURE_EVALUATOR E ON E.Evaluator_Email=G.Evaluator_Email AND E.Rubric_Measure_ID = S.Rubric_Measure_ID WHERE S.Student_ID=" +
           db.escape(Student_ID) +
           " AND R.Rubric_ID=" +
           Rubric_ID +
-          " GROUP BY Evaluator_Email";
+          " GROUP BY G.Evaluator_Email";
 
         // console.log(sql);
         db.query(sql, (err, result) => {

@@ -20,7 +20,7 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
         let Student_ID = row.Student_ID;
 
         let sql =
-          "SELECT AVG(Score) AS Overall_Score FROM STUDENTS_TEST_GRADE G  NATURAL JOIN TEST_STUDENTS S WHERE S.Test_Student_ID=" +
+          "SELECT AVG(Score) AS Overall_Score FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS S  JOIN TEST_MEASURE_EVALUATOR E ON E.Evaluator_Email=G.Evaluator_Email AND E.Test_Measure_ID = S.Test_Measure_ID WHERE S.Test_Student_ID=" +
           db.escape(Test_Student_ID) +
           " GROUP BY Evaluator_Email";
 
