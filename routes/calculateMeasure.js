@@ -19,10 +19,11 @@ let calculateMeasure = Rubric_Measure_ID => {
 
       //sql to find total no of students evaluated
       sql =
-        "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
+        "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
         Rubric_Measure_ID +
         " AND Rubric_ID=" +
         Rubric_ID;
+
       db.query(sql, (err, result) => {
         if (err) throw err;
         else {
