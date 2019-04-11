@@ -5,28 +5,24 @@ const passport = require("passport");
 const secret = require("../config/secret");
 const calculateMeasure = require("./calculateMeasure");
 
-var async = require("async");
-
-async function updateStudentsScore(Rubric_Measure_ID, callback) {
-  // console.log(Rubric_Measure_ID);
+async function updateStudentsTestScore(Test_Measure_ID, callback) {
+  //   console.log(Test_Measure_ID);
 
   let sql =
-    "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES  WHERE Rubric_Measure_ID =" +
-    Rubric_Measure_ID;
+    "SELECT * FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES  WHERE Test_Measure_ID =" +
+    Test_Measure_ID;
 
   db.query(sql, (err, result) => {
     if (err) throw err;
     else {
       result.forEach(row => {
+        let Test_Student_ID = row.Test_Student_ID;
         let Student_ID = row.Student_ID;
-        let Rubric_ID = result[0].Rubric_ID;
 
         let sql =
-          "SELECT SUM(Weighted_Score) AS Overall_Score FROM STUDENTS_RUBRIC_ROWS_GRADE G  JOIN RUBRIC_ROW R ON G.Rubric_Row_ID = R.Rubric_Row_ID  RIGHT OUTER JOIN RUBRIC_STUDENTS S ON S.Rubric_Student_ID=G.Rubric_Student_ID JOIN RUBRIC_MEASURE_EVALUATOR E ON E.Evaluator_Email=G.Evaluator_Email AND E.Rubric_Measure_ID = S.Rubric_Measure_ID WHERE S.Student_ID=" +
-          db.escape(Student_ID) +
-          " AND R.Rubric_ID=" +
-          Rubric_ID +
-          " GROUP BY G.Evaluator_Email";
+          "SELECT AVG(Score) AS Overall_Score FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS S  JOIN TEST_MEASURE_EVALUATOR E ON E.Evaluator_Email=G.Evaluator_Email AND E.Test_Measure_ID = S.Test_Measure_ID WHERE S.Test_Student_ID=" +
+          db.escape(Test_Student_ID) +
+          " GROUP BY Evaluator_Email";
 
         // console.log(sql);
         db.query(sql, (err, result) => {
@@ -47,12 +43,12 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
             }
             //sql to get average score of a measure
             sql =
-              "UPDATE RUBRIC_STUDENTS SET Student_Avg_Grade=" +
+              "UPDATE TEST_STUDENTS SET Student_Avg_Grade=" +
               Average_Student_Score +
-              " WHERE Rubric_Measure_ID =" +
-              Rubric_Measure_ID +
-              " AND Student_ID=" +
-              db.escape(Student_ID);
+              " WHERE Test_Measure_ID =" +
+              Test_Measure_ID +
+              " AND Test_Student_ID=" +
+              db.escape(Test_Student_ID);
 
             // console.log(sql);
             db.query(sql, (err, result) => {
@@ -62,22 +58,19 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
         });
       });
       sql =
-        "SELECT Rubric_ID, Target,Threshold FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
-        Rubric_Measure_ID;
+        "SELECT  Target,Threshold FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+        Test_Measure_ID;
 
       db.query(sql, (err, result) => {
         if (err) throw err;
         else {
-          const Rubric_ID = result[0].Rubric_ID;
           const Target = result[0].Target;
           const Threshold = result[0].Threshold;
 
           //sql to find total no of students evaluated
           sql =
-            "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
-            Rubric_Measure_ID +
-            " AND Rubric_ID=" +
-            Rubric_ID;
+            "SELECT Count(DISTINCT(Student_ID)) AS Total FROM  TEST_STUDENTS NATURAL JOIN STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+            Test_Measure_ID;
           db.query(sql, (err, result) => {
             if (err) throw err;
             else {
@@ -85,8 +78,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
 
               //sql to find the count of students with required or better grade
               sql =
-                "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
-                Rubric_Measure_ID +
+                "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                Test_Measure_ID +
                 " AND Student_Avg_Grade>=" +
                 Target;
 
@@ -105,15 +98,15 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
                     Measure_Success = db.escape("true");
                   }
 
-                  //sql to update the percent of success and isSuccess for a Rubric Measure
+                  //sql to update the percent of success and isSuccess for a Test Measure
 
                   sql =
-                    "UPDATE RUBRIC_MEASURES SET Score=" +
+                    "UPDATE TEST_MEASURES SET Score=" +
                     percent_success +
                     ", Is_Success=" +
                     Measure_Success +
-                    " WHERE Rubric_Measure_ID=" +
-                    Rubric_Measure_ID;
+                    " WHERE Test_Measure_ID=" +
+                    Test_Measure_ID;
 
                   db.query(sql, (err, result) => {
                     if (err) throw err;
@@ -130,4 +123,4 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
   });
 }
 
-module.exports = updateStudentsScore;
+module.exports = updateStudentsTestScore;
