@@ -611,7 +611,7 @@ router.get(
                 calculateMeasure(Rubric_Measure_ID);
 
                 sql =
-                  "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE WHERE Rubric_Measure_ID=" +
+                  "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Rubric_ID=" +
                   Measure.Rubric_ID;
@@ -735,13 +735,14 @@ router.get(
                 Measure.Threshold = result[0].Threshold;
                 Measure.Achieved_Threshold = result[0].Score;
                 Measure.Is_Success = result[0].Is_Success;
-                Measure.Test_Name = result[0].Test_Name;
+                Measure.Test_Name = result[0].Exam_Name;
 
                 calculateTestMeasure(Test_Measure_ID);
                 sql =
-                  "SELECT Count(DISTINCT(Student_ID)) AS Total FROM TEST_STUDENTS NATURAL JOIN STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+                  "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
                   Test_Measure_ID;
 
+                // console.log(sql);
                 db.query(sql, (err, result) => {
                   if (err) throw err;
                   else {
@@ -779,9 +780,12 @@ router.get(
                           sql =
                             " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
                             Test_Measure_ID;
-                          // console.log(sql);
+
+                          console.log(sql);
+
                           Measure.Evaluators = [];
                           db.query(sql, (err, result) => {
+                            console.log("Here");
                             if (err) res.status(400).json(err);
                             result.forEach(row => {
                               evaluator = {
@@ -1227,6 +1231,7 @@ router.post(
                           error: "There was some problem adding  the evaluator"
                         });
                       } else {
+                        updateStudentsScore(Rubric_Measure_ID, () => {});
                         return res.status(200).json({
                           // message: "Evaluator has successfully been assigned."
                           Evaluator_Email: req.body.Evaluator_Email,
@@ -1258,65 +1263,61 @@ router.post(
                       .status(400)
                       .json({ error: "There was message adding an evaluator" });
                   } else {
-                    if (result.length > 0) {
-                      return res.status(400).json({
-                        error: "An evaluator has already been assigned."
-                      });
-                    } else {
-                      if (isEmpty(Evaluator_Email)) {
-                        errors.Evaluator_Email =
-                          "Evaluator email cannot be empty";
-                        return res.status(404).json(errors);
+                    if (isEmpty(Evaluator_Email)) {
+                      errors.Evaluator_Email =
+                        "Evaluator email cannot be empty";
+                      return res.status(404).json(errors);
+                    }
+
+                    if (!Validator.isEmail(Evaluator_Email)) {
+                      errors.Evaluator_Email = "Evaluator email is not valid";
+                      return res.status(404).json(errors);
+                    }
+                    Evaluator_Email = db.escape(Evaluator_Email);
+
+                    sql =
+                      "SELECT * FROM Evaluators WHERE Email = " +
+                      Evaluator_Email;
+
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json({
+                          error: "There was some problem adding the Evaluator"
+                        });
                       }
 
-                      if (!Validator.isEmail(Evaluator_Email)) {
-                        errors.Evaluator_Email = "Evaluator email is not valid";
-                        return res.status(404).json(errors);
+                      if (result.length < 1) {
+                        return res
+                          .status(400)
+                          .json({ error: "Evaluator not found" });
                       }
-                      Evaluator_Email = db.escape(Evaluator_Email);
+                      let Evaluator_Name =
+                        result[0].Fname + " " + result[0].Lname;
 
                       sql =
-                        "SELECT * FROM Evaluators WHERE Email = " +
-                        Evaluator_Email;
+                        "INSERT INTO TEST_MEASURE_EVALUATOR (Test_Measure_ID,Evaluator_Email) VALUES(" +
+                        Test_Measure_ID +
+                        "," +
+                        Evaluator_Email +
+                        ")";
 
                       db.query(sql, (err, result) => {
                         if (err) {
                           return res.status(400).json({
-                            error: "There was some problem adding the Evaluator"
+                            error:
+                              "There was some problem adding  the evaluator"
+                          });
+                        } else {
+                          updateStudentsTestScore(Test_Measure_ID, () => {});
+
+                          return res.status(200).json({
+                            // message: "Evaluator has successfully been assigned."
+                            Evaluator_Email: req.body.Evaluator_Email,
+                            Evaluator_Name: Evaluator_Name
                           });
                         }
-
-                        if (result.length < 1) {
-                          return res
-                            .status(400)
-                            .json({ error: "Evaluator not found" });
-                        }
-                        let Evaluator_Name =
-                          result[0].Fname + " " + result[0].Lname;
-
-                        sql =
-                          "INSERT INTO TEST_MEASURE_EVALUATOR (Test_Measure_ID,Evaluator_Email) VALUES(" +
-                          Test_Measure_ID +
-                          "," +
-                          Evaluator_Email +
-                          ")";
-
-                        db.query(sql, (err, result) => {
-                          if (err) {
-                            return res.status(400).json({
-                              error:
-                                "There was some problem adding  the evaluator"
-                            });
-                          } else {
-                            return res.status(200).json({
-                              // message: "Evaluator has successfully been assigned."
-                              Evaluator_Email: req.body.Evaluator_Email,
-                              Evaluator_Name: Evaluator_Name
-                            });
-                          }
-                        });
                       });
-                    }
+                    });
                   }
                 });
               }

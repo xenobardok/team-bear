@@ -18,8 +18,10 @@ let calculateTestMeasure = Test_Measure_ID => {
 
       //sql to find total no of students evaluated
       sql =
-        "SELECT Count(DISTINCT(Student_ID)) AS Total FROM  TEST_STUDENTS NATURAL JOIN STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+        "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
         Test_Measure_ID;
+
+      // console.log(sql);
       db.query(sql, (err, result) => {
         if (err) throw err;
         else {
@@ -57,6 +59,9 @@ let calculateTestMeasure = Test_Measure_ID => {
                 " WHERE Test_Measure_ID=" +
                 Test_Measure_ID;
 
+              // console.log(Total_Students);
+
+              // console.log(sql);
               db.query(sql, (err, result) => {
                 if (err) throw err;
               });
