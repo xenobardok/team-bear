@@ -48,6 +48,42 @@ router.get(
   }
 );
 
+// @route   GET api/evaluations/tests
+// @desc    Returns the list of all the assigned Tests
+// @access  Private route
+router.get(
+  "/tests",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    Tests = [];
+    let sql =
+      "SELECT Test_Measure_ID, Exam_Name  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR WHERE Evaluator_Email =" +
+      email;
+
+    db.query(sql, (err, result) => {
+      if (err)
+        res.status(404).json({ error: "There was a problem loading it" });
+      else {
+        result.forEach(row => {
+          id = row.Test_Measure_ID;
+          name = row.Test_Name;
+
+          test = {
+            Rubric_Measure_ID: id,
+            Rubric_Name: name
+          };
+          Tests.push(test);
+        });
+        return res.status(200).json(Tests);
+      }
+    });
+  }
+);
+
 // @route   GET api/evaluations/rubrics/:RubricMeasureID
 // @desc    Returns the details about an assigned Rubric from the Rubric_Measure_ID
 // @access  Private route
@@ -170,6 +206,64 @@ router.get(
                 });
               }
             });
+          }
+        });
+      }
+    });
+  }
+);
+
+// @route   GET api/evaluations/tests/:TestMeasureID
+// @desc    Returns the details about an assigned Test from the Test_Measure_ID
+// @access  Private route
+router.get(
+  "/testMeasure/:TestMeasureID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Test_Measure_ID = req.params.TestMeasureID;
+    const Test = {};
+
+    let sql =
+      "SELECT * FROM TEST_MEASURE_EVALUATOR NATURAL JOIN TEST_MEASURES WHERE Evaluator_Email =" +
+      email +
+      " AND Test_Measure_ID =" +
+      Test_Measure_ID;
+
+    // console.log(sql);
+    db.query(sql, (err, result) => {
+      var Test = {};
+      if (err) throw err;
+      else {
+        if (result.length < 1) {
+          return res.status(404).json({ error: "Test Not Found" });
+        }
+        Test.Test_Name = result[0].Exam_Name;
+        Test.StudentsData = [];
+
+        sql =
+          "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE Test_Measure_ID=" +
+          Test_Measure_ID;
+
+        console.log(sql);
+        db.query(sql, (err, result) => {
+          if (err) return res.status(400).json(err);
+          else {
+            result.forEach(student => {
+              let Student_ID = student.Student_ID;
+              let Student_Name = student.Student_Name;
+              let Grade = student.Score;
+
+              let astudent = {
+                Student_ID: Student_ID,
+                Student_Name: Student_Name,
+                Grade: Grade
+              };
+              Test.StudentsData.push(astudent);
+            });
+            res.status(200).json(Test);
           }
         });
       }
