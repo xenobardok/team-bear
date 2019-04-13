@@ -850,7 +850,7 @@ router.post(
             errors.Measure_Name = "Measure does not exist.";
             return res.status(404).json(errors);
           }
-
+          // console.log(result[0]);
           sql =
             "UPDATE MEASURES SET Measure_label=" +
             Measure_Name +
@@ -1392,7 +1392,6 @@ router.delete(
                 sql =
                   "SELECT * FROM Evaluators WHERE Email = " +
                   db.escape(Evaluator_Email);
-                console.log(sql);
                 db.query(sql, (err, result) => {
                   if (err) {
                     return res.status(400).json({
@@ -1411,7 +1410,6 @@ router.delete(
                     Rubric_Measure_ID +
                     " AND Evaluator_Email=" +
                     db.escape(Evaluator_Email);
-                  console.log(sql);
                   db.query(sql, (err, result) => {
                     if (err) {
                       return res.status(400).json({

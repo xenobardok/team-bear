@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { ListGroup, Row, Col, Card } from "react-bootstrap";
-import { listAssignedRubrics } from "../../actions/evaluationsActions";
+import {
+  listAssignedRubrics,
+  listAssignedTests
+} from "../../actions/evaluationsActions";
 import { Link } from "react-router-dom";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
@@ -10,18 +13,27 @@ import { connect } from "react-redux";
 class Tasks extends Component {
   componentDidMount() {
     this.props.listAssignedRubrics();
+    this.props.listAssignedTests();
   }
 
   render() {
-    let { loading, allRubrics } = this.props.evaluations;
-    let rubricsList;
+    let { loading, allRubrics, allTests } = this.props.evaluations;
+    let rubricsList, testsList;
     if (loading) {
       rubricsList = <Spinner />;
+      testsList = <Spinner />;
     } else {
       rubricsList = allRubrics.map(rubric => (
         <Link to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}>
           <ListGroup.Item action key={rubric.Rubric_Name}>
             {rubric.Rubric_Name}
+          </ListGroup.Item>
+        </Link>
+      ));
+      testsList = allTests.map(test => (
+        <Link to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}>
+          <ListGroup.Item action key={test.Test_Measure_ID}>
+            {test.Test_Name}
           </ListGroup.Item>
         </Link>
       ));
@@ -40,6 +52,16 @@ class Tasks extends Component {
               </Card.Body>
             </Card>
           </Col>
+          {this.props.evaluations.allTests ? (
+            <Col>
+              <Card className="text-center">
+                <Card.Header>Tests assigned to me</Card.Header>
+                <Card.Body style={{ padding: "0px" }}>
+                  <ListGroup variant="flush">{testsList}</ListGroup>
+                </Card.Body>
+              </Card>
+            </Col>
+          ) : null}
         </Row>
       </div>
     );
@@ -49,7 +71,8 @@ class Tasks extends Component {
 Tasks.propTypes = {
   auth: PropTypes.object.isRequired,
   evaluations: PropTypes.object.isRequired,
-  listAssignedRubrics: PropTypes.func.isRequired
+  listAssignedRubrics: PropTypes.func.isRequired,
+  listAssignedTests: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -60,5 +83,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { listAssignedRubrics }
+  { listAssignedRubrics, listAssignedTests }
 )(Tasks);

@@ -4,7 +4,9 @@ import {
   ASSIGNED_RUBRICS_LOADING,
   VIEW_MEASURE_RUBRIC,
   GRADE_STUDENT_RUBRIC_MEASURE,
-  VIEW_STUDENT_GRADE_RUBRIC_MEASURE
+  VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
+  LIST_ASSIGNED_TESTS,
+  VIEW_MEASURE_TEST
 } from "./types";
 
 export const listAssignedRubrics = () => dispatch => {
@@ -38,6 +40,19 @@ export const viewRubricMeasure = RubricMeasureID => dispatch => {
     .then(res =>
       dispatch({
         type: VIEW_MEASURE_RUBRIC,
+        payload: res.data
+      })
+    )
+    .catch(err => console.log(err));
+};
+
+export const viewTestMeasure = TestMeasureID => dispatch => {
+  dispatch(setRubricsLoading());
+  axios
+    .get(`/api/evaluations/testMeasure/${TestMeasureID}`)
+    .then(res =>
+      dispatch({
+        type: VIEW_MEASURE_TEST,
         payload: res.data
       })
     )
@@ -80,4 +95,22 @@ export const gradeStudentRubricMeasure = (
       })
     )
     .catch(err => console.log(err));
+};
+
+export const listAssignedTests = () => dispatch => {
+  dispatch(setRubricsLoading());
+  axios
+    .get("/api/evaluations/tests")
+    .then(res =>
+      dispatch({
+        type: LIST_ASSIGNED_TESTS,
+        payload: res.data
+      })
+    )
+    .catch(err => {
+      dispatch({
+        type: LIST_ASSIGNED_TESTS,
+        payload: []
+      });
+    });
 };

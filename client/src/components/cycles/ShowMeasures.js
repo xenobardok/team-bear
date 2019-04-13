@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-// import { getSingleCycle } from "../../actions/cycleActions";
-import { createMeasure } from "../../actions/measureActions";
+import {
+  createMeasure,
+  updateMeasureLabel
+} from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl, Form } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import { getMeasures } from "../../actions/measureActions";
@@ -81,6 +83,8 @@ class ShowMeasures extends Component {
           key={value.Measure_ID}
           id={id}
           outcomeID={outcomeID}
+          updateMeasureLabel={this.props.updateMeasureLabel}
+          measureID={value.Measure_ID}
         />
       ));
     } else {
@@ -164,5 +168,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMeasures, createMeasure }
+  { getMeasures, createMeasure, updateMeasureLabel }
 )(ShowMeasures);

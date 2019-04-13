@@ -17,6 +17,7 @@ import Tasks from "../tasks/Tasks";
 import CreateRubric from "../rubrics/CreateRubric";
 import ShowRubric from "../rubrics/ShowRubric";
 import ViewRubric from "../tasks/ViewRubric";
+import ViewTest from "../tasks/ViewTest";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -67,6 +68,11 @@ class Dashboard extends Component {
               exact
               path="/dashboard/tasks/rubric/:rubricMeasureId(\d+)"
               component={ViewRubric}
+            />
+            <Route
+              exact
+              path="/dashboard/tasks/test/:testMeasureId(\d+)"
+              component={ViewTest}
             />
           </div>
         </main>
