@@ -736,6 +736,7 @@ router.get(
                 Measure.Achieved_Threshold = result[0].Score;
                 Measure.Is_Success = result[0].Is_Success;
                 Measure.Test_Name = result[0].Exam_Name;
+                Measure.Test_Type = result[0].Test_Type;
 
                 calculateTestMeasure(Test_Measure_ID);
                 sql =
@@ -1048,6 +1049,7 @@ router.post(
                 //Target is target score
                 //Test_Name is the name of Test
                 //add date later
+                // Test_Type is the type of the test
 
                 const { errors, isValid } = validateUpdateTest(req.body);
 
@@ -1058,6 +1060,11 @@ router.post(
                 Threshold = req.body.Threshold;
                 Target = req.body.Target;
                 const Exam_Name = db.escape(req.body.Test_Name);
+                const Test_Type = db.escape(req.body.Score); // 'pass/fail' or 'score'
+
+                if (Test_Type == "pass/fail") {
+                  Target = 1;
+                }
 
                 sql =
                   "UPDATE TEST_MEASURES SET Threshold=" +
@@ -1066,6 +1073,8 @@ router.post(
                   Target +
                   ", Exam_Name=" +
                   Exam_Name +
+                  ", Test_Type =" +
+                  Test_Type +
                   " WHERE Test_Measure_ID=" +
                   Test_Measure_ID;
 
@@ -1089,6 +1098,7 @@ router.post(
                           Measure.Achieved_Threshold = result[0].Score;
                           Measure.Is_Success = result[0].Is_Success;
                           Measure.Test_Name = result[0].Test_Name;
+                          Measure.Test_Type = result[0].Test_Type;
 
                           calculateTestMeasure(Test_Measure_ID);
                           sql =
