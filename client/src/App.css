@@ -193,6 +193,10 @@ svg.fa-bars{
 td {
   padding: 0px !important;
 }
+
+.test td{
+  padding: .75rem !important;
+}
 textarea {
   resize: none !important;
   /* height: 130px !important;
@@ -464,3 +468,4 @@ a:hover {
 .newa:hover{
   color: #7b344a;
 }
+

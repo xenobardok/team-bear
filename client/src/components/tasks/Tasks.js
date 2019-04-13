@@ -31,7 +31,7 @@ class Tasks extends Component {
         </Link>
       ));
       testsList = allTests.map(test => (
-        <Link to={`/dashboard/tasks/rubric/${test.Test_Measure_ID}`}>
+        <Link to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}>
           <ListGroup.Item action key={test.Test_Measure_ID}>
             {test.Test_Name}
           </ListGroup.Item>
