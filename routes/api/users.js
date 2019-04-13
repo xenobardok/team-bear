@@ -54,7 +54,9 @@ router.post("/register", (req, res) => {
           lastname +
           ", Password = PASSWORD(" +
           password +
-          ")";
+          ") " +
+          "isActive = 'true' WHERE Email = " +
+          email;
         db.query(sql, function(err, result) {
           if (result) {
             return res.status(200).json(result);
@@ -197,11 +199,11 @@ router.get(
   }
 );
 
-// @route   GET api/users/members
-// @desc    Return list of all the members in that department
+// @route   GET api/users/evaluators
+// @desc    Return list of all the evaluators in that department
 // @access  Private
 router.get(
-  "/members",
+  "/evaluators",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const profiles = [];
@@ -210,8 +212,7 @@ router.get(
     const dept = db.escape(req.user.dept);
 
     if (type == "Admin") {
-      let sql =
-        "SELECT * FROM Evaluators where isActive='true' AND Dept_ID = " + dept;
+      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
       db.query(sql, (err, result) => {
         if (err) res.status(400).json(err);
         else {
@@ -223,10 +224,11 @@ router.get(
             name = name + " " + row.Lname;
 
             let email = row.Email;
-
+            let isActive = row.isActive;
             let profile = {
               Name: name,
-              Email: email
+              Email: email,
+              isActive: isActive
             };
 
             profiles.push(profile);
