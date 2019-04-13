@@ -195,8 +195,8 @@ td {
 }
 textarea {
   resize: none !important;
-  height: 130px !important;
-  font-size: 14px !important;
+  /* height: 130px !important;
+  font-size: 14px !important; */
 }
 
 .measureTitle {

@@ -54,6 +54,28 @@ export const createMeasure = (
     });
 };
 
+export const updateMeasureLabel = (
+  Outcome_ID,
+  Measure_ID,
+  Measure_Name
+) => dispatch => {
+  console.log(Measure_Name);
+  axios
+    .post(`/api/cycle/outcome/${Outcome_ID}/measure/${Measure_ID}/edit`, {
+      Measure_Name: Measure_Name
+    })
+    .then(res => {
+      // dispatch(getMeasures(Outcome_ID));
+      console.log("measure name updated");
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
 export const setMeasureLoading = () => ({
   type: MEASURE_LOADING
 });

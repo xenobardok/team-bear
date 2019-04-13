@@ -849,7 +849,7 @@ router.post(
             errors.Measure_Name = "Measure does not exist.";
             return res.status(404).json(errors);
           }
-
+          // console.log(result[0]);
           sql =
             "UPDATE MEASURES SET Measure_label=" +
             Measure_Name +
