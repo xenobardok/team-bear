@@ -6,7 +6,6 @@ import {
 } from "../../actions/evaluationsActions";
 import { Link } from "react-router-dom";
 import Spinner from "../../common/Spinner";
-import isEmpty from "../../validation/isEmpty";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
@@ -24,17 +23,19 @@ class Tasks extends Component {
       testsList = <Spinner />;
     } else {
       rubricsList = allRubrics.map(rubric => (
-        <Link to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}>
-          <ListGroup.Item action key={rubric.Rubric_Name}>
-            {rubric.Rubric_Name}
-          </ListGroup.Item>
+        <Link
+          to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}
+          key={rubric.Rubric_Name}
+        >
+          <ListGroup.Item action>{rubric.Rubric_Name}</ListGroup.Item>
         </Link>
       ));
       testsList = allTests.map(test => (
-        <Link to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}>
-          <ListGroup.Item action key={test.Test_Measure_ID}>
-            {test.Test_Name}
-          </ListGroup.Item>
+        <Link
+          to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}
+          key={test.Test_Measure_ID}
+        >
+          <ListGroup.Item action>{test.Test_Name}</ListGroup.Item>
         </Link>
       ));
     }

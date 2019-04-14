@@ -28,12 +28,12 @@ class Evaluators extends Component {
     if (loading || isEmpty(evaluators)) {
       evaluatorsList = <Spinner />;
     } else {
-      evaluatorsList = evaluators.map(value => (
-        <>
+      evaluatorsList = evaluators.map((value, index) => (
+        <ListGroup variant="flush" key={value.Email}>
           {value.isActive === "true" ? (
             <ListGroup.Item key={value.Email}>{value.Name}</ListGroup.Item>
           ) : (
-            <ListGroup.Item key={value.Email}>
+            <ListGroup.Item>
               {value.Email}
               <div style={{ float: "right" }}>
                 <Badge variant="warning">
@@ -46,16 +46,14 @@ class Evaluators extends Component {
               </div>
             </ListGroup.Item>
           )}
-        </>
+        </ListGroup>
       ));
     }
     return (
       <>
         <Card className="text-center">
           <Card.Header>List of Evaluators</Card.Header>
-          <Card.Body style={{ padding: "0px" }}>
-            <ListGroup variant="flush">{evaluatorsList}</ListGroup>
-          </Card.Body>
+          <Card.Body style={{ padding: "0px" }}>{evaluatorsList}</Card.Body>
           <Card.Footer
             onClick={() => this.setState({ modalShow: true })}
             style={{ cursor: "pointer" }}

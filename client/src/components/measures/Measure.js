@@ -66,11 +66,11 @@ class Measure extends Component {
 
   componentDidUpdate = prevProps => {
     if (this.props.measures.singleMeasure) {
-      console.log(
-        this.props.measures.singleMeasure !==
-          prevProps.measures.singleMeasure &&
-          !isEmpty(this.props.measures.singleMeasure)
-      );
+      // console.log(
+      //   this.props.measures.singleMeasure !==
+      //     prevProps.measures.singleMeasure &&
+      //     !isEmpty(this.props.measures.singleMeasure)
+      // );
       // console.log(this.props.measures.singleMeasure);
       if (
         this.props.measures.singleMeasure !==
@@ -99,7 +99,7 @@ class Measure extends Component {
     }
 
     if (this.props.profile.evaluators !== prevProps.profile.evaluators) {
-      console.log(this.props.profile.evaluators);
+      // console.log(this.props.profile.evaluators);
       this.setState({
         allEvaluators: this.props.profile.evaluators
       });
@@ -305,7 +305,6 @@ class Measure extends Component {
             </span>
             <h5>Evaluators</h5>
             <div className="evaluators">
-              {console.log(isEmpty(Evaluators))}
               {!isEmpty(Evaluators)
                 ? Evaluators.map(value => (
                     <EvaluatorBox
@@ -466,9 +465,11 @@ class Measure extends Component {
                     {": "}
                   </p>
                   <ol>
-                    {this.state.unevaluatedStudents.students.map(student => (
-                      <li>{student}</li>
-                    ))}
+                    {this.state.unevaluatedStudents.students.map(
+                      (student, index) => (
+                        <li key={index + 5000}>{student}</li>
+                      )
+                    )}
                   </ol>
                 </div>
               )}
