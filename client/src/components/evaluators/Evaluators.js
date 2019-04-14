@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Card, ListGroup, Badge } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getEvaluators } from "../../actions/profileActions";
+import { getEvaluators, addEvaluator } from "../../actions/profileActions";
 import isEmpty from "../../validation/isEmpty";
 import Spinner from "../../common/Spinner";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -64,7 +64,11 @@ class Evaluators extends Component {
             &nbsp;&nbsp;Invite an Evaluator
           </Card.Footer>
         </Card>
-        <AddEvaluator show={this.state.modalShow} onHide={modalClose} />
+        <AddEvaluator
+          show={this.state.modalShow}
+          onHide={modalClose}
+          addEvaluator={this.props.addEvaluator}
+        />
       </>
     );
   }
@@ -84,5 +88,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getEvaluators }
+  { getEvaluators, addEvaluator }
 )(Evaluators);

@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Form, ListGroup, Card, Button } from "react-bootstrap";
+import {
+  Form,
+  ListGroup,
+  Card,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -48,17 +55,22 @@ class Editable extends Component {
                 {this.props.value.Cycle_Name}
               </ListGroup.Item>
             </Link>
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
-              onClick={this.editHandler}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit {this.props.value.Cycle_Name}</Tooltip>}
             >
-              <FontAwesomeIcon icon="edit" className="edit" />
-            </div>
+              <div
+                style={{
+                  display: "inline",
+                  alignSelf: "center",
+                  padding: "0px 5px",
+                  cursor: "pointer"
+                }}
+                onClick={this.editHandler}
+              >
+                <FontAwesomeIcon icon="edit" className="edit" />
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>

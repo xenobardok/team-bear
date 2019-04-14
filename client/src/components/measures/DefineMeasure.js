@@ -90,6 +90,16 @@ export default class DefineMeasure extends Component {
     });
   };
 
+  cancelButtonHandler = e => {
+    this.setState({
+      isEditing: !this.state.isEditing,
+      Threshold: this.props.Threshold,
+      Class_Name: this.props.Class_Name,
+      Rubric_Name: this.props.Rubric_Name,
+      Target: this.props.Target
+    });
+  };
+
   componentDidUpdate = (prevProps, prevState) => {
     let {
       Threshold,
@@ -240,7 +250,7 @@ export default class DefineMeasure extends Component {
                 <FontAwesomeIcon
                   icon="times-circle"
                   className="crossIcon"
-                  onClick={this.editToggle}
+                  onClick={this.cancelButtonHandler}
                 />
               </OverlayTrigger>
               <OverlayTrigger

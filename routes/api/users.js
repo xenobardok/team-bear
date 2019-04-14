@@ -3,7 +3,8 @@ const router = express.Router(),
   db = require("../../config/connection"),
   jwt = require("jsonwebtoken"),
   secret = require("../../config/secret"),
-  passport = require("passport");
+  passport = require("passport"),
+  nodemailer = require("nodemailer");
 
 // Loading Input Validation
 const validateRegisterInput = require("../../validation/register");
@@ -105,8 +106,32 @@ router.post(
             errors.message = "There was some problem adding a new user.";
             return res.status(400).json(errors);
           }
-          errors.message = "User successfully added.";
-          return res.status(200).json(errors);
+          user = {
+            Email: req.body.newEmail,
+            isActive: "false"
+          };
+
+          var transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "ulmevaluations@gmail.com",
+              pass: "thebestulm"
+            }
+          });
+
+          const mailOptions = {
+            from: "ulmevaluations@gmail.com", // sender address
+            to: req.body.newEmail, // list of receivers
+            subject: "Welcome to ULM Evaluations ", // Subject line
+            html: `<div><p style="text-align: center">Welcome to ULM Evaluations</p>
+              <p style="text-align: center">Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P>
+            </div>` // plain text body
+          };
+          transporter.sendMail(mailOptions, function(err, info) {
+            if (err) console.log(err);
+            else console.log("Email sent!");
+          });
+          return res.status(200).json(user);
         });
       }
     } else {
