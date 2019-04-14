@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { Route, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getSingleCycle, createNewOutcome } from "../../actions/cycleActions";
+import {
+  getSingleCycle,
+  createNewOutcome,
+  updateOutcome
+} from "../../actions/cycleActions";
 import { getMeasures } from "../../actions/measureActions";
 import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
 import isEmpty from "../../validation/isEmpty";
@@ -30,7 +34,7 @@ class ShowCycle extends Component {
     if (this.props.match.params.id) {
       this.props.getSingleCycle(this.props.match.params.id);
     }
-    if (this.props.auth.user.type === "Evaluator") {
+    if (this.props.auth.user.type !== "Admin") {
       this.props.history.push("/dashboard");
     }
   }
@@ -47,7 +51,8 @@ class ShowCycle extends Component {
 
   createNewOutcome = e => {
     this.setState({
-      showNewOutcome: true
+      showNewOutcome: true,
+      errors: ""
     });
   };
 
@@ -86,15 +91,6 @@ class ShowCycle extends Component {
     const { cycle, loading, allCycles } = this.props.cycles;
     let outcomes = "";
     let cycleName = "";
-    createOutcome = (
-      <Card.Footer
-        style={{ cursor: "pointer" }}
-        onClick={this.createNewOutcome.bind(this)}
-      >
-        <FontAwesomeIcon icon="plus" />
-        &nbsp;&nbsp;&nbsp;Create a new outcome
-      </Card.Footer>
-    );
     if (loading) {
       outcomes = <Spinner />;
     } else if (cycle === null) {
@@ -107,26 +103,9 @@ class ShowCycle extends Component {
             value={value}
             key={value.Outcome_ID}
             cycleID={this.props.cycles.cycle.Cycle_ID}
+            updateOutcome={this.props.updateOutcome}
+            errors={this.props.errors}
           />
-          // <ListGroup key={value.Outcome_ID} className="edit-post">
-          //   <ListGroup.Item
-          //     action
-          //     name={value.Outcome_ID}
-          //     onClick={this.onClickHandler}
-          //   >
-          //     {value.Outcome_Name}
-          //   </ListGroup.Item>
-          //   <div
-          //     style={{
-          //       display: "inline",
-          //       alignSelf: "center",
-          //       padding: "0px 5px"
-          //     }}
-          //     onClick={this.editHandler}
-          //   >
-          //     <FontAwesomeIcon icon="edit" />
-          //   </div>
-          // </ListGroup>
         ));
       }
     }
@@ -177,7 +156,13 @@ class ShowCycle extends Component {
                   </Button>
                 </div>
               ) : null}
-              {createOutcome}
+              <Card.Footer
+                style={{ cursor: "pointer" }}
+                onClick={this.createNewOutcome}
+              >
+                <FontAwesomeIcon icon="plus" />
+                &nbsp;&nbsp;&nbsp;Create a new outcome
+              </Card.Footer>
             </Card>
           </div>
           <Route
@@ -205,5 +190,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getSingleCycle, getMeasures, createNewOutcome }
+  { getSingleCycle, getMeasures, createNewOutcome, updateOutcome }
 )(ShowCycle);

@@ -2,7 +2,8 @@ import {
   GET_CURRENT_PROFILE,
   PROFILE_LOADING,
   CLEAR_CURRENT_PROFILE,
-  GET_EVALUATORS
+  GET_EVALUATORS,
+  ADD_EVALUATOR
 } from "../actions/types";
 
 const initialState = {
@@ -34,6 +35,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         evaluators: action.payload
+      };
+    case ADD_EVALUATOR:
+      return {
+        ...state,
+        loading: false,
+        evaluators: [...state.evaluators, action.payload]
       };
     default:
       return state;

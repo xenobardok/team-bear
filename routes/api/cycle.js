@@ -137,9 +137,14 @@ router.post(
                   .status(400)
                   .json({ error: "There was some problem adding it" });
               else {
-                let Cycle_ID = db.escape(result.insertId);
+                let Cycle_ID = result.insertId;
 
-                res.status(200).json((cycle = { Cycle_ID: Cycle_ID }));
+                res.status(200).json(
+                  (cycle = {
+                    Cycle_ID: Cycle_ID,
+                    Cycle_Name: req.body.Cycle_Name
+                  })
+                );
               }
             });
           }
@@ -736,6 +741,7 @@ router.get(
                 Measure.Achieved_Threshold = result[0].Score;
                 Measure.Is_Success = result[0].Is_Success;
                 Measure.Test_Name = result[0].Exam_Name;
+                Measure.Test_Type = result[0].Test_Type;
 
                 calculateTestMeasure(Test_Measure_ID);
                 sql =
@@ -849,7 +855,7 @@ router.post(
             errors.Measure_Name = "Measure does not exist.";
             return res.status(404).json(errors);
           }
-
+          // console.log(result[0]);
           sql =
             "UPDATE MEASURES SET Measure_label=" +
             Measure_Name +
@@ -875,7 +881,7 @@ router.post(
 );
 
 // @route   POST api/cycle/measures/:measureID/update
-// @desc    Update a Rubric Measure details
+// @desc    Update a Measure details
 // @access  Private
 router.post(
   "/measure/:measureID/update",
@@ -1048,6 +1054,7 @@ router.post(
                 //Target is target score
                 //Test_Name is the name of Test
                 //add date later
+                // Test_Type is the type of the test
 
                 const { errors, isValid } = validateUpdateTest(req.body);
 
@@ -1058,6 +1065,11 @@ router.post(
                 Threshold = req.body.Threshold;
                 Target = req.body.Target;
                 const Exam_Name = db.escape(req.body.Test_Name);
+                const Test_Type = db.escape(req.body.Test_Type); // 'pass/fail' or 'score'
+
+                if (Test_Type == "pass/fail") {
+                  Target = 1;
+                }
 
                 sql =
                   "UPDATE TEST_MEASURES SET Threshold=" +
@@ -1066,6 +1078,8 @@ router.post(
                   Target +
                   ", Exam_Name=" +
                   Exam_Name +
+                  ", Test_Type =" +
+                  Test_Type +
                   " WHERE Test_Measure_ID=" +
                   Test_Measure_ID;
 
@@ -1089,6 +1103,7 @@ router.post(
                           Measure.Achieved_Threshold = result[0].Score;
                           Measure.Is_Success = result[0].Is_Success;
                           Measure.Test_Name = result[0].Test_Name;
+                          Measure.Test_Type = result[0].Test_Type;
 
                           calculateTestMeasure(Test_Measure_ID);
                           sql =

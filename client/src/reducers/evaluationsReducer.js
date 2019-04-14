@@ -4,7 +4,8 @@ import {
   VIEW_MEASURE_RUBRIC,
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
   GRADE_STUDENT_RUBRIC_MEASURE,
-  LIST_ASSIGNED_TESTS
+  LIST_ASSIGNED_TESTS,
+  VIEW_MEASURE_TEST
 } from "../actions/types";
 
 const initialState = {
@@ -51,6 +52,12 @@ export default function(state = initialState, action) {
         ...state,
         allTests: action.payload,
         loading: false
+      };
+    case VIEW_MEASURE_TEST:
+      return {
+        ...state,
+        loading: false,
+        test: action.payload
       };
     default:
       return state;

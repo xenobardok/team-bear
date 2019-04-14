@@ -9,8 +9,13 @@ import {
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-library.add(faEdit);
+import {
+  faEdit,
+  faCheckCircle,
+  faTrash,
+  faWindowClose
+} from "@fortawesome/free-solid-svg-icons";
+library.add(faEdit, faCheckCircle, faTrash, faWindowClose);
 
 class EditableStudentList extends Component {
   constructor(props) {
@@ -65,7 +70,7 @@ class EditableStudentList extends Component {
               key="top"
               placement="right"
               overlay={
-                <Tooltip id="add-evaluator">
+                <Tooltip id="edit-student">
                   Edit {this.state.Student_Name}
                 </Tooltip>
               }
@@ -105,13 +110,30 @@ class EditableStudentList extends Component {
               onChange={this.onChangeHandler}
             />
             <InputGroup.Append>
-              <Button variant="primary">Update</Button>
-              <Button variant="primary" onClick={this.deleteStudent}>
-                Delete
-              </Button>
-              <Button variant="outline-secondary" onClick={this.editStudent}>
-                Cancel
-              </Button>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Save Changes</Tooltip>}
+              >
+                <Button variant="primary">
+                  <FontAwesomeIcon icon="check-circle" />
+                </Button>
+              </OverlayTrigger>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Delete Student</Tooltip>}
+              >
+                <Button variant="primary" onClick={this.deleteStudent}>
+                  <FontAwesomeIcon icon="trash" />
+                </Button>
+              </OverlayTrigger>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Cancel</Tooltip>}
+              >
+                <Button variant="outline-secondary" onClick={this.editStudent}>
+                  <FontAwesomeIcon icon="window-close" />
+                </Button>
+              </OverlayTrigger>
             </InputGroup.Append>
           </InputGroup>
         </li>

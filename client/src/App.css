@@ -193,10 +193,14 @@ svg.fa-bars{
 td {
   padding: 0px !important;
 }
+
+.test td{
+  padding: .75rem !important;
+}
 textarea {
   resize: none !important;
-  height: 130px !important;
-  font-size: 14px !important;
+  /* height: 130px !important;
+  font-size: 14px !important; */
 }
 
 .measureTitle {
@@ -298,6 +302,21 @@ tr th,tr td{
   justify-content: space-around;
 }
 
+.cycle-outcome .list-group-item:focus, .list-group-item:hover {
+    color: #ffffff !important;
+  text-decoration: none;
+  background-color: #7b3449;
+  cursor: pointer;
+}
+
+.cycle-outcome a{
+  color: inherit;
+}
+
+.cycle-outcome a:hover{
+  color: inherit;
+}
+
 .cycle-view h2 {
   margin: 0px 0px 50px 0px;
 }
@@ -332,6 +351,10 @@ tr th,tr td{
 .label-defination .input-group.small{
   width: 150px;
   display: inline-flex;
+}
+
+.label-defination .form-group {
+  margin-bottom: 0px;
 }
 
 .label-defination .input-group.rubric {
@@ -464,3 +487,4 @@ a:hover {
 .newa:hover{
   color: #7b344a;
 }
+

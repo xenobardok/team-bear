@@ -35,11 +35,17 @@ import Stats from "./Stats";
 import DefineMeasure from "./DefineMeasure";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faEdit,
+  faUserPlus,
+  faCheckCircle,
+  faWindowClose
+} from "@fortawesome/free-solid-svg-icons";
 import EditableStudentList from "./EditableStudentList";
 import { toastr } from "react-redux-toastr";
 import "./measure.css";
-library.add(faPlus, faEdit, faUserPlus);
+library.add(faPlus, faEdit, faUserPlus, faCheckCircle, faWindowClose);
 
 class Measure extends Component {
   constructor(props) {
@@ -272,6 +278,7 @@ class Measure extends Component {
             measureDefination={this.measureDefination}
             Measure_Type={this.state.Measure_Type}
             Test_Name={this.state.Test_Name}
+            Test_Type={this.props.measures.singleMeasure.Test_Type}
           />
           <br />
           <Stats
@@ -405,19 +412,28 @@ class Measure extends Component {
                             onChange={this.onChangeHandler}
                           />
                           <InputGroup.Append>
-                            <Button
-                              variant="primary"
-                              onClick={this.addStudentButton}
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={<Tooltip>Save Changes</Tooltip>}
                             >
-                              Add Student
-                            </Button>
-
-                            <Button
-                              variant="outline-secondary"
-                              onClick={this.toggleAddStudentButton}
+                              <Button
+                                variant="primary"
+                                onClick={this.addStudentButton}
+                              >
+                                <FontAwesomeIcon icon="check-circle" />
+                              </Button>
+                            </OverlayTrigger>
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={<Tooltip>Cancel</Tooltip>}
                             >
-                              Cancel
-                            </Button>
+                              <Button
+                                variant="outline-secondary"
+                                onClick={this.toggleAddStudentButton}
+                              >
+                                <FontAwesomeIcon icon="window-close" />
+                              </Button>
+                            </OverlayTrigger>
                           </InputGroup.Append>
                         </InputGroup>
                       </Form>

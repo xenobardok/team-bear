@@ -176,7 +176,7 @@ class ShowRubric extends Component {
         displayRubric = <h2>Rubric not found!</h2>;
       }
     }
-    return <div>{displayRubric}</div>;
+    return <div className="show-rubric">{displayRubric}</div>;
   }
 }
 

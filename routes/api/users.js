@@ -3,7 +3,8 @@ const router = express.Router(),
   db = require("../../config/connection"),
   jwt = require("jsonwebtoken"),
   secret = require("../../config/secret"),
-  passport = require("passport");
+  passport = require("passport"),
+  nodemailer = require("nodemailer");
 
 // Loading Input Validation
 const validateRegisterInput = require("../../validation/register");
@@ -54,7 +55,9 @@ router.post("/register", (req, res) => {
           lastname +
           ", Password = PASSWORD(" +
           password +
-          ")";
+          ") " +
+          "isActive = 'true' WHERE Email = " +
+          email;
         db.query(sql, function(err, result) {
           if (result) {
             return res.status(200).json(result);
@@ -103,8 +106,32 @@ router.post(
             errors.message = "There was some problem adding a new user.";
             return res.status(400).json(errors);
           }
-          errors.message = "User successfully added.";
-          return res.status(200).json(errors);
+          user = {
+            Email: req.body.newEmail,
+            isActive: "false"
+          };
+
+          var transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "ulmevaluations@gmail.com",
+              pass: "thebestulm"
+            }
+          });
+
+          const mailOptions = {
+            from: "ulmevaluations@gmail.com", // sender address
+            to: req.body.newEmail, // list of receivers
+            subject: "Welcome to ULM Evaluations ", // Subject line
+            html: `<div><p style="text-align: center">Welcome to ULM Evaluations</p>
+              <p style="text-align: center">Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P>
+            </div>` // plain text body
+          };
+          transporter.sendMail(mailOptions, function(err, info) {
+            if (err) console.log(err);
+            else console.log("Email sent!");
+          });
+          return res.status(200).json(user);
         });
       }
     } else {
@@ -197,11 +224,11 @@ router.get(
   }
 );
 
-// @route   GET api/users/members
-// @desc    Return list of all the members in that department
+// @route   GET api/users/evaluators
+// @desc    Return list of all the evaluators in that department
 // @access  Private
 router.get(
-  "/members",
+  "/evaluators",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const profiles = [];
@@ -210,8 +237,7 @@ router.get(
     const dept = db.escape(req.user.dept);
 
     if (type == "Admin") {
-      let sql =
-        "SELECT * FROM Evaluators where isActive='true' AND Dept_ID = " + dept;
+      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
       db.query(sql, (err, result) => {
         if (err) res.status(400).json(err);
         else {
@@ -223,10 +249,11 @@ router.get(
             name = name + " " + row.Lname;
 
             let email = row.Email;
-
+            let isActive = row.isActive;
             let profile = {
               Name: name,
-              Email: email
+              Email: email,
+              isActive: isActive
             };
 
             profiles.push(profile);

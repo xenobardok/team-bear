@@ -11,29 +11,56 @@ class EditableMeasureList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditable: false
+      isEditable: false,
+      Measure_Name: this.props.value.Measure_Name
     };
   }
 
   editHandler = e => {
     let { isEditable } = this.state;
     this.setState({
-      isEditable: !isEditable
+      isEditable: !isEditable,
+      Measure_Name: this.props.value.Measure_Name
     });
   };
 
+  updateMeasureLabel = e => {
+    e.preventDefault();
+    let { outcomeID, measureID } = this.props;
+    this.props.updateMeasureLabel(
+      outcomeID,
+      measureID,
+      this.state.Measure_Name
+    );
+
+    this.setState({
+      isEditable: !this.state.isEditable
+    });
+  };
+
+  onChangeHandler = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
   render() {
     let { isEditable } = this.state;
 
     return (
       <>
         {isEditable ? (
-          <Form>
+          <Form onSubmit={this.updateMeasureLabel} style={{ padding: "10px" }}>
             <Form.Control
+              name="Measure_Name"
               type="text"
-              defaultValue={this.props.value.Measure_Name}
+              as="textarea"
+              rows="2"
+              value={this.state.Measure_Name}
+              onChange={this.onChangeHandler}
             />
-            <Button variant="primary">Update</Button>
+            <Button variant="primary" onClick={this.updateMeasureLabel}>
+              Update
+            </Button>
             <Button variant="secondary" onClick={this.editHandler}>
               Cancel
             </Button>
@@ -52,7 +79,7 @@ class EditableMeasureList extends Component {
               style={{ flexGrow: "1" }}
             >
               <ListGroup.Item action key={this.props.value.Measure_ID}>
-                {this.props.value.Measure_Name}
+                {this.state.Measure_Name}
               </ListGroup.Item>
             </Link>
             <div

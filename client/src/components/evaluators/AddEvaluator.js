@@ -1,17 +1,13 @@
 import React, { Component } from "react";
-import Spinner from "../../common/Spinner";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { createCycle } from "../../actions/cycleActions";
+import { addEvaluator } from "../../actions/evaluationsActions";
 import classnames from "classnames";
 import { Button, Modal, Form, Col, Row } from "react-bootstrap";
+import isEmpty from "../../validation/isEmpty";
 
-class CreateCycle extends React.Component {
+class AddEvaluator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: "", errors: {} };
+    this.state = { email: "", errors: {} };
   }
 
   onChange = e => {
@@ -20,16 +16,42 @@ class CreateCycle extends React.Component {
     });
   };
   submitHander = event => {
-    event.preventDefault();
-    this.props.createCycle({ Cycle_Name: this.state.name });
+    if (!isEmpty(this.state.email)) {
+      event.preventDefault();
+      this.props.addEvaluator(this.state.email);
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          email: ""
+        },
+        email: ""
+      });
+      this.hideModal();
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          email: "Email should not be empty"
+        }
+      });
+    }
+  };
+
+  hideModal = () => {
     this.props.onHide();
+    this.setState({
+      errors: {
+        ...this.state.errors,
+        email: ""
+      }
+    });
   };
 
   render() {
     return (
       <Modal
         show={this.props.show}
-        onHide={this.props.onHide}
+        onHide={this.hideModal}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -37,33 +59,34 @@ class CreateCycle extends React.Component {
         <Form className="createCycle" onSubmit={this.submitHander}>
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Create a new Cycle
+              Add Evaluator
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Group as={Row} controlId="formHorizontalRubric">
               <Form.Label column sm={4}>
-                Name of the Cycle:
+                Email of the Evaluator:
               </Form.Label>
               <Col sm={8}>
                 <Form.Control
-                  name="name"
-                  type="text"
-                  placeholder="Eg. Assessment Cycle 2018 - 2019"
-                  value={this.state.name}
-                  onChange={this.onChange.bind(this)}
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Eg. someone@someemail.com"
+                  value={this.state.email}
+                  onChange={this.onChange}
                   className={classnames("", {
-                    "is-invalid": this.props.errors.Cycle_Name
+                    "is-invalid": this.state.errors.email
                   })}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {this.props.errors.Cycle_Name}
+                  {this.state.errors.email}
                 </Form.Control.Feedback>
               </Col>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.submitHander}>Create</Button>
+            <Button onClick={this.submitHander}>Send Invite</Button>
           </Modal.Footer>
         </Form>
       </Modal>
@@ -71,20 +94,4 @@ class CreateCycle extends React.Component {
   }
 }
 
-CreateCycle.propTypes = {
-  auth: PropTypes.object.isRequired,
-  createCycle: PropTypes.func.isRequired
-};
-
-const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors,
-  cycles: state.cycles
-});
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { createCycle }
-  )(CreateCycle)
-);
+export default AddEvaluator;
