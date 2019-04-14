@@ -46,7 +46,7 @@ export default class DefineMeasure extends Component {
       scale: "",
       complete: true,
       Test_Name: Test_Name,
-      Test_Type: "score"
+      Test_Type: Test_Type
     };
   }
 
@@ -174,29 +174,24 @@ export default class DefineMeasure extends Component {
       });
     }
 
-    if (Test_Type !== this.state.Test_Type) {
-      // console.log(T);
-      if (Test_Type === null) {
+    if (this.state.Test_Type === null) {
+      if (Test_Type !== prevProps.Test_Type) {
         this.setState({
           Test_Type: "score"
-        });
-      } else {
-        this.setState({
-          Test_Type: Test_Type
         });
       }
     }
   };
 
   onChangeHandler = e => {
-    if (
-      this.props.Measure_Type === "test" &&
-      this.state.Test_Type === "pass/fail" &&
-      e.target.name === "Target"
-    ) {
-      console.log(e.target.value);
-      this.setState({});
-    }
+    // if (
+    //   this.props.Measure_Type === "test" &&
+    //   this.state.Test_Type === "pass/fail" &&
+    //   e.target.name === "Target"
+    // ) {
+    //   console.log(e.target.value);
+    //   this.setState({});
+    // }
     this.setState({
       [e.target.name]: e.target.value
     });
