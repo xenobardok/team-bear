@@ -51,7 +51,6 @@ export default class DefineMeasure extends Component {
   }
 
   checkButtonHandler = e => {
-    console.log(this.props.Measure_Type);
     if (this.props.Measure_Type === "rubric") {
       let measureValue = {
         Threshold: this.state.Threshold.toString(),
@@ -103,7 +102,6 @@ export default class DefineMeasure extends Component {
       Measure_Type,
       Test_Name
     } = this.props;
-    console.log(Test_Type);
     if (Threshold !== prevProps.Threshold) {
       if (Measure_Type === "rubric") {
         if (
@@ -176,7 +174,7 @@ export default class DefineMeasure extends Component {
       });
     }
 
-    if (Test_Type !== prevProps.Test_Type) {
+    if (Test_Type !== this.state.Test_Type) {
       // console.log(T);
       if (Test_Type === null) {
         this.setState({
