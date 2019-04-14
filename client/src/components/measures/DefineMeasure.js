@@ -10,6 +10,7 @@ import {
   Row,
   Col
 } from "react-bootstrap";
+import { toastr } from "react-redux-toastr";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,7 +18,6 @@ import {
   faCheck,
   faEdit
 } from "@fortawesome/free-solid-svg-icons";
-import PropTypes from "prop-types";
 library.add(faTimesCircle, faCheck, faEdit);
 
 export default class DefineMeasure extends Component {
@@ -51,12 +51,22 @@ export default class DefineMeasure extends Component {
   }
 
   checkButtonHandler = e => {
+    let {
+      Threshold,
+      Target,
+      Test_Name,
+      Test_Type,
+      Class_Name,
+      rubric,
+      scale
+    } = this.state;
+
     if (this.props.Measure_Type === "rubric") {
       let measureValue = {
-        Threshold: this.state.Threshold.toString(),
-        Class_Name: this.state.Class_Name,
-        Rubric_ID: this.state.rubric,
-        Target: this.state.scale.toString()
+        Threshold: Threshold.toString(),
+        Class_Name: Class_Name,
+        Rubric_ID: rubric,
+        Target: scale.toString()
       };
       console.log(measureValue);
       this.setState({
@@ -64,17 +74,26 @@ export default class DefineMeasure extends Component {
       });
       this.props.measureDefination(measureValue);
     } else if (this.props.Measure_Type === "test") {
-      let measureValue = {
-        Threshold: this.state.Threshold.toString(),
-        Target: this.state.Target.toString(),
-        Test_Name: this.state.Test_Name,
-        Test_Type: this.state.Test_Type
-      };
-      console.log(measureValue);
-      this.setState({
-        isEditing: false
-      });
-      this.props.measureDefination(measureValue);
+      if (
+        isEmpty(Threshold) ||
+        isEmpty(Target) ||
+        isEmpty(Test_Name) ||
+        isEmpty(Test_Type)
+      ) {
+        toastr.warning("One or more input field is empty!");
+      } else {
+        let measureValue = {
+          Threshold: Threshold.toString(),
+          Target: Target.toString(),
+          Test_Name: Test_Name,
+          Test_Type: Test_Type
+        };
+        console.log(measureValue);
+        this.setState({
+          isEditing: false
+        });
+        this.props.measureDefination(measureValue);
+      }
     }
   };
 
@@ -105,7 +124,6 @@ export default class DefineMeasure extends Component {
       Threshold,
       Rubric_Name,
       Target,
-      allRubrics,
       rubricScales,
       Class_Name,
       Test_Type,
@@ -340,6 +358,7 @@ export default class DefineMeasure extends Component {
               <InputGroup className="mb-3 small px-2">
                 <FormControl
                   name="Threshold"
+                  type="number"
                   placeholder="Eg. 75"
                   aria-label="percentage"
                   aria-describedby="percentage"

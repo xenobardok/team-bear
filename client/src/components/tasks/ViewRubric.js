@@ -15,14 +15,11 @@ import {
   Card,
   ListGroup,
   Button,
-  Container,
   Alert
 } from "react-bootstrap";
 import { toastr } from "react-redux-toastr";
-import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-// import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
 
 let scalesRow, dataRow;
 

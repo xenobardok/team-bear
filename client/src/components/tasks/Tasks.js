@@ -6,7 +6,6 @@ import {
 } from "../../actions/evaluationsActions";
 import { Link } from "react-router-dom";
 import Spinner from "../../common/Spinner";
-import isEmpty from "../../validation/isEmpty";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 

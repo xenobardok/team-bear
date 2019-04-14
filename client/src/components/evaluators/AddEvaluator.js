@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { addEvaluator } from "../../actions/evaluationsActions";
 import classnames from "classnames";
 import { Button, Modal, Form, Col, Row } from "react-bootstrap";
 import isEmpty from "../../validation/isEmpty";
 
-class AddEvaluator extends React.Component {
+class AddEvaluator extends Component {
   constructor(props) {
     super(props);
     this.state = { email: "", errors: {} };
