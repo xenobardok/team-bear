@@ -15,6 +15,8 @@ const rubrics = require("./routes/api/rubrics");
 const dashboard = require("./routes/api/dashboard");
 const cycle = require("./routes/api/cycle");
 const evaluations = require("./routes/api/evaluations");
+const reports = require("./routes/api/reports");
+
 //passport middleware
 app.use(passport.initialize());
 
@@ -29,6 +31,7 @@ app.use("/api/rubrics", rubrics);
 app.use("/api/cycle", cycle);
 app.use("/api/dashboard", dashboard);
 app.use("/api/evaluations", evaluations);
+app.use("/api/reports", reports);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
