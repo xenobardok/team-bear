@@ -302,6 +302,21 @@ tr th,tr td{
   justify-content: space-around;
 }
 
+.cycle-outcome .list-group-item:focus, .list-group-item:hover {
+    color: #ffffff !important;
+  text-decoration: none;
+  background-color: #7b3449;
+  cursor: pointer;
+}
+
+.cycle-outcome a{
+  color: inherit;
+}
+
+.cycle-outcome a:hover{
+  color: inherit;
+}
+
 .cycle-view h2 {
   margin: 0px 0px 50px 0px;
 }

@@ -4,8 +4,10 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  GET_MEASURES
+  GET_MEASURES,
+  CREATE_CYCLE
 } from "./types";
+import { toastr } from "react-redux-toastr";
 
 export const getCycles = () => dispatch => {
   axios.get("/api/cycle").then(res =>
@@ -49,7 +51,14 @@ export const createCycle = cycleName => dispatch => {
         "Successfully created axios request. Dispatching result now!"
       );
       // console.log(res.data.Cycle_ID);
-      dispatch(getSingleCycle(res.data.Cycle_ID));
+      dispatch({
+        type: CREATE_CYCLE,
+        payload: res.data
+      });
+      toastr.success(
+        "New Cycle Created!",
+        res.data.Cycle_Name + " created successfully!"
+      );
     })
     .catch(err => {
       dispatch({

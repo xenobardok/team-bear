@@ -55,13 +55,12 @@ class App extends Component {
           </div>
         </Router>
         <ReduxToastr
-          timeOut={4000}
+          timeOut={5000}
           newestOnTop={false}
           preventDuplicates
-          position="bottom-right"
+          position="top-right"
           transitionIn="fadeIn"
           transitionOut="fadeOut"
-          progressBar
           closeOnToastrClick
         />
       </Provider>

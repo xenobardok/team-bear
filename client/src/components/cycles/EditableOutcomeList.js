@@ -1,10 +1,14 @@
 import React, { Component } from "react";
-import { Form, ListGroup, Card, Button } from "react-bootstrap";
+import {
+  Form,
+  ListGroup,
+  Card,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import isEmpty from "../../validation/isEmpty";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { updateOutcome, getSingleCycle } from "../../actions/cycleActions";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -52,7 +56,8 @@ class EditableOutcomeList extends Component {
   editHandler = e => {
     let { isEditable } = this.state;
     this.setState({
-      isEditable: !isEditable
+      isEditable: !isEditable,
+      errors: ""
     });
   };
 
@@ -60,9 +65,10 @@ class EditableOutcomeList extends Component {
     let { isEditable } = this.state;
     this.setState({
       isEditable: !isEditable,
-      errors: ""
+      errors: "",
+      textValue: this.props.value.Outcome_Name
     });
-    this.props.getSingleCycle(this.props.cycleID);
+    // this.props.getSingleCycle(this.props.cycleID);
   };
 
   updateOutcomeButton = e => {
@@ -109,17 +115,22 @@ class EditableOutcomeList extends Component {
                 {this.state.textValue}
               </ListGroup.Item>
             </Link>
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
-              onClick={this.editHandler}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit Outcome</Tooltip>}
             >
-              <FontAwesomeIcon icon="edit" className="edit" />
-            </div>
+              <div
+                style={{
+                  display: "inline",
+                  alignSelf: "center",
+                  padding: "0px 5px",
+                  cursor: "pointer"
+                }}
+                onClick={this.editHandler}
+              >
+                <FontAwesomeIcon icon="edit" className="edit" />
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>
@@ -127,15 +138,4 @@ class EditableOutcomeList extends Component {
   }
 }
 
-EditableOutcomeList.propTypes = {
-  updateOutcome: PropTypes.func.isRequired
-  // errors: PropTypes.object.isRequired
-};
-
-const mapStateToProps = state => ({
-  errors: state.errors
-});
-export default connect(
-  mapStateToProps,
-  { getSingleCycle, updateOutcome }
-)(EditableOutcomeList);
+export default EditableOutcomeList;

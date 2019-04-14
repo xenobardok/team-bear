@@ -1,4 +1,9 @@
-import { GET_CYCLES, GET_SINGLE_CYCLE, LOADING } from "../actions/types";
+import {
+  GET_CYCLES,
+  GET_SINGLE_CYCLE,
+  LOADING,
+  CREATE_CYCLE
+} from "../actions/types";
 
 const initialState = {
   activeCycle: 1,
@@ -25,6 +30,12 @@ export default function(state = initialState, action) {
         ...state,
         cycle: action.payload,
         loading: false
+      };
+    case CREATE_CYCLE:
+      return {
+        ...state,
+        loading: false,
+        allCycles: [...state.allCycles, action.payload]
       };
     default:
       return state;
