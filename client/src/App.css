@@ -338,6 +338,10 @@ tr th,tr td{
   display: inline-flex;
 }
 
+.label-defination .form-group {
+  margin-bottom: 0px;
+}
+
 .label-defination .input-group.rubric {
   width: 300px;
   display: inline-flex;

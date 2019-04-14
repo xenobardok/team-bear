@@ -272,6 +272,7 @@ class Measure extends Component {
             measureDefination={this.measureDefination}
             Measure_Type={this.state.Measure_Type}
             Test_Name={this.state.Test_Name}
+            Test_Type={this.props.measures.singleMeasure.Test_Type}
           />
           <br />
           <Stats

@@ -876,7 +876,7 @@ router.post(
 );
 
 // @route   POST api/cycle/measures/:measureID/update
-// @desc    Update a Rubric Measure details
+// @desc    Update a Measure details
 // @access  Private
 router.post(
   "/measure/:measureID/update",
@@ -1060,7 +1060,7 @@ router.post(
                 Threshold = req.body.Threshold;
                 Target = req.body.Target;
                 const Exam_Name = db.escape(req.body.Test_Name);
-                const Test_Type = db.escape(req.body.Score); // 'pass/fail' or 'score'
+                const Test_Type = db.escape(req.body.Test_Type); // 'pass/fail' or 'score'
 
                 if (Test_Type == "pass/fail") {
                   Target = 1;
