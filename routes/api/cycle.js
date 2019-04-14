@@ -137,9 +137,14 @@ router.post(
                   .status(400)
                   .json({ error: "There was some problem adding it" });
               else {
-                let Cycle_ID = db.escape(result.insertId);
+                let Cycle_ID = result.insertId;
 
-                res.status(200).json((cycle = { Cycle_ID: Cycle_ID }));
+                res.status(200).json(
+                  (cycle = {
+                    Cycle_ID: Cycle_ID,
+                    Cycle_Name: req.body.Cycle_Name
+                  })
+                );
               }
             });
           }

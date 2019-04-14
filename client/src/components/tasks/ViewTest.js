@@ -84,7 +84,7 @@ const EditableSingleGrade = props => {
           type="number"
           placeholder="Eg. 75"
           value={grade}
-          onChange={e => updateGrade(e.target.value)}
+          onChange={e => updateGrade(Number(e.target.value))}
         />
       </Form.Group>
     </Form>

@@ -60,9 +60,10 @@ class EditableOutcomeList extends Component {
     let { isEditable } = this.state;
     this.setState({
       isEditable: !isEditable,
-      errors: ""
+      errors: "",
+      textValue: this.props.value.Outcome_Name
     });
-    this.props.getSingleCycle(this.props.cycleID);
+    // this.props.getSingleCycle(this.props.cycleID);
   };
 
   updateOutcomeButton = e => {

@@ -22,6 +22,7 @@ class CreateCycle extends React.Component {
   submitHander = event => {
     event.preventDefault();
     this.props.createCycle({ Cycle_Name: this.state.name });
+    this.props.onHide();
   };
 
   render() {
