@@ -118,6 +118,7 @@ router.get(
         Rubric.Rows_Num = result[0].Rows_Num;
         Rubric.Column_Num = result[0].Column_Num;
         Rubric.Scale = [];
+        Rubric.isWeighted = result[0].isWeighted;
         Rubric.Students = [];
         Rubric.data = [];
 

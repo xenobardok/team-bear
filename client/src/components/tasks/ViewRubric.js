@@ -15,9 +15,10 @@ import {
   Card,
   ListGroup,
   Button,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
-
+import { toastr } from "react-redux-toastr";
 import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
@@ -126,7 +127,6 @@ class ViewRubric extends Component {
   }
 
   studentClickHandler = (student, e) => {
-    console.log(e);
     this.setState({
       Student_ID: student.Student_ID,
       Student_Name: student.Student_Name
@@ -140,6 +140,26 @@ class ViewRubric extends Component {
       this.state.Student_ID,
       this.state.Student_Grades
     );
+  };
+
+  boxClickHandler = (index, rowIndex, e) => {
+    if (!isEmpty(this.state.Student_ID)) {
+      console.log(index, rowIndex);
+      // console.log(this.state.rubricScale[index]);
+      // console.log(e.target.value);
+      let value = this.state.rubricScale[rowIndex];
+
+      if (value === 0 || this.state.rubricScale.includes(value)) {
+        const gradeIndex = index;
+        const allGrades = [...this.state.Student_Grades];
+        const updatedGrade = value;
+        allGrades[gradeIndex] = updatedGrade;
+        this.setState({ Student_Grades: allGrades });
+        // console.log(gradeIndex);
+      }
+    } else {
+      toastr.info("Please select a student first!");
+    }
   };
   render() {
     let { rubric, loading } = this.props.evaluations;
@@ -166,8 +186,12 @@ class ViewRubric extends Component {
                 disabled
               />
             </td>
-            {singleRow.Column_values.map(cell => (
-              <td key={cell.Column_ID} className="borderedCell">
+            {singleRow.Column_values.map((cell, rowIndex) => (
+              <td
+                key={cell.Column_ID}
+                className="borderedCell"
+                onClick={this.boxClickHandler.bind(this, index, rowIndex)}
+              >
                 <FormControl
                   as="textarea"
                   aria-label="With textarea"
@@ -177,8 +201,6 @@ class ViewRubric extends Component {
                 />
               </td>
             ))}
-            {/* {console.log(this.state.Student_Grades[index])} */}
-            {/* {!isEmpty(this.state.Student_Grades[index]) ? ( */}
             <td className="borderedCell">
               <FormControl
                 name={"Student_Grades[" + index + "]"}
@@ -194,12 +216,17 @@ class ViewRubric extends Component {
         displayRubric = (
           <div style={{ margin: "0px auto", maxWidth: "1200px" }}>
             <h2>{rubric.Rubric_Name}</h2>
-            <h4 className="text-center">
-              {isEmpty(this.state.Student_Name)
-                ? "Please select a Student to grade:"
-                : "Grading: " + this.state.Student_Name}
-            </h4>
-            <br />
+            <h5>
+              {isEmpty(this.state.Student_Name) ? (
+                <Alert variant="info" className="text-center">
+                  Please select a student to start grading
+                </Alert>
+              ) : (
+                <Alert variant="primary" className="text-center">
+                  Grading: <strong>{this.state.Student_Name}</strong>
+                </Alert>
+              )}
+            </h5>
             <Row>
               <Col sm={9}>
                 <Table bordered striped>
