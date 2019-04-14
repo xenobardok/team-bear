@@ -42,7 +42,7 @@ export const clearCurrentProfile = () => {
 
 export const getEvaluators = () => dispatch => {
   axios
-    .get("/api/users/members")
+    .get("/api/users/evaluators")
     .then(res =>
       dispatch({
         type: GET_EVALUATORS,

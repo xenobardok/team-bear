@@ -12,7 +12,9 @@ import {
   faTasks,
   faFileAlt,
   faEnvelope,
-  faCircleNotch
+  faCircleNotch,
+  faTable,
+  faUsers
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faBars,
@@ -21,7 +23,9 @@ library.add(
   faTasks,
   faFileAlt,
   faEnvelope,
-  faCircleNotch
+  faCircleNotch,
+  faTable,
+  faUsers
 );
 
 class SideBar extends Component {
@@ -72,11 +76,19 @@ class SideBar extends Component {
           <FontAwesomeIcon icon="file-alt" />
           &nbsp;&nbsp;Reports [NW]
         </Link>
-        <hr className="label" />
         {this.props.auth.user.type === "Admin" ? (
-          <Link to="/dashboard/rubrics">Rubrics</Link>
+          <Link to="/dashboard/rubrics">
+            <FontAwesomeIcon icon="table" />
+            &nbsp;&nbsp;Rubrics
+          </Link>
         ) : null}
         {this.props.auth.user.type === "Admin" ? (
+          <Link to="/dashboard/evaluators">
+            <FontAwesomeIcon icon="users" />
+            &nbsp;&nbsp;Evaluators
+          </Link>
+        ) : null}
+        {/* {this.props.auth.user.type === "Admin" ? (
           <div className="label" style={{ display: "flex" }}>
             <div style={{ display: "inline" }}>
               <p style={{ display: "inline" }}>Edit mode: &nbsp;&nbsp;</p>
@@ -86,7 +98,7 @@ class SideBar extends Component {
               onChange={this.onToggle}
             />
           </div>
-        ) : null}
+        ) : null} */}
       </Menu>
     );
   }

@@ -6,7 +6,9 @@ import {
   InputGroup,
   FormControl,
   Tooltip,
-  OverlayTrigger
+  OverlayTrigger,
+  Row,
+  Col
 } from "react-bootstrap";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +30,8 @@ export default class DefineMeasure extends Component {
       allRubrics,
       rubricScales,
       Class_Name,
-      Test_Name
+      Test_Name,
+      Test_Type
     } = this.props;
 
     this.state = {
@@ -42,18 +45,12 @@ export default class DefineMeasure extends Component {
       rubric: "",
       scale: "",
       complete: true,
-      Test_Name: Test_Name
+      Test_Name: Test_Name,
+      Test_Type: "score"
     };
   }
 
-  componentDidMount = prevProps => {
-    this.setState({
-      status: "editing"
-    });
-  };
-
   checkButtonHandler = e => {
-    console.log(this.props.Measure_Type);
     if (this.props.Measure_Type === "rubric") {
       let measureValue = {
         Threshold: this.state.Threshold.toString(),
@@ -70,7 +67,8 @@ export default class DefineMeasure extends Component {
       let measureValue = {
         Threshold: this.state.Threshold.toString(),
         Target: this.state.Target.toString(),
-        Test_Name: this.state.Test_Name
+        Test_Name: this.state.Test_Name,
+        Test_Type: this.state.Test_Type
       };
       console.log(measureValue);
       this.setState({
@@ -82,7 +80,7 @@ export default class DefineMeasure extends Component {
 
   getScales = e => {
     console.log(e.target.name, e.target.value);
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ rubric: e.target.value });
     this.props.getSingleRubricScale(e.target.value);
   };
 
@@ -99,11 +97,13 @@ export default class DefineMeasure extends Component {
       Target,
       allRubrics,
       rubricScales,
-      Class_Name
+      Class_Name,
+      Test_Type,
+      Measure_Type,
+      Test_Name
     } = this.props;
-
-    if (this.props.Threshold !== prevProps.Threshold) {
-      if (this.props.Measure_Type === "rubric") {
+    if (Threshold !== prevProps.Threshold) {
+      if (Measure_Type === "rubric") {
         if (
           isEmpty(Threshold) ||
           isEmpty(Class_Name) ||
@@ -120,8 +120,8 @@ export default class DefineMeasure extends Component {
             complete: true
           });
         }
-      } else if (this.props.Measure_Type === "test") {
-        if (isEmpty(Threshold) || isEmpty(Target)) {
+      } else if (Measure_Type === "test") {
+        if (isEmpty(Threshold) || isEmpty(Target) || Test_Type === null) {
           this.setState({
             isEditing: true,
             complete: false
@@ -136,48 +136,75 @@ export default class DefineMeasure extends Component {
     }
 
     if (
-      this.props.Threshold !== prevProps.Threshold
+      Threshold !== prevProps.Threshold
       // isEmpty(this.state.Threshold)
     ) {
       this.setState({
-        Threshold: this.props.Threshold
+        Threshold: Threshold
       });
     }
 
-    if (this.props.Class_Name !== prevProps.Class_Name) {
+    if (Class_Name !== prevProps.Class_Name) {
       this.setState({
-        Class_Name: this.props.Class_Name
+        Class_Name: Class_Name
       });
     }
 
-    if (this.props.Rubric_Name !== prevProps.Rubric_Name) {
+    if (Rubric_Name !== prevProps.Rubric_Name) {
       this.setState({
-        Rubric_Name: this.props.Rubric_Name
+        Rubric_Name: Rubric_Name
       });
     }
 
-    if (this.props.Target !== prevProps.Target) {
+    if (Target !== prevProps.Target) {
       this.setState({
-        Target: this.props.Target
+        Target: Target
       });
     }
 
-    if (this.props.rubricScales !== prevProps.rubricScales) {
+    if (rubricScales !== prevProps.rubricScales) {
       this.setState({
-        rubricScales: this.props.rubricScales
+        rubricScales: rubricScales
       });
     }
 
-    if (this.props.Test_Name !== prevProps.Test_Name) {
+    if (Test_Name !== prevProps.Test_Name) {
       this.setState({
-        Test_Name: this.props.Test_Name
+        Test_Name: Test_Name
       });
+    }
+
+    if (Test_Type !== this.state.Test_Type) {
+      // console.log(T);
+      if (Test_Type === null) {
+        this.setState({
+          Test_Type: "score"
+        });
+      } else {
+        this.setState({
+          Test_Type: Test_Type
+        });
+      }
     }
   };
 
   onChangeHandler = e => {
+    if (
+      this.props.Measure_Type === "test" &&
+      this.state.Test_Type === "pass/fail" &&
+      e.target.name === "Target"
+    ) {
+      console.log(e.target.value);
+      this.setState({});
+    }
     this.setState({
       [e.target.name]: e.target.value
+    });
+  };
+
+  handleOptionChange = e => {
+    this.setState({
+      Test_Type: e.target.value
     });
   };
   render() {
@@ -189,7 +216,8 @@ export default class DefineMeasure extends Component {
       rubricScales,
       Class_Name,
       complete,
-      Test_Name
+      Test_Name,
+      Test_Type
     } = this.state;
     let measureDefination;
     let scaleOptions;
@@ -255,6 +283,50 @@ export default class DefineMeasure extends Component {
           </h5>
 
           <div className="label-defination px-2">
+            {this.state.isEditing && this.props.Measure_Type === "test" ? (
+              <Form.Group as={Row} controlId="weightedRubric" className="px-2">
+                <Form.Label column sm={2}>
+                  Type of the Test?
+                </Form.Label>
+                <Col sm={10} style={{ display: "flex", alignItems: "center" }}>
+                  <div className="custom-control custom-radio">
+                    <input
+                      type="radio"
+                      id="customRadio1"
+                      name="Test_Type"
+                      className="custom-control-input"
+                      value="score"
+                      checked={Test_Type === "score"}
+                      onChange={this.handleOptionChange}
+                    />
+                    <label
+                      className="custom-control-label"
+                      htmlFor="customRadio1"
+                    >
+                      Score
+                    </label>
+                    &nbsp;&nbsp;
+                  </div>
+                  <div className="custom-control custom-radio">
+                    <input
+                      type="radio"
+                      id="customRadio2"
+                      name="Test_Type"
+                      className="custom-control-input"
+                      value="pass/fail"
+                      checked={Test_Type === "pass/fail"}
+                      onChange={this.handleOptionChange}
+                    />
+                    <label
+                      className="custom-control-label"
+                      htmlFor="customRadio2"
+                    >
+                      Pass/Fail
+                    </label>
+                  </div>
+                </Col>
+              </Form.Group>
+            ) : null}
             {!this.state.isEditing ? (
               <span>
                 <strong>{Threshold}</strong> %
@@ -348,24 +420,54 @@ export default class DefineMeasure extends Component {
               </>
             ) : (
               <>
-                <span> must receive </span>
-                {!this.state.isEditing ? (
-                  <span>
-                    <strong>{Target}</strong>
-                  </span>
+                {this.state.Test_Type === "score" ? (
+                  <>
+                    <span> must receive </span>
+                    {!this.state.isEditing ? (
+                      <span>
+                        <strong>{Target}</strong>
+                      </span>
+                    ) : (
+                      <InputGroup className="mb-3 small px-2">
+                        <FormControl
+                          name="Target"
+                          placeholder="eg. 50"
+                          aria-label=""
+                          aria-describedby="coursename"
+                          value={this.state.Target}
+                          onChange={this.onChangeHandler}
+                        />
+                      </InputGroup>
+                    )}
+                    <span> or more in </span>
+                  </>
                 ) : (
-                  <InputGroup className="mb-3 small px-2">
-                    <FormControl
-                      name="Target"
-                      placeholder="eg. 50"
-                      aria-label=""
-                      aria-describedby="coursename"
-                      value={this.state.Target}
-                      onChange={this.onChangeHandler}
-                    />
-                  </InputGroup>
+                  <>
+                    <span> must </span>
+                    {!this.state.isEditing ? (
+                      <span>
+                        <strong>
+                          {Number(Target) === 1 ? <>Pass</> : <>Fail</>}
+                        </strong>
+                      </span>
+                    ) : (
+                      <InputGroup className="mb-3 small px-2">
+                        <Form.Control
+                          name="Target"
+                          as="select"
+                          onChange={this.onChangeHandler}
+                          value={this.state.Target}
+                        >
+                          <option value="">Choose one:</option>
+                          <option value="1">Pass</option>
+                          <option value="0">Fail</option>
+                        </Form.Control>
+                      </InputGroup>
+                    )}
+                    <span> in </span>
+                  </>
                 )}
-                <span> or more in </span>
+
                 {!this.state.isEditing ? (
                   <span>
                     <strong>{Test_Name}</strong>

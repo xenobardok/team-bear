@@ -2,28 +2,12 @@ import React, { Component, useState } from "react";
 // import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import {
-  viewTestMeasure,
-  viewStudentGradeRubricMeasure,
-  gradeStudentRubricMeasure
-} from "../../actions/evaluationsActions";
-import {
-  Table,
-  Form,
-  Row,
-  Col,
-  Card,
-  ListGroup,
-  Button,
-  Container
-} from "react-bootstrap";
+import { viewTestMeasure } from "../../actions/evaluationsActions";
+import { Table, Form, Container } from "react-bootstrap";
 
-import classnames from "classnames";
+// import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-// import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
-
-let scalesRow, dataRow;
 
 class ViewTest extends Component {
   constructor(props) {
