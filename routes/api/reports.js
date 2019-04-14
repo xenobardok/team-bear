@@ -41,7 +41,7 @@ router.get(
         if (err) res.send(err);
         else {
           if (result.length < 1) {
-            errors.Outcome_Name = "Measure not found";
+            errors.Measure = "Measure not found";
             return res.status(200).json(errors);
           }
 

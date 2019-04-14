@@ -787,7 +787,7 @@ router.get(
                             " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
                             Test_Measure_ID;
 
-                          console.log(sql);
+                          // console.log(sql);
 
                           Measure.Evaluators = [];
                           db.query(sql, (err, result) => {
@@ -1066,10 +1066,6 @@ router.post(
                 Target = req.body.Target;
                 const Exam_Name = db.escape(req.body.Test_Name);
                 const Test_Type = db.escape(req.body.Test_Type); // 'pass/fail' or 'score'
-
-                if (Test_Type == "pass/fail") {
-                  Target = 1;
-                }
 
                 sql =
                   "UPDATE TEST_MEASURES SET Threshold=" +
