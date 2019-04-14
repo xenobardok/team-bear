@@ -167,6 +167,7 @@ router.get(
                     result.forEach(row => {
                       var Rubric_Row_ID = row.Rubric_Row_ID;
                       var Sort_Index = row.Sort_Index;
+                      var Rubric_Row_Weight = row.Rubric_Row_Weight;
                       var Measure_Factor = row.Measure_Factor;
                       var Column_values = [];
                       var newSql2 =
@@ -192,7 +193,8 @@ router.get(
                           var eachRow = {
                             Rubric_Row_ID: Rubric_Row_ID,
                             Measure_Factor: Measure_Factor,
-                            Column_values: Column_values
+                            Column_values: Column_values,
+                            Rubric_Row_Weight: Rubric_Row_Weight
                           };
                           Rubric.data.push(eachRow);
                           rowIndex++;

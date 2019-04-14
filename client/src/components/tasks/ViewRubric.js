@@ -35,7 +35,8 @@ class ViewRubric extends Component {
       gradeEdit: false,
       Student_Grades: [],
       SubmitGrade: false,
-      rubricScale: []
+      rubricScale: [],
+      Weighted_Grades: []
     };
   }
 
@@ -65,17 +66,18 @@ class ViewRubric extends Component {
           emptyArray.push(0);
         }
         this.setState({
-          Student_Grades: emptyArray
+          Student_Grades: emptyArray,
+          Weighted_Grades: emptyArray
         });
       }
     }
 
     if (!isEmpty(this.state.Student_ID)) {
       if (this.state.Student_ID !== prevState.Student_ID) {
-        console.log(
-          this.props.match.params.rubricMeasureId,
-          this.state.Student_ID
-        );
+        // console.log(
+        //   this.props.match.params.rubricMeasureId,
+        //   this.state.Student_ID
+        // );
         this.props.viewStudentGradeRubricMeasure(
           this.props.match.params.rubricMeasureId,
           this.state.Student_ID
@@ -88,8 +90,16 @@ class ViewRubric extends Component {
         this.props.evaluations.studentGrade !==
         prevProps.evaluations.studentGrade
       ) {
+        // console.log(this.props.evaluations.studentGrade.score);
+        let newWeightArray = [];
+        this.props.evaluations.studentGrade.score.map((score, index) =>
+          newWeightArray.push(
+            (score * this.state.weight[index].Rubric_Row_Weight) / 100
+          )
+        );
         this.setState({
-          Student_Grades: this.props.evaluations.studentGrade.score
+          Student_Grades: this.props.evaluations.studentGrade.score,
+          Weighted_Grades: newWeightArray
         });
       }
     }
@@ -104,25 +114,60 @@ class ViewRubric extends Component {
         this.setState({
           rubricScale: newScale
         });
+
+        let newWeight = [];
+        this.props.evaluations.rubric.data.forEach(element => {
+          newWeight.push({
+            Rubric_Row_ID: element.Rubric_Row_ID,
+            Rubric_Row_Weight: element.Rubric_Row_Weight
+          });
+        });
+
+        this.setState({
+          weight: newWeight
+        });
       }
     }
+
+    // if (
+    //   this.props.evaluations.rubric.data !== prevProps.evaluations.rubric.data
+    // ) {
+    //   console.log(this.props.evaluations.rubric.data);
   };
 
   onChangeHandlerArray(index, e) {
-    const re = /^[0-9\b]+$/;
-    console.log(e.target.value);
     let value = Number(e.target.value);
-    // console.log(e.target.value);
-    if (
-      value === 0 ||
-      (re.test(value) && this.state.rubricScale.includes(value))
-    ) {
-      const gradeIndex = index;
-      const allGrades = [...this.state.Student_Grades];
-      const updatedGrade = value;
-      allGrades[gradeIndex] = updatedGrade;
-      this.setState({ Student_Grades: allGrades });
-      // console.log(gradeIndex);
+    this.changeStudentGrade(index, value);
+  }
+
+  changeStudentGrade(index, value) {
+    if (!isEmpty(this.state.Student_ID)) {
+      const re = /^[0-9\b]+$/;
+      // console.log(e.target.value);
+      if (
+        value === 0 ||
+        (re.test(value) && this.state.rubricScale.includes(value))
+      ) {
+        /* For Grade */
+        const gradeIndex = index;
+        const allGrades = [...this.state.Student_Grades];
+        const updatedGrade = value;
+        allGrades[gradeIndex] = updatedGrade;
+
+        /* For Grade Weight */
+        const allWeightValues = [...this.state.Weighted_Grades];
+        const updatedWeight =
+          (value * this.state.weight[index].Rubric_Row_Weight) / 100;
+        allWeightValues[index] = updatedWeight;
+
+        this.setState({
+          Student_Grades: allGrades,
+          Weighted_Grades: allWeightValues
+        });
+        // console.log(gradeIndex);
+      }
+    } else {
+      toastr.info("Please select a student first!");
     }
   }
 
@@ -143,23 +188,8 @@ class ViewRubric extends Component {
   };
 
   boxClickHandler = (index, rowIndex, e) => {
-    if (!isEmpty(this.state.Student_ID)) {
-      console.log(index, rowIndex);
-      // console.log(this.state.rubricScale[index]);
-      // console.log(e.target.value);
-      let value = this.state.rubricScale[rowIndex];
-
-      if (value === 0 || this.state.rubricScale.includes(value)) {
-        const gradeIndex = index;
-        const allGrades = [...this.state.Student_Grades];
-        const updatedGrade = value;
-        allGrades[gradeIndex] = updatedGrade;
-        this.setState({ Student_Grades: allGrades });
-        // console.log(gradeIndex);
-      }
-    } else {
-      toastr.info("Please select a student first!");
-    }
+    let value = this.state.rubricScale[rowIndex];
+    this.changeStudentGrade(index, value);
   };
   render() {
     let { rubric, loading } = this.props.evaluations;
@@ -211,6 +241,18 @@ class ViewRubric extends Component {
                 onChange={this.onChangeHandlerArray.bind(this, index)}
               />
             </td>
+            {rubric.isWeighted === "true" ? (
+              <td key="Score" className="borderedCell">
+                <FormControl
+                  name={"Student_Grades[" + index + "]"}
+                  as="textarea"
+                  aria-label="With textarea"
+                  value={this.state.Weighted_Grades[index]}
+                  className="grade centerAlign cells"
+                  disabled
+                />
+              </td>
+            ) : null}
           </tr>
         ));
         displayRubric = (
@@ -232,19 +274,14 @@ class ViewRubric extends Component {
                 <Table bordered striped>
                   <thead>
                     <tr className="header">
-                      <th
-                        key="Criteria"
-                        className="measureTitle centerAlign borderedCell"
-                      >
+                      <th className="measureTitle centerAlign borderedCell">
                         Criteria
                       </th>
                       {scalesRow}
-                      <th
-                        key="Score"
-                        className="grade centerAlign borderedCell"
-                      >
-                        Score
-                      </th>
+                      <th className="grade centerAlign borderedCell">Score</th>
+                      {rubric.isWeighted === "true" ? (
+                        <th className="grade centerAlign borderedCell">WS</th>
+                      ) : null}
                     </tr>
                   </thead>
                   <tbody>{dataRow}</tbody>
