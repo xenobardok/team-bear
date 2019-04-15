@@ -6,7 +6,8 @@ import {
   GRADE_STUDENT_RUBRIC_MEASURE,
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
   LIST_ASSIGNED_TESTS,
-  VIEW_MEASURE_TEST
+  VIEW_MEASURE_TEST,
+  GET_ERRORS
 } from "./types";
 import { toastr } from "react-redux-toastr";
 export const listAssignedRubrics = () => dispatch => {
@@ -98,6 +99,10 @@ export const gradeStudentRubricMeasure = (
       toastr.success("Student Graded!");
     })
     .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
       console.log("error");
       toastr.error(err.response.data);
     });
