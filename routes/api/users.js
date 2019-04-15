@@ -32,6 +32,7 @@ router.post("/register", (req, res) => {
   } else {
     let email = db.escape(req.body.email);
     let sql = "SELECT * FROM Evaluators WHERE email = " + email;
+    console.log(sql);
     db.query(sql, (err, result) => {
       if (result.length > 0 && result[0].isActive === "true") {
         errors.email = "User already exists, please login!";
@@ -55,10 +56,14 @@ router.post("/register", (req, res) => {
           lastname +
           ", Password = PASSWORD(" +
           password +
-          ") " +
-          "isActive = 'true' WHERE Email = " +
+          "), " +
+          "isActive = " +
+          db.escape("true") +
+          " WHERE Email = " +
           email;
+        console.log(sql);
         db.query(sql, function(err, result) {
+          console.log(err);
           if (result) {
             return res.status(200).json(result);
           } else if (err) {
