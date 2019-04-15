@@ -89,13 +89,16 @@ export const gradeStudentRubricMeasure = (
       { Score: Score }
     )
     .then(res => {
-      dispatch({
-        type: GRADE_STUDENT_RUBRIC_MEASURE,
-        payload: res.data
-      });
+      // dispatch({
+      //   type: GRADE_STUDENT_RUBRIC_MEASURE,
+      //   payload: res.data
+      // });
+      console.log(res.data);
+      console.log("Successful");
       toastr.success("Student Graded!");
     })
     .catch(err => {
+      console.log("error");
       toastr.error(err.response.data);
     });
 };
