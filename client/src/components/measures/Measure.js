@@ -33,6 +33,7 @@ import isEmpty from "../../validation/isEmpty";
 import EvaluatorBox from "./EvaluatorBox";
 import Stats from "./Stats";
 import DefineMeasure from "./DefineMeasure";
+import ThreeDotDropdown from "./ThreeDotDropdown";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -259,6 +260,7 @@ class Measure extends Component {
     } else {
       measure = (
         <div>
+          <ThreeDotDropdown Measure_ID={this.state.Measure_ID} />
           <div className="measure-label">
             <Badge variant="primary">
               <span style={{ fontWeight: "400" }}>Measure Label</span>
@@ -267,6 +269,7 @@ class Measure extends Component {
             <h3>{Measure_Label ? Measure_Label : null}</h3>
           </div>
           <br />
+
           <DefineMeasure
             Threshold={Threshold}
             Rubric_Name={Rubric_Name}

@@ -72,9 +72,9 @@ class SideBar extends Component {
           <FontAwesomeIcon icon="envelope" />
           &nbsp;&nbsp;Inbox [NW]
         </Link>
-        <Link className="menu-item" to="/reports">
+        <Link className="menu-item" to="/dashboard/reports">
           <FontAwesomeIcon icon="file-alt" />
-          &nbsp;&nbsp;Reports [NW]
+          &nbsp;&nbsp;Reports
         </Link>
         {this.props.auth.user.type === "Admin" ? (
           <Link to="/dashboard/rubrics">
