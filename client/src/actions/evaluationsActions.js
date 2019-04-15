@@ -8,7 +8,7 @@ import {
   LIST_ASSIGNED_TESTS,
   VIEW_MEASURE_TEST
 } from "./types";
-
+import { toastr } from "react-redux-toastr";
 export const listAssignedRubrics = () => dispatch => {
   dispatch(setRubricsLoading());
   axios
@@ -81,20 +81,23 @@ export const gradeStudentRubricMeasure = (
   studentID,
   Score
 ) => dispatch => {
-  console.log(RubricMeasureID, studentID, Score);
-  dispatch(setRubricsLoading());
+  // console.log(RubricMeasureID, studentID, Score);
+  // dispatch(setRubricsLoading());
   axios
     .post(
       `/api/evaluations/rubricMeasure/${RubricMeasureID}/student/${studentID}`,
       { Score: Score }
     )
-    .then(res =>
+    .then(res => {
       dispatch({
         type: GRADE_STUDENT_RUBRIC_MEASURE,
         payload: res.data
-      })
-    )
-    .catch(err => console.log(err));
+      });
+      toastr.success("Student Graded!");
+    })
+    .catch(err => {
+      toastr.error(err.response.data);
+    });
 };
 
 export const listAssignedTests = () => dispatch => {

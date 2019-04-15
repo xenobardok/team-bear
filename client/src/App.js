@@ -55,7 +55,7 @@ class App extends Component {
           </div>
         </Router>
         <ReduxToastr
-          timeOut={5000}
+          timeOut={4000}
           newestOnTop={false}
           preventDuplicates
           position="top-right"

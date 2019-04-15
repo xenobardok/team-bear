@@ -32,6 +32,19 @@ body {
   padding-top: 25vh;
 }
 
+.dropdown{
+  float: right;
+  cursor: pointer;
+}
+
+a{
+  color: #7b3449;
+}
+
+.dropdown a:hover{
+  color: #4b202d;
+}
+
 nav.navbar {
   background-color: #7b344a !important;
   color: white!important;
@@ -234,6 +247,20 @@ tr th,tr td{
 }
 .table {
   margin: 0px auto;
+}
+
+table.report{
+  table-layout: fixed!important;
+
+}
+
+table.report th, table.report td {
+  padding: 0.5rem!important ;
+  font-size: 0.9rem
+}
+
+table.report th, table.report td{
+  vertical-align: middle!important;
 }
 
 .cells:hover {

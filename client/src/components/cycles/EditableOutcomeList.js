@@ -2,13 +2,11 @@ import React, { Component } from "react";
 import {
   Form,
   ListGroup,
-  Card,
   Button,
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import isEmpty from "../../validation/isEmpty";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";

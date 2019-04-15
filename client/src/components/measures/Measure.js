@@ -33,6 +33,7 @@ import isEmpty from "../../validation/isEmpty";
 import EvaluatorBox from "./EvaluatorBox";
 import Stats from "./Stats";
 import DefineMeasure from "./DefineMeasure";
+import ThreeDotDropdown from "./ThreeDotDropdown";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -66,11 +67,11 @@ class Measure extends Component {
 
   componentDidUpdate = prevProps => {
     if (this.props.measures.singleMeasure) {
-      console.log(
-        this.props.measures.singleMeasure !==
-          prevProps.measures.singleMeasure &&
-          !isEmpty(this.props.measures.singleMeasure)
-      );
+      // console.log(
+      //   this.props.measures.singleMeasure !==
+      //     prevProps.measures.singleMeasure &&
+      //     !isEmpty(this.props.measures.singleMeasure)
+      // );
       // console.log(this.props.measures.singleMeasure);
       if (
         this.props.measures.singleMeasure !==
@@ -99,7 +100,7 @@ class Measure extends Component {
     }
 
     if (this.props.profile.evaluators !== prevProps.profile.evaluators) {
-      console.log(this.props.profile.evaluators);
+      // console.log(this.props.profile.evaluators);
       this.setState({
         allEvaluators: this.props.profile.evaluators
       });
@@ -259,6 +260,7 @@ class Measure extends Component {
     } else {
       measure = (
         <div>
+          <ThreeDotDropdown Measure_ID={this.state.Measure_ID} />
           <div className="measure-label">
             <Badge variant="primary">
               <span style={{ fontWeight: "400" }}>Measure Label</span>
@@ -267,6 +269,7 @@ class Measure extends Component {
             <h3>{Measure_Label ? Measure_Label : null}</h3>
           </div>
           <br />
+
           <DefineMeasure
             Threshold={Threshold}
             Rubric_Name={Rubric_Name}
@@ -305,7 +308,6 @@ class Measure extends Component {
             </span>
             <h5>Evaluators</h5>
             <div className="evaluators">
-              {console.log(isEmpty(Evaluators))}
               {!isEmpty(Evaluators)
                 ? Evaluators.map(value => (
                     <EvaluatorBox
@@ -466,9 +468,11 @@ class Measure extends Component {
                     {": "}
                   </p>
                   <ol>
-                    {this.state.unevaluatedStudents.students.map(student => (
-                      <li>{student}</li>
-                    ))}
+                    {this.state.unevaluatedStudents.students.map(
+                      (student, index) => (
+                        <li key={index + 5000}>{student}</li>
+                      )
+                    )}
                   </ol>
                 </div>
               )}

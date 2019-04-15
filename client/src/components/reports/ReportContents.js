@@ -4,22 +4,23 @@ import Cycles from "../cycles/Cycles";
 import ShowCycle from "../cycles/ShowCycle";
 import Measure from "../measures/Measure";
 import MainDashboard from "../dashboard/MainDashboard";
+import MainReport from "./MainReport";
+import MeasureReport from "./MeasureReport";
 // import NewCycles from "../cycles/NewCycles";
 
-class DashboardContents extends Component {
+class ReportContents extends Component {
   render() {
     return (
       <Switch>
-        <Route exact path="/dashboard" component={MainDashboard} />
-        <Route exact path="/dashboard/cycles" component={Cycles} />
+        <Route exact path="/dashboard/reports" component={MainReport} />
         <Route
           exact
-          path="/dashboard/cycles/:id(\d+)/outcome/:outcomeID(\d+)/:measureID(\d+)"
-          component={Measure}
+          path="/dashboard/reports/measure/:id(\d+)"
+          component={MeasureReport}
         />
-        <Route path="/dashboard/cycles/:id(\d+)" component={ShowCycle} />
+        {/* <Route path="/dashboard/cycles/:id(\d+)" component={ShowCycle} /> */}
       </Switch>
     );
   }
 }
-export default DashboardContents;
+export default ReportContents;

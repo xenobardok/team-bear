@@ -19,6 +19,7 @@ import ShowRubric from "../rubrics/ShowRubric";
 import ViewRubric from "../tasks/ViewRubric";
 import ViewTest from "../tasks/ViewTest";
 import Evaluators from "../evaluators/Evaluators";
+import ReportContents from "../reports/ReportContents";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -69,6 +70,8 @@ class Dashboard extends Component {
             </div>
           </Container>
           <div style={{ margin: "0px 5vw" }}>
+            <Route path="/dashboard/reports" component={ReportContents} />
+
             <Route
               exact
               path="/dashboard/tasks/rubric/:rubricMeasureId(\d+)"

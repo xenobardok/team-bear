@@ -41,13 +41,11 @@ class ShowMeasures extends Component {
       ) {
         this.props.getMeasures(this.props.match.params.outcomeID);
       }
-      console.log(this.props.match.params.outcomeID);
     }
   }
 
   componentDidMount() {
     if (this.props.match.params.outcomeID) {
-      console.log(this.props.match.params.outcomeID);
       this.props.getMeasures(this.props.match.params.outcomeID);
     }
   }
