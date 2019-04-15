@@ -5,6 +5,11 @@ const passport = require("passport");
 const secret = require("../../config/secret");
 var async = require("async");
 const Validator = require("validator");
+const fs = require("fs");
+const multer = require("multer");
+const upload = multer({ dest: "uploads" });
+const csv = require("fast-csv");
+const path = require("path");
 
 const updateStudentsScore = require("../updateStudentsScore");
 const updateStudentsTestScore = require("../updateStudentsTestScore");
@@ -588,6 +593,181 @@ router.post(
         });
       }
     });
+  }
+);
+
+// @route   POST api/evaluations/testMeasure/:TestMeasureID/fileUpload
+// @desc    Upload students tests score using a file
+// @access  Private
+router.post(
+  "/testMeasure/:Test_Measure_ID/fileUpload",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("StudentsGrade"),
+  (req, res) => {
+    const fileRows = [];
+
+    // open uploaded file
+    csv
+      .fromPath(req.file.path)
+      .on("data", function(data) {
+        fileRows.push(data); // push each row
+      })
+      .on("end", function() {
+        // console.log(fileRows); //contains array of arrays.
+        fs.unlinkSync(req.file.path); // remove temp file
+        //process "fileRows" and respond
+        const email = db.escape(req.user.email);
+        const type = req.user.type;
+        const dept = db.escape(req.user.dept);
+        const Test_Measure_ID = db.escape(req.params.Test_Measure_ID);
+
+        const errors = {};
+
+        let sql =
+          "SELECT * FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+          Test_Measure_ID;
+
+        db.query(sql, (err, result) => {
+          if (err) {
+            return res.status(400).json(err);
+          } else {
+            if (result.length < 1) {
+              return res.status(400).json({ error: "Test Does not exist" });
+            } else {
+              let Test_Type = result[0].Test_Type;
+
+              // Validation
+              let uploadedStudents = [];
+              let output = [];
+
+              fileRows.forEach(function(element) {
+                uploadedStudents.push(new Array(element[0], element[1]));
+              });
+              // console.log(newStudents);
+
+              sql =
+                "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                Test_Measure_ID;
+              db.query(sql, (err, result) => {
+                if (err) {
+                  return res.status(400).json(err);
+                } else {
+                  let regStudent = new Map();
+
+                  result.forEach(row => {
+                    regStudent.set(row.Student_ID, row.Test_Student_ID);
+                  });
+
+                  sql =
+                    "SELECT DISTINCT(Test_Student_ID) FROM STUDENTS_TEST_GRADE WHERE Evaluator_Email = " +
+                    email;
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json(err);
+                    } else {
+                      gradedStudents = [];
+                      result.forEach(row => {
+                        gradedStudents.push(row.Test_Student_ID);
+                      });
+
+                      invalidStudents = [];
+                      AddStudentsGrade = [];
+                      updateStudentsSql = "";
+                      //iterate through uploadedStudents to see if they are registered
+                      uploadedStudents.forEach(student => {
+                        let StudentID = student[0];
+                        let StudentGrade = student[1];
+
+                        if (regStudent.has(StudentID)) {
+                          let Test_Student_ID = regStudent.get(StudentID);
+                          if (Test_Type == "score") {
+                            if (!Validator.isFloat(StudentGrade)) {
+                              return res
+                                .status(400)
+                                .json({ error: "Score  must be  a number" });
+                            }
+                          } else {
+                            if (
+                              StudentGrade == "pass" ||
+                              StudentGrade == "PASS" ||
+                              StudentGrade == "Pass"
+                            ) {
+                              StudentGrade = 1;
+                            } else if (
+                              StudentGrade == "fail" ||
+                              StudentGrade == "FAIL" ||
+                              StudentGrade == "Fail"
+                            ) {
+                              StudentGrade = 0;
+                            } else {
+                              return res.status(400).json({
+                                error: "Score  must be  'Pass' or 'Fail'"
+                              });
+                            }
+                          }
+
+                          if (gradedStudents.include(Test_Student_ID)) {
+                            UpdateStudentsGrade.push(
+                              (updateStudentsSql +=
+                                " UPDATE STUDENTS_TEST,GRADE SET Score=" +
+                                StudentGrade +
+                                " WHERE Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Evaluator_Email=" +
+                                email +
+                                " ; ")
+                            );
+                          }
+                          AddStudentsGrade.push(
+                            new Array(
+                              Test_Measure_ID,
+                              Test_Student_ID,
+                              email,
+                              StudentGrade
+                            )
+                          );
+                        } else {
+                          invalidStudents.push(StudentID);
+                        }
+                      });
+
+                      if (invalidStudents.length > 0) {
+                        return res.status(400).json(invalidStudents);
+                      } else {
+                        sql =
+                          "INSERT INTO STUDENTS_TEST_GRADE (Test_Measure_ID, Test_Student_ID,Evaluator_Email,Score) VALUES  ?";
+
+                        db.query(sql, [AddStudentsGrade], (err, result) => {
+                          if (err) {
+                            errors.students =
+                              "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                            return res.status(400).json(errors);
+                          } else {
+                            db.query(updateStudentsSql, (err, result) => {
+                              if (err) res.status(400).json(err);
+
+                              updateStudentsTestScore(
+                                Test_Measure_ID,
+                                () => {}
+                              );
+                              return res
+                                .status(200)
+                                .json({ message: "successfully updated" });
+                            });
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
+              });
+            }
+          }
+        });
+      });
   }
 );
 
