@@ -44,7 +44,8 @@ router.post("/register", (req, res) => {
       } else if (
         result.length > 0 &&
         result[0].isActive === "false" &&
-        result[0].Fname === null
+        result[0].Fname === null &&
+        result[0].isDeleted === "false"
       ) {
         let firstname = db.escape(req.body.firstname);
         let lastname = db.escape(req.body.lastname);
@@ -191,7 +192,8 @@ router.post("/login", (req, res) => {
             lastname: result[0].Lname,
             email: result[0].Email,
             type: level,
-            dept: result[0].Dept_ID
+            dept: result[0].Dept_ID,
+            isSuperUser: result[0].isSuperUser
           };
           jwt.sign(
             payload,
@@ -241,16 +243,27 @@ router.get(
     const dept = db.escape(req.user.dept);
 
     if (type == "Admin") {
-      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
+      let sql =
+        "SELECT * FROM Evaluators where Dept_ID = " +
+        dept +
+        " AND isDeleted='false' ORDER BY Fname ASC";
       db.query(sql, (err, result) => {
         if (err) res.status(400).json(err);
         else {
           result.forEach(row => {
             let name = row.Fname;
+            if (row.Fname == null) {
+              name = "";
+            }
             if (row.Mname != null) {
               name = name + " " + row.Mname;
             }
-            name = name + " " + row.Lname;
+
+            if (row.Lname == null) {
+              name += "";
+            } else {
+              name = name + " " + row.Lname;
+            }
 
             let email = row.Email;
             let isActive = row.isActive;

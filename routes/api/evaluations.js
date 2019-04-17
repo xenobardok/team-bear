@@ -145,7 +145,8 @@ router.get(
 
             sql =
               "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
-              Rubric_Measure_ID;
+              Rubric_Measure_ID +
+              " ORDER BY Student_Name";
 
             db.query(sql, (err, result) => {
               if (err) return res.status(400).json(err);
@@ -255,7 +256,8 @@ router.get(
 
         sql =
           "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
-          Test_Measure_ID;
+          Test_Measure_ID +
+          " ORDER BY S.Student_Name ";
 
         // console.log(sql);
         db.query(sql, (err, result) => {
