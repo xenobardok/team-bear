@@ -2,12 +2,17 @@ import React, { Component, useState } from "react";
 // import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { viewTestMeasure } from "../../actions/evaluationsActions";
+import {
+  viewTestMeasure,
+  studentFilefromCSV,
+  gradeStudentTestMeasure
+} from "../../actions/evaluationsActions";
 import { Table, Form, Container } from "react-bootstrap";
 
 // import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import UploadFileButton from "../../common/UploadFileButton";
 
 class ViewTest extends Component {
   constructor(props) {
@@ -31,6 +36,19 @@ class ViewTest extends Component {
 
   componentDidUpdate = (prevProps, prevState) => {};
 
+  fileUploadHandler = file => {
+    let { testMeasureId } = this.props.match.params;
+    const data = new FormData();
+    data.append("StudentsGrade", file);
+    console.log(testMeasureId, file);
+    this.props.studentFilefromCSV(testMeasureId, file);
+  };
+
+  gradeStudentTestMeasure = (studentID, Score) => {
+    let { testMeasureId } = this.props.match.params;
+    console.log(testMeasureId, studentID, Score);
+    this.props.gradeStudentTestMeasure(testMeasureId, studentID, Score);
+  };
   render() {
     let { test, loading } = this.props.evaluations;
     let displayTest = "";
@@ -58,12 +76,20 @@ class ViewTest extends Component {
                     <td>{value.Student_ID}</td>
                     <td>{value.Student_Name}</td>
                     <td>
-                      <EditableSingleGrade {...value} />
+                      <EditableSingleGrade
+                        {...value}
+                        gradeStudentTestMeasure={this.gradeStudentTestMeasure}
+                      />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
+            <br />
+            <UploadFileButton
+              fileUploadName="StudentsGrade"
+              fileUploadHandler={this.fileUploadHandler}
+            />
           </Container>
         );
       } else {
@@ -84,7 +110,10 @@ const EditableSingleGrade = props => {
           type="number"
           placeholder="Eg. 75"
           value={grade}
-          onChange={e => updateGrade(Number(e.target.value))}
+          onChange={e => {
+            updateGrade(Number(e.target.value));
+            props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
+          }}
         />
       </Form.Group>
     </Form>
@@ -107,6 +136,8 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    viewTestMeasure
+    viewTestMeasure,
+    studentFilefromCSV,
+    gradeStudentTestMeasure
   }
 )(ViewTest);
