@@ -78,6 +78,49 @@ router.post("/register", (req, res) => {
   }
 });
 
+// @route   GET api/users/cancelInvite
+// @desc    Remove Invited user
+// @access  Public
+router.delete(
+  "/cancelInvite",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Check for validation
+    const dept = db.escape(req.user.dept);
+    const type = req.user.type;
+    let email = db.escape(req.user.email);
+    let removeEmail = db.escape(req.body.removeEmail);
+    errors = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM Evaluators WHERE email = " +
+        removeEmail +
+        " AND Dept_ID=" +
+        dept;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (result.length > 0 && result[0].isActive === "true") {
+          errors.email = "User already registered, please delete the user!";
+          return res.status(400).json(errors);
+        } else if (result.length > 0 && result[0].isActive == "false") {
+          sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            return res
+              .status(200)
+              .json({ message: "Successfully canceled the invitation" });
+          });
+        } else {
+          errors.email = "User not found";
+          return res.status(400).json(errors);
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/users/addEvaluator
 // @desc    Register user
 // @access  Private
