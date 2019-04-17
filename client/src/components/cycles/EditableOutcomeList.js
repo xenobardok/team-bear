@@ -111,22 +111,11 @@ class EditableOutcomeList extends Component {
             key={this.props.value.Outcome_ID}
             className="edit-post list-lines"
           >
-            <Link
-              to={`/dashboard/cycles/${this.props.cycleID}/outcome/${
-                this.props.value.Outcome_ID
-              }`}
-              style={{ flexGrow: "1" }}
-            >
-              <ListGroup.Item action name={this.props.value.Outcome_ID}>
-                {this.state.textValue}
-              </ListGroup.Item>
-            </Link>
-
             <div
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 5px",
+                padding: "0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -151,6 +140,26 @@ class EditableOutcomeList extends Component {
                   />
                 </OverlayTrigger>
               )}
+            </div>
+            <Link
+              to={`/dashboard/cycles/${this.props.cycleID}/outcome/${
+                this.props.value.Outcome_ID
+              }`}
+              style={{ flexGrow: "1" }}
+            >
+              <ListGroup.Item action name={this.props.value.Outcome_ID}>
+                {this.state.textValue}
+              </ListGroup.Item>
+            </Link>
+
+            <div
+              style={{
+                display: "inline",
+                alignSelf: "center",
+                padding: "0px 5px",
+                cursor: "pointer"
+              }}
+            >
               <br />
               <OverlayTrigger
                 placement="right"

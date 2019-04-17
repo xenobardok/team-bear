@@ -74,26 +74,11 @@ class EditableMeasureList extends Component {
           </Form>
         ) : (
           <ListGroup key={this.props.value.Measure_ID} className="edit-post">
-            <Link
-              to={
-                "/dashboard/cycles/" +
-                this.props.id +
-                "/outcome/" +
-                this.props.outcomeID +
-                "/" +
-                this.props.value.Measure_ID
-              }
-              style={{ flexGrow: "1" }}
-            >
-              <ListGroup.Item action key={this.props.value.Measure_ID}>
-                {this.state.Measure_Name}
-              </ListGroup.Item>
-            </Link>
             <div
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 5px",
+                padding: "0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -118,6 +103,30 @@ class EditableMeasureList extends Component {
                   />
                 </OverlayTrigger>
               )}
+            </div>
+            <Link
+              to={
+                "/dashboard/cycles/" +
+                this.props.id +
+                "/outcome/" +
+                this.props.outcomeID +
+                "/" +
+                this.props.value.Measure_ID
+              }
+              style={{ flexGrow: "1" }}
+            >
+              <ListGroup.Item action key={this.props.value.Measure_ID}>
+                {this.state.Measure_Name}
+              </ListGroup.Item>
+            </Link>
+            <div
+              style={{
+                display: "inline",
+                alignSelf: "center",
+                padding: "0px 5px",
+                cursor: "pointer"
+              }}
+            >
               <br />
               <OverlayTrigger
                 placement="right"

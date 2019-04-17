@@ -146,7 +146,7 @@ export const gradeStudentTestMeasure = (
 export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
   dispatch(setRubricsLoading());
   axios
-    .post(`/api/cycle//testMeasure/${Test_Measure_ID}/fileUpload`, file, {
+    .post(`/api/evaluations/testMeasure/${Test_Measure_ID}/fileUpload`, file, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
