@@ -6,7 +6,8 @@ import {
   GRADE_STUDENT_RUBRIC_MEASURE,
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
   LIST_ASSIGNED_TESTS,
-  VIEW_MEASURE_TEST
+  VIEW_MEASURE_TEST,
+  GET_ERRORS
 } from "./types";
 import { toastr } from "react-redux-toastr";
 export const listAssignedRubrics = () => dispatch => {
@@ -115,5 +116,44 @@ export const listAssignedTests = () => dispatch => {
         type: LIST_ASSIGNED_TESTS,
         payload: []
       });
+    });
+};
+
+export const gradeStudentTestMeasure = (
+  TestMeasureID,
+  studentID,
+  Score
+) => dispatch => {
+  // console.log(RubricMeasureID, studentID, Score);
+  // dispatch(setRubricsLoading());
+  axios
+    .post(
+      `/api/evaluations/testMeasure/${TestMeasureID}/student/${studentID}`,
+      { Score: Score }
+    )
+    .then(res => {
+      // dispatch({
+      //   type: GRADE_STUDENT_RUBRIC_MEASURE,
+      //   payload: res.data
+      // });
+      toastr.success("Student Graded!");
+    })
+    .catch(err => {
+      toastr.error(err.response.data);
+    });
+};
+
+export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
+  dispatch(setRubricsLoading());
+  axios
+    .post(`/api/cycle//testMeasure/${Test_Measure_ID}/fileUpload`, file, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    .then(res => dispatch(listAssignedTests()))
+    .catch(err => {
+      dispatch(listAssignedTests());
+      toastr.error("Error occured", "Student grade not added");
     });
 };
