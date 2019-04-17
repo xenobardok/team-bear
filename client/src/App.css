@@ -446,6 +446,14 @@ section#evaluators .singleEvaluator:hover{
   margin: 0px 5px;
 }
 
+.status.success {
+  color: green;
+}
+
+.status.fail {
+  color: #dc3545;
+}
+
 .crossIcon:hover{
   color:#dc3545
 }

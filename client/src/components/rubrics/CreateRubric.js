@@ -279,6 +279,7 @@ class CreateRubric extends Component {
           <h3 className="text-center">{this.state.Rubric_Name}</h3>
         )}
         <SampleRubric {...this.state} />
+        <p />
       </>
     );
   }
