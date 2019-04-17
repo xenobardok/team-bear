@@ -80,11 +80,9 @@ router.get(
         result.forEach(row => {
           id = row.Test_Measure_ID;
           name = row.Exam_Name;
-          type = row.Test_Type;
           test = {
             Test_Measure_ID: id,
-            Test_Name: name,
-            Test_Type: type
+            Test_Name: name
           };
           Tests.push(test);
         });

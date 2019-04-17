@@ -18,12 +18,8 @@ class ViewTest extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Student_ID: "",
-      Student_Name: "",
       gradeEdit: false,
-      Student_Grades: [],
-      SubmitGrade: false,
-      rubricScale: []
+      SubmitGrade: false
     };
   }
 
@@ -62,7 +58,7 @@ class ViewTest extends Component {
             <h2>{test.Test_Name}</h2>
             <Table striped bordered hover className="test">
               <thead>
-                <tr>
+                <tr className="text-center">
                   <th>#</th>
                   <th>Student ID</th>
                   <th>Student Name</th>
@@ -72,13 +68,14 @@ class ViewTest extends Component {
               <tbody>
                 {test.StudentsData.map((value, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td className="text-center">{index + 1}</td>
                     <td>{value.Student_ID}</td>
                     <td>{value.Student_Name}</td>
                     <td>
                       <EditableSingleGrade
                         {...value}
                         gradeStudentTestMeasure={this.gradeStudentTestMeasure}
+                        Test_Type={test.Test_Type}
                       />
                     </td>
                   </tr>
@@ -102,17 +99,33 @@ const EditableSingleGrade = props => {
 
   return (
     <Form>
-      <Form.Group controlId="exampleForm.ControlInput1">
-        <Form.Control
-          type="number"
-          placeholder="Eg. 75"
-          value={grade}
-          onChange={e => {
-            updateGrade(Number(e.target.value));
-            props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
-          }}
-        />
-      </Form.Group>
+      {props.Test_Type === "pass/fail" ? (
+        <Form.Group controlId="exampleForm.ControlSelect1">
+          <Form.Control
+            as="select"
+            value={grade}
+            onChange={e => {
+              updateGrade(Number(e.target.value));
+              props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
+            }}
+          >
+            <option value="0">Fail</option>
+            <option value="1">Pass</option>
+          </Form.Control>
+        </Form.Group>
+      ) : (
+        <Form.Group controlId="exampleForm.ControlInput1">
+          <Form.Control
+            type="number"
+            placeholder="Eg. 75"
+            value={grade}
+            onChange={e => {
+              updateGrade(Number(e.target.value));
+              props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
+            }}
+          />
+        </Form.Group>
+      )}
     </Form>
   );
 };

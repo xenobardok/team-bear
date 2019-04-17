@@ -5,6 +5,7 @@ import { createRubric } from "../../actions/rubricsActions";
 import { Form, Col, Button, Row } from "react-bootstrap";
 import classnames from "classnames";
 import SampleRubric from "./SampleRubric";
+import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 class Scales extends Component {
   changeHandler(e) {
@@ -59,7 +60,8 @@ class CreateRubric extends Component {
         }
       ],
       errors: {},
-      weighted: "false"
+      weighted: "false",
+      visibleSample: false
       // rubric: {}
     };
   }
@@ -81,6 +83,20 @@ class CreateRubric extends Component {
       this.setState({ errors: nextProps.errors });
     }
   }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (
+      this.state.Rubric_Name !== prevState.Rubric_Name &&
+      this.state.Rubric_Name !== ""
+    ) {
+      this.setState({ visibleSample: true });
+    } else if (
+      this.state.Rubric_Name !== prevState.Rubric_Name &&
+      this.state.Rubric_Name === ""
+    ) {
+      this.setState({ visibleSample: false });
+    }
+  };
   onChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -277,12 +293,23 @@ class CreateRubric extends Component {
             Create
           </Button>
         </Form>
-        {this.state.Rubric_Name === "" ? (
-          <h3 className="text-center">Sample</h3>
-        ) : (
-          <h3 className="text-center">{this.state.Rubric_Name}</h3>
-        )}
-        <SampleRubric {...this.state} />
+
+        <ReactCSSTransitionGroup
+          transitionName="rubric-transition"
+          transitionEnterTimeout={700}
+          transitionLeaveTimeout={700}
+        >
+          {this.state.visibleSample ? (
+            <div className="animation-table">
+              {this.state.Rubric_Name === "" ? (
+                <h3 className="text-center">Sample</h3>
+              ) : (
+                <h3 className="text-center">{this.state.Rubric_Name}</h3>
+              )}{" "}
+              <SampleRubric {...this.state} />
+            </div>
+          ) : null}
+        </ReactCSSTransitionGroup>
         <p />
       </>
     );
