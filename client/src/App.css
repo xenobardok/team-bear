@@ -239,6 +239,10 @@ tr th,tr td{
   max-width: 200px;
 }
 
+.sample-table td{
+  padding:0.75rem !important;
+}
+
 .cells {
   border-radius: 0px;
   height: 150px !important;

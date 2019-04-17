@@ -71,7 +71,8 @@ class AnalyseRubric extends Component {
   render() {
     scalesRow = this.props.Scale.map(singleValue => (
       <th key={singleValue.value} className="centerAlign borderedCell">
-        {singleValue.label + " (" + singleValue.value + ")"}
+        {singleValue.label ? singleValue.label : singleValue.value}
+        {/* {singleValue.label + " (" + singleValue.value + ")"} */}
       </th>
     ));
 

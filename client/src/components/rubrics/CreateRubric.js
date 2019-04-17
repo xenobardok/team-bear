@@ -51,7 +51,7 @@ class CreateRubric extends Component {
       Scale: [
         {
           label: "",
-          value: ""
+          value: 1
         }
       ],
       errors: {},
@@ -88,7 +88,7 @@ class CreateRubric extends Component {
       for (var i = 0; i < e.target.value - 1; i++) {
         scaleArray.push({
           label: "",
-          value: ""
+          value: i + 1
         });
       }
       this.setState({
@@ -104,8 +104,8 @@ class CreateRubric extends Component {
   };
 
   onScaleChange(index, value) {
-    console.log(index);
-    console.log(value);
+    // console.log(index);
+    // console.log(value);
     this.setState(state => {
       const Scale = state.Scale.map((v, i) => {
         if (index === "Scale[" + i + "].label") {
@@ -273,7 +273,11 @@ class CreateRubric extends Component {
             Create
           </Button>
         </Form>
-        <h3 className="text-center">Sample</h3>
+        {this.state.Rubric_Name === "" ? (
+          <h3 className="text-center">Sample</h3>
+        ) : (
+          <h3 className="text-center">{this.state.Rubric_Name}</h3>
+        )}
         <SampleRubric {...this.state} />
       </>
     );
