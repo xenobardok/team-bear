@@ -218,7 +218,7 @@ textarea {
 
 .measureTitle {
   font-weight: bold;
-  font-size: 18px !important;
+  font-size: 0.9rem !important;
   vertical-align: middle !important;
   /* width: 200px !important; */
   padding: 6px 3px;
@@ -245,8 +245,16 @@ tr th,tr td{
   margin: none;
   /* width: 200px; */
 }
+
+.cells.form-control {
+  font-size: 0.8rem;
+}
 .table {
   margin: 0px auto;
+}
+
+.table td, .table th {
+  padding: 0.75rem 0.2rem;
 }
 
 table.report{

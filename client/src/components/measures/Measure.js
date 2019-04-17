@@ -204,12 +204,15 @@ class Measure extends Component {
 
   getUnevaluatedStudents = (name, e) => {
     let newStudentList = {};
-    this.props.measures.singleMeasure.Unevaluated.forEach(element => {
-      if (element.Evaluator_Name === name) {
-        newStudentList.Evaluator_Name = name;
-        newStudentList.students = [...element.Student_List];
-      }
-    });
+    if (!isEmpty(this.props.measures.singleMeasure.Unevaluated)) {
+      this.props.measures.singleMeasure.Unevaluated.forEach(element => {
+        if (element.Evaluator_Name === name) {
+          newStudentList.Evaluator_Name = name;
+          newStudentList.students = [...element.Student_List];
+        }
+      });
+    }
+
     this.setState({
       unevaluatedStudents: newStudentList
     });
@@ -443,29 +446,53 @@ class Measure extends Component {
                 </Alert>
               ) : (
                 <div>
-                  <p>
-                    <OverlayTrigger
-                      key="c"
-                      placement="top"
-                      overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
-                    >
-                      <FontAwesomeIcon
-                        icon="times-circle"
-                        className="crossIcon"
-                        onClick={this.closeUnevaluated}
-                      />
-                    </OverlayTrigger>
-                    Students yet to be evaluated by{" "}
-                    {this.state.unevaluatedStudents.Evaluator_Name}
-                    {": "}
-                  </p>
-                  <ol>
-                    {this.state.unevaluatedStudents.students.map(
-                      (student, index) => (
-                        <li key={index + 5000}>{student}</li>
-                      )
-                    )}
-                  </ol>
+                  {console.log(this.state.unevaluatedStudents.students)}
+                  {this.state.unevaluatedStudents.students === undefined ? (
+                    <p>
+                      <OverlayTrigger
+                        key="c"
+                        placement="top"
+                        overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
+                      >
+                        <FontAwesomeIcon
+                          icon="times-circle"
+                          className="crossIcon"
+                          onClick={this.closeUnevaluated}
+                        />
+                      </OverlayTrigger>
+                      <Badge variant="success">
+                        <span style={{ fontWeight: "400" }}>Completed!</span>
+                      </Badge>
+                      {"   "}
+                      This evaluator has evaluated all the students!
+                    </p>
+                  ) : (
+                    <>
+                      <p>
+                        <OverlayTrigger
+                          key="c"
+                          placement="top"
+                          overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
+                        >
+                          <FontAwesomeIcon
+                            icon="times-circle"
+                            className="crossIcon"
+                            onClick={this.closeUnevaluated}
+                          />
+                        </OverlayTrigger>
+                        Students yet to be evaluated by{" "}
+                      </p>
+                      <ol>
+                        {this.state.unevaluatedStudents.Evaluator_Name}
+                        {": "}
+                        {this.state.unevaluatedStudents.students.map(
+                          (student, index) => (
+                            <li key={index + 5000}>{student}</li>
+                          )
+                        )}
+                      </ol>
+                    </>
+                  )}
                 </div>
               )}
             </Col>

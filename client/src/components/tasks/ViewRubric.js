@@ -253,7 +253,7 @@ class ViewRubric extends Component {
           </tr>
         ));
         displayRubric = (
-          <div style={{ margin: "0px auto", maxWidth: "1200px" }}>
+          <div style={{ margin: "0px auto", maxWidth: "1600px" }}>
             <h2>{rubric.Rubric_Name}</h2>
             <h5>
               {isEmpty(this.state.Student_Name) ? (
@@ -267,7 +267,7 @@ class ViewRubric extends Component {
               )}
             </h5>
             <Row>
-              <Col sm={9}>
+              <Col xs={9}>
                 <Table bordered striped>
                   <thead>
                     <tr className="header">
@@ -284,13 +284,13 @@ class ViewRubric extends Component {
                   <tbody>{dataRow}</tbody>
                 </Table>
               </Col>
-              <Col>
+              <Col xs={3}>
                 <Card className="text-center students">
                   <Card.Header>List of Students</Card.Header>
                   <Card.Body
                     style={{
                       padding: "0px",
-                      height: "500px",
+                      maxHeight: "800px",
                       overflowY: "scroll"
                     }}
                   >
