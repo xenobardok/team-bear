@@ -645,7 +645,7 @@ router.post(
               fileRows.forEach(function(element) {
                 uploadedStudents.push(new Array(element[0], element[1]));
               });
-              // console.log(newStudents);
+              console.log(uploadedStudents);
 
               sql =
                 "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
