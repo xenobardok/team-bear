@@ -121,7 +121,7 @@ class EditableOutcomeList extends Component {
             >
               {this.props.value.Outcome_Success === "true" ? (
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={<Tooltip>Status: Passing</Tooltip>}
                 >
                   <FontAwesomeIcon
@@ -131,7 +131,7 @@ class EditableOutcomeList extends Component {
                 </OverlayTrigger>
               ) : (
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={<Tooltip>Status: Failing</Tooltip>}
                 >
                   <FontAwesomeIcon
@@ -162,7 +162,7 @@ class EditableOutcomeList extends Component {
             >
               <br />
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip>Edit Outcome</Tooltip>}
               >
                 <FontAwesomeIcon
