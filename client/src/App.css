@@ -33,7 +33,7 @@ body {
 }
 
 .dropdown{
-  float: right;
+  /* float: right; */
   cursor: pointer;
 }
 
@@ -515,3 +515,6 @@ a:hover {
   color: #7b344a;
 }
 
+.three-dots{
+  float:right;
+}

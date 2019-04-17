@@ -24,10 +24,10 @@ export default function UploadFileButton(props) {
     <div className="box">
       <input
         type="file"
-        name="file"
         id="file"
         className="inputfile"
         onChange={onChangeHandler}
+        accept=".csv"
       />
       <label htmlFor="file">
         <svg
@@ -41,7 +41,7 @@ export default function UploadFileButton(props) {
         {label}
       </label>
       <br />
-      <Button type="submit" variant="primary" onClick={submitHandler}>
+      <Button variant="primary" onClick={submitHandler}>
         Submit
       </Button>
     </div>

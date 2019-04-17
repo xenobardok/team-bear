@@ -8,7 +8,7 @@ import {
   gradeStudentTestMeasure
 } from "../../actions/evaluationsActions";
 import { Table, Form, Container } from "react-bootstrap";
-
+import "./Test.css";
 // import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
@@ -86,10 +86,8 @@ class ViewTest extends Component {
               </tbody>
             </Table>
             <br />
-            <UploadFileButton
-              fileUploadName="StudentsGrade"
-              fileUploadHandler={this.fileUploadHandler}
-            />
+            <hr class="hr-text" data-content="OR" />
+            <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
           </Container>
         );
       } else {

@@ -153,7 +153,7 @@ export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
     })
     .then(res => dispatch(listAssignedTests()))
     .catch(err => {
-      dispatch({ type: GET_ERRORS, payload: err.response.data });
+      dispatch(listAssignedTests());
       toastr.error("Error occured", "Student grade not added");
     });
 };
