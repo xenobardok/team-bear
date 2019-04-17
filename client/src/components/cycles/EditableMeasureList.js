@@ -84,7 +84,7 @@ class EditableMeasureList extends Component {
             >
               {this.props.value.Measure_Success === "true" ? (
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={<Tooltip>Status: Passing</Tooltip>}
                 >
                   <FontAwesomeIcon
@@ -94,7 +94,7 @@ class EditableMeasureList extends Component {
                 </OverlayTrigger>
               ) : (
                 <OverlayTrigger
-                  placement="right"
+                  placement="top"
                   overlay={<Tooltip>Status: Failing</Tooltip>}
                 >
                   <FontAwesomeIcon
@@ -129,7 +129,7 @@ class EditableMeasureList extends Component {
             >
               <br />
               <OverlayTrigger
-                placement="right"
+                placement="top"
                 overlay={<Tooltip>Edit Outcome</Tooltip>}
               >
                 <FontAwesomeIcon

@@ -41,7 +41,7 @@ class ViewTest extends Component {
     const data = new FormData();
     data.append("StudentsGrade", file);
     console.log(testMeasureId, file);
-    this.props.studentFilefromCSV(testMeasureId, file);
+    this.props.studentFilefromCSV(testMeasureId, data);
   };
 
   gradeStudentTestMeasure = (studentID, Score) => {
@@ -85,7 +85,6 @@ class ViewTest extends Component {
                 ))}
               </tbody>
             </Table>
-            <br />
             <hr class="hr-text" data-content="OR" />
             <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
           </Container>
