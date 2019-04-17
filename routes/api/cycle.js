@@ -1808,61 +1808,66 @@ router.post(
                       );
                       newCWID.push(element[0]);
                     });
-                    // console.log(newStudents);
 
-                    sql =
-                      "SELECT Student_ID FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
-                      Rubric_Measure_ID;
-                    db.query(sql, (err, result) => {
-                      if (err) {
-                        return res.status(400).json(err);
-                      } else {
-                        let regCWID = [];
+                    if (new Set(newCWID).size !== newCWID.length) {
+                      errors.students = "Duplicate Student ID in file";
 
-                        result.forEach(row => {
-                          let value = row.Student_ID;
-                          regCWID.push(value);
-                        });
-
-                        //get the intersection and newCWID contains the duplicate values
-                        let newArray = newCWID.filter(value =>
-                          regCWID.includes(value)
-                        );
-                        console.log(newArray);
-
-                        if (newArray.length > 0) {
-                          return res.status(400).json(newArray);
+                      return res.status(400).json(errors);
+                    } else {
+                      sql =
+                        "SELECT Student_ID FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                        Rubric_Measure_ID;
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json(err);
                         } else {
-                          sql =
-                            "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+                          let regCWID = [];
 
-                          db.query(sql, [newStudents], (err, result) => {
-                            if (err) {
-                              errors.students =
-                                "There was some problem adding the evaluatees. Please check your csv file and try again.";
-                              return res.status(400).json(errors);
-                            } else {
-                              calculateMeasure(Rubric_Measure_ID);
-                              sql =
-                                "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID= " +
-                                Rubric_Measure_ID;
-
-                              db.query(sql, (err, result) => {
-                                if (err) res.status(400).json(err);
-                                result.forEach(row => {
-                                  student = {
-                                    Student_ID: row.Student_ID,
-                                    Student_Name: row.Student_Name
-                                  };
-                                  output.push(student);
-                                });
-                                return res.status(200).json(output);
-                              });
-                            }
+                          result.forEach(row => {
+                            let value = row.Student_ID;
+                            regCWID.push(value);
                           });
+
+                          //get the intersection and newCWID contains the duplicate values
+                          let newArray = newCWID.filter(value =>
+                            regCWID.includes(value)
+                          );
+                          console.log(newArray);
+
+                          if (newArray.length > 0) {
+                            return res.status(400).json(newArray);
+                          } else {
+                            sql =
+                              "INSERT INTO RUBRIC_STUDENTS (Rubric_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+
+                            db.query(sql, [newStudents], (err, result) => {
+                              if (err) {
+                                errors.students =
+                                  "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                                return res.status(400).json(errors);
+                              } else {
+                                calculateMeasure(Rubric_Measure_ID);
+                                sql =
+                                  "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID= " +
+                                  Rubric_Measure_ID;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) res.status(400).json(err);
+                                  result.forEach(row => {
+                                    student = {
+                                      Student_ID: row.Student_ID,
+                                      Student_Name: row.Student_Name
+                                    };
+                                    output.push(student);
+                                  });
+                                  return res.status(200).json(output);
+                                });
+                              }
+                            });
+                          }
                         }
-                      }
-                    });
+                      });
+                    }
                   }
                 });
               }
@@ -1888,60 +1893,65 @@ router.post(
                       newCWID.push(element[0]);
                     });
                     // console.log(newStudents);
+                    if (new Set(newCWID).size !== newCWID.length) {
+                      errors.students = "Duplicate Student ID in file";
 
-                    sql =
-                      "SELECT Student_ID FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                      Test_Measure_ID;
-                    db.query(sql, (err, result) => {
-                      if (err) {
-                        return res.status(400).json(err);
-                      } else {
-                        let regCWID = [];
-
-                        result.forEach(row => {
-                          let value = row.Student_ID;
-                          regCWID.push(value);
-                        });
-
-                        //get the intersection and newCWID contains the duplicate values
-                        let newArray = newCWID.filter(value =>
-                          regCWID.includes(value)
-                        );
-                        console.log(newArray);
-
-                        if (newArray.length > 0) {
-                          return res.status(400).json(newArray);
+                      return res.status(400).json(errors);
+                    } else {
+                      sql =
+                        "SELECT Student_ID FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                        Test_Measure_ID;
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json(err);
                         } else {
-                          sql =
-                            "INSERT INTO TEST_STUDENTS (Test_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+                          let regCWID = [];
 
-                          db.query(sql, [newStudents], (err, result) => {
-                            if (err) {
-                              errors.students =
-                                "There was some problem adding the evaluatees. Please check your csv file and try again.";
-                              return res.status(400).json(errors);
-                            } else {
-                              calculateMeasure(Test_Measure_ID);
-                              sql =
-                                "SELECT Student_ID, Student_Name FROM TEST_STUDENTS WHERE Test_Measure_ID= " +
-                                Test_Measure_ID;
-
-                              db.query(sql, (err, result) => {
-                                if (err) res.status(400).json(err);
-                                result.forEach(row => {
-                                  student = {
-                                    Student_ID: row.Student_ID,
-                                    Student_Name: row.Student_Name
-                                  };
-                                  output.push(student);
-                                });
-                                return res.status(200).json(output);
-                              });
-                            }
+                          result.forEach(row => {
+                            let value = row.Student_ID;
+                            regCWID.push(value);
                           });
+
+                          //get the intersection and newCWID contains the duplicate values
+                          let newArray = newCWID.filter(value =>
+                            regCWID.includes(value)
+                          );
+                          console.log(newArray);
+
+                          if (newArray.length > 0) {
+                            return res.status(400).json(newArray);
+                          } else {
+                            sql =
+                              "INSERT INTO TEST_STUDENTS (Test_Measure_ID, Student_ID, Student_Name, Student_Avg_Grade) VALUES ?";
+
+                            db.query(sql, [newStudents], (err, result) => {
+                              if (err) {
+                                errors.students =
+                                  "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                                return res.status(400).json(errors);
+                              } else {
+                                calculateMeasure(Test_Measure_ID);
+                                sql =
+                                  "SELECT Student_ID, Student_Name FROM TEST_STUDENTS WHERE Test_Measure_ID= " +
+                                  Test_Measure_ID;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) res.status(400).json(err);
+                                  result.forEach(row => {
+                                    student = {
+                                      Student_ID: row.Student_ID,
+                                      Student_Name: row.Student_Name
+                                    };
+                                    output.push(student);
+                                  });
+                                  return res.status(200).json(output);
+                                });
+                              }
+                            });
+                          }
                         }
-                      }
-                    });
+                      });
+                    }
                   }
                 });
               }

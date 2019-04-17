@@ -19,6 +19,8 @@ const validateRubricInput = require("../../validation/rubric");
 
 const calculateMeasure = require("../calculateMeasure");
 
+const isEmpty = require("../../validation/isEmpty");
+
 // @route   GET api/evaluations/rubrics
 // @desc    Returns the list of all the assigned rubrics
 // @access  Private route
@@ -644,133 +646,137 @@ router.post(
               let uploadedStudents = [];
               let output = [];
 
+              let uploadedID = [];
+
               fileRows.forEach(function(element) {
                 uploadedStudents.push(new Array(element[0], element[1]));
+                uploadedID.push(element[0]);
               });
-              // console.log(uploadedStudents);
 
-              sql =
-                "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                Test_Measure_ID;
-              db.query(sql, (err, result) => {
-                if (err) {
-                  return res.status(400).json(err);
-                } else {
-                  let regStudent = new Map();
+              if (new Set(uploadedID).size !== uploadedID.length) {
+                errors.students = "Duplicate Student ID in file";
 
-                  result.forEach(row => {
-                    regStudent.set(
-                      db.escape(row.Student_ID),
-                      row.Test_Student_ID
-                    );
-                  });
+                return res.status(400).json(errors);
+              } else {
+                sql =
+                  "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                  Test_Measure_ID;
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json(err);
+                  } else {
+                    let regStudent = new Map();
 
-                  sql =
-                    "SELECT DISTINCT(Test_Student_ID) FROM STUDENTS_TEST_GRADE WHERE Evaluator_Email = " +
-                    email;
+                    result.forEach(row => {
+                      regStudent.set(
+                        db.escape(row.Student_ID),
+                        row.Test_Student_ID
+                      );
+                    });
 
-                  db.query(sql, (err, result) => {
-                    if (err) {
-                      return res.status(400).json(err);
-                    } else {
-                      gradedStudents = [];
-                      result.forEach(row => {
-                        gradedStudents.push(row.Test_Student_ID);
-                      });
-                      // console.log("Graded:" + gradedStudents);
-                      // console.log("Uploaded" + uploadedStudents);
-                      // console.log("Registered:" + regStudent);
+                    sql =
+                      "SELECT DISTINCT(Test_Student_ID) FROM STUDENTS_TEST_GRADE WHERE Evaluator_Email = " +
+                      email;
 
-                      invalidStudents = [];
-                      addStudentsSql = "";
-                      updateStudentsSql = "";
-                      //iterate through uploadedStudents to see if they are registered
-                      uploadedStudents.forEach(student => {
-                        let StudentID = student[0];
-                        let StudentGrade = student[1];
-                        // console.log(StudentID);
-                        // console.log(regStudent);
-                        // console.log(regStudent.has(StudentID));
-                        if (regStudent.has(StudentID)) {
-                          let Test_Student_ID = regStudent.get(StudentID);
-                          if (Test_Type == "score") {
-                            if (!Validator.isFloat(StudentGrade)) {
-                              return res
-                                .status(400)
-                                .json({ error: "Score  must be  a number" });
-                            }
-                          } else {
-                            if (
-                              StudentGrade == "pass" ||
-                              StudentGrade == "PASS" ||
-                              StudentGrade == "Pass"
-                            ) {
-                              StudentGrade = 1;
-                            } else if (
-                              StudentGrade == "fail" ||
-                              StudentGrade == "FAIL" ||
-                              StudentGrade == "Fail"
-                            ) {
-                              StudentGrade = 0;
-                            } else {
-                              return res.status(400).json({
-                                error: "Score  must be  'Pass' or 'Fail'"
-                              });
-                            }
-                          }
-
-                          // console.log(Test_Student_ID);
-                          if (gradedStudents.includes(Test_Student_ID)) {
-                            updateStudentsSql +=
-                              " UPDATE STUDENTS_TEST_GRADE SET Score=" +
-                              StudentGrade +
-                              " WHERE Test_Measure_ID=" +
-                              Test_Measure_ID +
-                              " AND Test_Student_ID=" +
-                              Test_Student_ID +
-                              " AND Evaluator_Email=" +
-                              email +
-                              " ; ";
-                          } else {
-                            addStudentsSql +=
-                              " INSERT INTO STUDENTS_TEST_GRADE (Test_Measure_ID, Test_Student_ID,Evaluator_Email,Score) VALUES (" +
-                              Test_Measure_ID +
-                              "," +
-                              Test_Student_ID +
-                              "," +
-                              email +
-                              "," +
-                              StudentGrade +
-                              "); ";
-                          }
-                        } else {
-                          invalidStudents.push(StudentID);
-                        }
-                      });
-
-                      if (invalidStudents.length > 0) {
-                        return res.status(400).json(invalidStudents);
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json(err);
                       } else {
-                        sql = updateStudentsSql + addStudentsSql;
-                        // console.log(sql);
-                        db.query(sql, (err, result) => {
-                          // console.log(err);
-                          if (err) {
-                            errors.students =
-                              "There was some problem adding the evaluatees. Please check your csv file and try again.";
-                            return res.status(400).json(errors);
+                        gradedStudents = [];
+                        result.forEach(row => {
+                          gradedStudents.push(row.Test_Student_ID);
+                        });
+                        // invalid Students is the array of IDs of invalid students in the list
+                        // addStudentsSql to insert new grade
+                        // updatetudentsSql to update old grade
+
+                        invalidStudents = [];
+                        addStudentsSql = "";
+                        updateStudentsSql = "";
+                        //iterate through uploadedStudents to see if they are registered
+                        uploadedStudents.forEach(student => {
+                          let StudentID = student[0];
+                          let StudentGrade = student[1];
+
+                          // If that ID is registered, check for the score
+                          if (regStudent.has(StudentID)) {
+                            let Test_Student_ID = regStudent.get(StudentID);
+                            if (Test_Type == "score") {
+                              if (!Validator.isFloat(StudentGrade)) {
+                                errors.score = "Score  must be  a number";
+                              }
+                            } else {
+                              if (StudentGrade.toLowerCase() == "pass") {
+                                StudentGrade = 1;
+                              } else if (StudentGrade.toLowerCase() == "fail") {
+                                StudentGrade = 0;
+                              } else {
+                                errors.score =
+                                  "Score  must be  'Pass' or 'Fail'";
+                              }
+                            }
+
+                            // see if the student already has grade
+                            if (gradedStudents.includes(Test_Student_ID)) {
+                              updateStudentsSql +=
+                                " UPDATE STUDENTS_TEST_GRADE SET Score=" +
+                                StudentGrade +
+                                " WHERE Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Test_Student_ID=" +
+                                Test_Student_ID +
+                                " AND Evaluator_Email=" +
+                                email +
+                                " ; ";
+                            } else {
+                              addStudentsSql +=
+                                " INSERT INTO STUDENTS_TEST_GRADE (Test_Measure_ID, Test_Student_ID,Evaluator_Email,Score) VALUES (" +
+                                Test_Measure_ID +
+                                "," +
+                                Test_Student_ID +
+                                "," +
+                                email +
+                                "," +
+                                StudentGrade +
+                                "); ";
+                            }
                           } else {
-                            updateStudentsTestScore(Test_Measure_ID, () => {});
-                            return res
-                              .status(200)
-                              .json({ message: "successfully updated" });
+                            invalidStudents.push(StudentID);
                           }
                         });
+                        // if there is any invalid / unregistered students in the file, add them to error
+                        if (invalidStudents.length > 0) {
+                          errors.invalidStudents = invalidStudents;
+                        }
+
+                        // if error is not empty, return error
+                        if (!isEmpty(errors)) {
+                          return res.status(400).json(errors);
+                        } else {
+                          sql = updateStudentsSql + addStudentsSql;
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            // console.log(err);
+                            if (err) {
+                              errors.students =
+                                "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                              return res.status(400).json(errors);
+                            } else {
+                              updateStudentsTestScore(
+                                Test_Measure_ID,
+                                () => {}
+                              );
+                              return res
+                                .status(200)
+                                .json({ message: "successfully updated" });
+                            }
+                          });
+                        }
                       }
-                    }
-                  });
-                }
-              });
+                    });
+                  }
+                });
+              }
             }
           }
         });
