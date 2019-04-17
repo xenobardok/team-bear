@@ -3,7 +3,8 @@ import {
   PROFILE_LOADING,
   CLEAR_CURRENT_PROFILE,
   GET_EVALUATORS,
-  ADD_EVALUATOR
+  ADD_EVALUATOR,
+  CANCEL_EVALUATOR_INVITE
 } from "../actions/types";
 
 const initialState = {
@@ -41,6 +42,15 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         evaluators: [...state.evaluators, action.payload]
+      };
+    case CANCEL_EVALUATOR_INVITE:
+      console.log(action.payload.Email);
+      return {
+        ...state,
+        loading: false,
+        evaluators: state.evaluators.filter(
+          evaluator => evaluator.Email !== action.payload.Email
+        )
       };
     default:
       return state;
