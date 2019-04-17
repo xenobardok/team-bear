@@ -256,6 +256,7 @@ router.get(
         }
         Test.Test_Name = result[0].Exam_Name;
         Test.StudentsData = [];
+        Test.Test_Type = result[0].Test_Type;
 
         sql =
           "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
