@@ -44,7 +44,8 @@ router.post("/register", (req, res) => {
       } else if (
         result.length > 0 &&
         result[0].isActive === "false" &&
-        result[0].Fname === null
+        result[0].Fname === null &&
+        result[0].isDeleted === "false"
       ) {
         let firstname = db.escape(req.body.firstname);
         let lastname = db.escape(req.body.lastname);
@@ -77,6 +78,49 @@ router.post("/register", (req, res) => {
     });
   }
 });
+
+// @route   GET api/users/cancelInvite
+// @desc    Remove Invited user
+// @access  Public
+router.delete(
+  "/cancelInvite",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Check for validation
+    const dept = db.escape(req.user.dept);
+    const type = req.user.type;
+    let email = db.escape(req.user.email);
+    let removeEmail = db.escape(req.body.removeEmail);
+    errors = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM Evaluators WHERE email = " +
+        removeEmail +
+        " AND Dept_ID=" +
+        dept;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (result.length > 0 && result[0].isActive === "true") {
+          errors.email = "User already registered, please delete the user!";
+          return res.status(400).json(errors);
+        } else if (result.length > 0 && result[0].isActive == "false") {
+          sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            return res
+              .status(200)
+              .json({ message: "Successfully canceled the invitation" });
+          });
+        } else {
+          errors.email = "User not found";
+          return res.status(400).json(errors);
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
 
 // @route   POST api/users/addEvaluator
 // @desc    Register user
@@ -192,7 +236,8 @@ router.post("/login", (req, res) => {
             lastname: result[0].Lname,
             email: result[0].Email,
             type: level,
-            dept: result[0].Dept_ID
+            dept: result[0].Dept_ID,
+            isSuperUser: result[0].isSuperUser
           };
           jwt.sign(
             payload,
@@ -242,16 +287,27 @@ router.get(
     const dept = db.escape(req.user.dept);
 
     if (type == "Admin") {
-      let sql = "SELECT * FROM Evaluators where Dept_ID = " + dept;
+      let sql =
+        "SELECT * FROM Evaluators where Dept_ID = " +
+        dept +
+        " AND isDeleted='false' ORDER BY Fname ASC";
       db.query(sql, (err, result) => {
         if (err) res.status(400).json(err);
         else {
           result.forEach(row => {
             let name = row.Fname;
+            if (row.Fname == null) {
+              name = "";
+            }
             if (row.Mname != null) {
               name = name + " " + row.Mname;
             }
-            name = name + " " + row.Lname;
+
+            if (row.Lname == null) {
+              name += "";
+            } else {
+              name = name + " " + row.Lname;
+            }
 
             let email = row.Email;
             let isActive = row.isActive;

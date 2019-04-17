@@ -30,7 +30,7 @@ class CustomToggle extends React.Component {
 
 export default function ThreeDotDropdown(props) {
   return (
-    <Dropdown className="dropdown" alignRight>
+    <Dropdown className="dropdown three-dots" alignRight>
       <Dropdown.Toggle id="dropdown-custom-components" as={CustomToggle}>
         <FontAwesomeIcon icon="ellipsis-v" />
       </Dropdown.Toggle>

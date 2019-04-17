@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Form, ListGroup, Card, Button } from "react-bootstrap";
+import {
+  Form,
+  ListGroup,
+  Card,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -67,6 +74,36 @@ class EditableMeasureList extends Component {
           </Form>
         ) : (
           <ListGroup key={this.props.value.Measure_ID} className="edit-post">
+            <div
+              style={{
+                display: "inline",
+                alignSelf: "center",
+                padding: "0px 15px",
+                cursor: "pointer"
+              }}
+            >
+              {this.props.value.Measure_Success === "true" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Passing</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="status success"
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Failing</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="times-circle"
+                    className="status fail"
+                  />
+                </OverlayTrigger>
+              )}
+            </div>
             <Link
               to={
                 "/dashboard/cycles/" +
@@ -89,9 +126,18 @@ class EditableMeasureList extends Component {
                 padding: "0px 5px",
                 cursor: "pointer"
               }}
-              onClick={this.editHandler}
             >
-              <FontAwesomeIcon icon="edit" className="edit" />
+              <br />
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Edit Outcome</Tooltip>}
+              >
+                <FontAwesomeIcon
+                  icon="edit"
+                  className="edit"
+                  onClick={this.editHandler}
+                />
+              </OverlayTrigger>
             </div>
           </ListGroup>
         )}

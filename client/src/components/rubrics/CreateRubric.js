@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { createRubric } from "../../actions/rubricsActions";
 import { Form, Col, Button, Row } from "react-bootstrap";
 import classnames from "classnames";
+import SampleRubric from "./SampleRubric";
+import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 class Scales extends Component {
   changeHandler(e) {
@@ -30,7 +32,7 @@ class Scales extends Component {
               name={this.props.name + ".value"}
               value={this.props.value.value}
               onChange={this.changeHandler.bind(this)}
-              required
+              disabled
             />
           </Col>
         </Row>
@@ -46,15 +48,20 @@ class CreateRubric extends Component {
     this.state = {
       Rubric_Name: "",
       Rows_Num: "5",
-      Column_Num: "2",
+      Column_Num: "3",
       Scale: [
         {
           label: "",
-          value: ""
+          value: 1
+        },
+        {
+          label: "",
+          value: 2
         }
       ],
       errors: {},
-      weighted: "false"
+      weighted: "false",
+      visibleSample: false
       // rubric: {}
     };
   }
@@ -76,6 +83,20 @@ class CreateRubric extends Component {
       this.setState({ errors: nextProps.errors });
     }
   }
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (
+      this.state.Rubric_Name !== prevState.Rubric_Name &&
+      this.state.Rubric_Name !== ""
+    ) {
+      this.setState({ visibleSample: true });
+    } else if (
+      this.state.Rubric_Name !== prevState.Rubric_Name &&
+      this.state.Rubric_Name === ""
+    ) {
+      this.setState({ visibleSample: false });
+    }
+  };
   onChange(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -87,7 +108,7 @@ class CreateRubric extends Component {
       for (var i = 0; i < e.target.value - 1; i++) {
         scaleArray.push({
           label: "",
-          value: ""
+          value: i + 1
         });
       }
       this.setState({
@@ -103,8 +124,8 @@ class CreateRubric extends Component {
   };
 
   onScaleChange(index, value) {
-    console.log(index);
-    console.log(value);
+    // console.log(index);
+    // console.log(value);
     this.setState(state => {
       const Scale = state.Scale.map((v, i) => {
         if (index === "Scale[" + i + "].label") {
@@ -158,119 +179,139 @@ class CreateRubric extends Component {
     }
     const { errors } = this.state;
     return (
-      <Form onSubmit={this.onSubmit.bind(this)} className="createRubric">
-        <h2>Create a new Rubric</h2>
-        <br />
-        <Form.Group as={Row} controlId="formHorizontalRubric">
-          <Form.Label column sm={4}>
-            Name of the Rubric:
-          </Form.Label>
-          <Col sm={8}>
-            <Form.Control
-              name="Rubric_Name"
-              type="text"
-              placeholder="Eg. BUSN 3005 Presentation Rubric"
-              value={this.state.Rubric_Name}
-              onChange={this.onChange.bind(this)}
-              className={classnames("", { "is-invalid": errors.Rubric_Name })}
-            />
-            <Form.Control.Feedback type="invalid">
-              {errors.Rubric_Name}
-            </Form.Control.Feedback>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} controlId="weightedRubric">
-          <Form.Label column sm={4}>
-            Is this a weighted rubric?
-          </Form.Label>
-          <Col sm={8}>
-            <div className="custom-control custom-radio">
-              <input
-                type="radio"
-                id="customRadio1"
-                name="weighted"
-                className="custom-control-input"
-                value="true"
-                checked={this.state.weighted === "true"}
-                onChange={this.handleOptionChange}
+      <>
+        <Form onSubmit={this.onSubmit.bind(this)} className="createRubric">
+          <h2>Create a new Rubric</h2>
+          <br />
+          <Form.Group as={Row} controlId="formHorizontalRubric">
+            <Form.Label column sm={4}>
+              Name of the Rubric:
+            </Form.Label>
+            <Col sm={8}>
+              <Form.Control
+                name="Rubric_Name"
+                type="text"
+                placeholder="Eg. BUSN 3005 Presentation Rubric"
+                value={this.state.Rubric_Name}
+                onChange={this.onChange.bind(this)}
+                className={classnames("", { "is-invalid": errors.Rubric_Name })}
               />
-              <label className="custom-control-label" htmlFor="customRadio1">
-                Yes
-              </label>
-            </div>
-            <div className="custom-control custom-radio">
-              <input
-                type="radio"
-                id="customRadio2"
-                name="weighted"
-                className="custom-control-input"
-                value="false"
-                checked={this.state.weighted === "false"}
-                onChange={this.handleOptionChange}
-              />
-              <label className="custom-control-label" htmlFor="customRadio2">
-                No
-              </label>
-            </div>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} controlId="formHorizontalRows">
-          <Form.Label column sm={4}>
-            No. of Rows:
-          </Form.Label>
-          <Col sm={8}>
-            <Form.Control
-              as="select"
-              name="Rows_Num"
-              value={this.state.Rows_Num}
-              onChange={this.onChange.bind(this)}
-            >
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-            </Form.Control>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} controlId="formHorizontalCols">
-          <Form.Label column sm={4}>
-            No. of Columns:
-          </Form.Label>
-          <Col sm={8}>
-            <Form.Control
-              as="select"
-              name="Column_Num"
-              value={this.state.Column_Num}
-              onChange={this.onChange.bind(this)}
-            >
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-              <option>7</option>
-              <option>8</option>
-            </Form.Control>
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} controlId="formHorizontalScales">
-          <Form.Label column sm={4}>
-            Define Scales:
-          </Form.Label>
-          <Col sm={8}>{scaleRows}</Col>
-        </Form.Group>
-        <Button
-          variant="primary"
-          block
-          onClick={this.onSubmit.bind(this)}
-          type="submit"
+              <Form.Control.Feedback type="invalid">
+                {errors.Rubric_Name}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} controlId="weightedRubric">
+            <Form.Label column sm={4}>
+              Is this a weighted rubric?
+            </Form.Label>
+            <Col sm={8}>
+              <div className="custom-control custom-radio">
+                <input
+                  type="radio"
+                  id="customRadio1"
+                  name="weighted"
+                  className="custom-control-input"
+                  value="true"
+                  checked={this.state.weighted === "true"}
+                  onChange={this.handleOptionChange}
+                />
+                <label className="custom-control-label" htmlFor="customRadio1">
+                  Yes
+                </label>
+              </div>
+              <div className="custom-control custom-radio">
+                <input
+                  type="radio"
+                  id="customRadio2"
+                  name="weighted"
+                  className="custom-control-input"
+                  value="false"
+                  checked={this.state.weighted === "false"}
+                  onChange={this.handleOptionChange}
+                />
+                <label className="custom-control-label" htmlFor="customRadio2">
+                  No
+                </label>
+              </div>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} controlId="formHorizontalRows">
+            <Form.Label column sm={4}>
+              No. of Rows:
+            </Form.Label>
+            <Col sm={8}>
+              <Form.Control
+                as="select"
+                name="Rows_Num"
+                value={this.state.Rows_Num}
+                onChange={this.onChange.bind(this)}
+              >
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+              </Form.Control>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} controlId="formHorizontalCols">
+            <Form.Label column sm={4}>
+              No. of Columns:
+            </Form.Label>
+            <Col sm={8}>
+              <Form.Control
+                as="select"
+                name="Column_Num"
+                value={this.state.Column_Num}
+                onChange={this.onChange.bind(this)}
+              >
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+              </Form.Control>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} controlId="formHorizontalScales">
+            <Form.Label column sm={4}>
+              Define Scales:
+            </Form.Label>
+            <Col sm={8}>{scaleRows}</Col>
+          </Form.Group>
+          <Button
+            variant="primary"
+            block
+            onClick={this.onSubmit.bind(this)}
+            type="submit"
+          >
+            Create
+          </Button>
+        </Form>
+
+        <ReactCSSTransitionGroup
+          transitionName="rubric-transition"
+          transitionEnterTimeout={700}
+          transitionLeaveTimeout={700}
         >
-          Create
-        </Button>
-      </Form>
+          {this.state.visibleSample ? (
+            <div className="animation-table">
+              {this.state.Rubric_Name === "" ? (
+                <h3 className="text-center">Sample</h3>
+              ) : (
+                <h3 className="text-center">{this.state.Rubric_Name}</h3>
+              )}{" "}
+              <SampleRubric {...this.state} />
+            </div>
+          ) : null}
+        </ReactCSSTransitionGroup>
+        <p />
+      </>
     );
   }
 }

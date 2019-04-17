@@ -46,6 +46,7 @@ import {
 import EditableStudentList from "./EditableStudentList";
 import { toastr } from "react-redux-toastr";
 import "./measure.css";
+import UploadFileButton from "../../common/UploadFileButton";
 library.add(faPlus, faEdit, faUserPlus, faCheckCircle, faWindowClose);
 
 class Measure extends Component {
@@ -60,7 +61,6 @@ class Measure extends Component {
       Student_Name: "",
       Student_ID: "",
       fileUpload: false,
-      uploadedFile: null,
       unevaluatedStudents: null
     };
   }
@@ -169,7 +169,7 @@ class Measure extends Component {
   toggleAddStudentsFromFileButton = e => {
     this.setState({
       addStudentBox: !this.state.addStudentBox,
-      fileUpload: true
+      fileUpload: !this.state.fileUpload
     });
   };
 
@@ -185,15 +185,14 @@ class Measure extends Component {
     });
   };
 
-  fileUploadHandler = e => {
-    if (this.state.uploadedFile !== null) {
+  fileUploadHandler = file => {
+    if (file !== "") {
       const data = new FormData();
-      data.append("students", this.state.uploadedFile);
+      data.append("students", file);
       this.props.addStudentsFromCSV(this.state.Measure_ID, data);
       this.setState({
         fileUpload: false,
-        addStudentBox: false,
-        uploadedFile: null
+        addStudentBox: false
       });
     } else {
       toastr.error("File Not Found!", "Please upload a csv file");
@@ -205,12 +204,15 @@ class Measure extends Component {
 
   getUnevaluatedStudents = (name, e) => {
     let newStudentList = {};
-    this.props.measures.singleMeasure.Unevaluated.forEach(element => {
-      if (element.Evaluator_Name === name) {
-        newStudentList.Evaluator_Name = name;
-        newStudentList.students = [...element.Student_List];
-      }
-    });
+    if (!isEmpty(this.props.measures.singleMeasure.Unevaluated)) {
+      this.props.measures.singleMeasure.Unevaluated.forEach(element => {
+        if (element.Evaluator_Name === name) {
+          newStudentList.Evaluator_Name = name;
+          newStudentList.students = [...element.Student_List];
+        }
+      });
+    }
+
     this.setState({
       unevaluatedStudents: newStudentList
     });
@@ -347,102 +349,95 @@ class Measure extends Component {
                     )}
                   </>
                 )}
-                <br />
-                {!addStudentBox ? (
-                  <DropdownButton
-                    size="sm"
-                    variant="primary"
-                    title="Add Students"
-                    id="student-add"
-                    key="addStudentDropdown"
-                  >
-                    <Dropdown.Item
-                      eventKey="1"
-                      onClick={this.toggleAddStudentButton}
-                    >
-                      Add a Student
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      eventKey="2"
-                      onClick={this.toggleAddStudentsFromFileButton}
-                    >
-                      Upload a file
-                    </Dropdown.Item>
-                  </DropdownButton>
-                ) : (
-                  <>
-                    {fileUpload ? (
-                      <Form
-                        onSubmit={this.fileUploadHandler}
-                        encType="multipart/form-data"
-                      >
-                        <input
-                          type="file"
-                          name="students"
-                          onChange={e =>
-                            this.setState({ uploadedFile: e.target.files[0] })
-                          }
-                          className="invalid"
-                        />
-                        <Button
-                          variant="primary"
-                          onClick={this.fileUploadHandler}
-                        >
-                          <Form.Control.Feedback type="invalid">
-                            {this.props.errors.fileUpload}
-                          </Form.Control.Feedback>
-                          Submit
-                        </Button>
-                      </Form>
-                    ) : (
-                      <Form onSubmit={this.addStudentButton}>
-                        <InputGroup className="mb-3">
-                          <FormControl
-                            placeholder="Student name"
-                            aria-label="Student name"
-                            aria-describedby="basic-addon2"
-                            name="Student_Name"
-                            value={this.state.Student_Name}
-                            onChange={this.onChangeHandler}
-                          />
-                          <FormControl
-                            placeholder="ID"
-                            aria-label="ID"
-                            aria-describedby="basic-addon2"
-                            name="Student_ID"
-                            value={this.state.Student_ID}
-                            onChange={this.onChangeHandler}
-                          />
-                          <InputGroup.Append>
-                            <OverlayTrigger
-                              placement="top"
-                              overlay={<Tooltip>Save Changes</Tooltip>}
-                            >
-                              <Button
-                                variant="primary"
-                                onClick={this.addStudentButton}
-                              >
-                                <FontAwesomeIcon icon="check-circle" />
-                              </Button>
-                            </OverlayTrigger>
-                            <OverlayTrigger
-                              placement="top"
-                              overlay={<Tooltip>Cancel</Tooltip>}
-                            >
-                              <Button
-                                variant="outline-secondary"
-                                onClick={this.toggleAddStudentButton}
-                              >
-                                <FontAwesomeIcon icon="window-close" />
-                              </Button>
-                            </OverlayTrigger>
-                          </InputGroup.Append>
-                        </InputGroup>
-                      </Form>
-                    )}
-                  </>
-                )}
               </ol>
+              {!addStudentBox ? (
+                <DropdownButton
+                  size="sm"
+                  variant="primary"
+                  title="Add Students"
+                  id="student-add"
+                  key="addStudentDropdown"
+                  style={{ textAlign: "center" }}
+                >
+                  <Dropdown.Item
+                    eventKey="1"
+                    onClick={this.toggleAddStudentButton}
+                  >
+                    Add a Student
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    eventKey="2"
+                    onClick={this.toggleAddStudentsFromFileButton}
+                  >
+                    Upload a file
+                  </Dropdown.Item>
+                </DropdownButton>
+              ) : (
+                <>
+                  {fileUpload ? (
+                    <Form
+                      onSubmit={this.fileUploadHandler}
+                      encType="multipart/form-data"
+                      style={{ textAlign: "center" }}
+                    >
+                      <UploadFileButton
+                        fileUploadHandler={this.fileUploadHandler}
+                      />
+                      <Button
+                        variant="secondary"
+                        onClick={this.toggleAddStudentsFromFileButton}
+                      >
+                        Cancel
+                      </Button>
+                    </Form>
+                  ) : (
+                    <Form onSubmit={this.addStudentButton}>
+                      <InputGroup className="mb-3">
+                        <FormControl
+                          placeholder="Student name"
+                          aria-label="Student name"
+                          aria-describedby="basic-addon2"
+                          name="Student_Name"
+                          value={this.state.Student_Name}
+                          onChange={this.onChangeHandler}
+                        />
+                        <FormControl
+                          placeholder="ID"
+                          aria-label="ID"
+                          aria-describedby="basic-addon2"
+                          name="Student_ID"
+                          value={this.state.Student_ID}
+                          onChange={this.onChangeHandler}
+                        />
+                        <InputGroup.Append>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Save Changes</Tooltip>}
+                          >
+                            <Button
+                              variant="primary"
+                              onClick={this.addStudentButton}
+                            >
+                              <FontAwesomeIcon icon="check-circle" />
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            placement="top"
+                            overlay={<Tooltip>Cancel</Tooltip>}
+                          >
+                            <Button
+                              variant="outline-secondary"
+                              onClick={this.toggleAddStudentButton}
+                            >
+                              <FontAwesomeIcon icon="window-close" />
+                            </Button>
+                          </OverlayTrigger>
+                        </InputGroup.Append>
+                      </InputGroup>
+                    </Form>
+                  )}
+                </>
+              )}
             </Col>
             <Col sm={6}>
               {this.state.unevaluatedStudents === null ? (
@@ -451,29 +446,53 @@ class Measure extends Component {
                 </Alert>
               ) : (
                 <div>
-                  <p>
-                    <OverlayTrigger
-                      key="c"
-                      placement="top"
-                      overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
-                    >
-                      <FontAwesomeIcon
-                        icon="times-circle"
-                        className="crossIcon"
-                        onClick={this.closeUnevaluated}
-                      />
-                    </OverlayTrigger>
-                    Students yet to be evaluated by{" "}
-                    {this.state.unevaluatedStudents.Evaluator_Name}
-                    {": "}
-                  </p>
-                  <ol>
-                    {this.state.unevaluatedStudents.students.map(
-                      (student, index) => (
-                        <li key={index + 5000}>{student}</li>
-                      )
-                    )}
-                  </ol>
+                  {console.log(this.state.unevaluatedStudents.students)}
+                  {this.state.unevaluatedStudents.students === undefined ? (
+                    <p>
+                      <OverlayTrigger
+                        key="c"
+                        placement="top"
+                        overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
+                      >
+                        <FontAwesomeIcon
+                          icon="times-circle"
+                          className="crossIcon"
+                          onClick={this.closeUnevaluated}
+                        />
+                      </OverlayTrigger>
+                      <Badge variant="success">
+                        <span style={{ fontWeight: "400" }}>Completed!</span>
+                      </Badge>
+                      {"   "}
+                      This evaluator has evaluated all the students!
+                    </p>
+                  ) : (
+                    <>
+                      <p>
+                        <OverlayTrigger
+                          key="c"
+                          placement="top"
+                          overlay={<Tooltip id="tooltip-top">Close</Tooltip>}
+                        >
+                          <FontAwesomeIcon
+                            icon="times-circle"
+                            className="crossIcon"
+                            onClick={this.closeUnevaluated}
+                          />
+                        </OverlayTrigger>
+                        Students yet to be evaluated by{" "}
+                      </p>
+                      <ol>
+                        {this.state.unevaluatedStudents.Evaluator_Name}
+                        {": "}
+                        {this.state.unevaluatedStudents.students.map(
+                          (student, index) => (
+                            <li key={index + 5000}>{student}</li>
+                          )
+                        )}
+                      </ol>
+                    </>
+                  )}
                 </div>
               )}
             </Col>

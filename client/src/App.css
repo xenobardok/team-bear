@@ -33,7 +33,7 @@ body {
 }
 
 .dropdown{
-  float: right;
+  /* float: right; */
   cursor: pointer;
 }
 
@@ -218,7 +218,7 @@ textarea {
 
 .measureTitle {
   font-weight: bold;
-  font-size: 18px !important;
+  font-size: 0.9rem !important;
   vertical-align: middle !important;
   /* width: 200px !important; */
   padding: 6px 3px;
@@ -239,14 +239,26 @@ tr th,tr td{
   max-width: 200px;
 }
 
+.sample-table td{
+  padding:0.75rem !important;
+}
+
 .cells {
   border-radius: 0px;
   height: 150px !important;
   margin: none;
   /* width: 200px; */
 }
+
+.cells.form-control {
+  font-size: 0.8rem;
+}
 .table {
   margin: 0px auto;
+}
+
+.table td, .table th {
+  padding: 0.75rem 0.2rem;
 }
 
 table.report{
@@ -434,6 +446,14 @@ section#evaluators .singleEvaluator:hover{
   margin: 0px 5px;
 }
 
+.status.success {
+  color: green;
+}
+
+.status.fail {
+  color: #dc3545;
+}
+
 .crossIcon:hover{
   color:#dc3545
 }
@@ -447,7 +467,9 @@ section#evaluators .singleEvaluator:hover{
 }
 
 
-
+.cycle-view .list-group-item{
+  padding: 0.75rem 0.25rem 0.75rem 0.1rem;
+}
 
 .addEvaluatorIcon{
   cursor: pointer;
@@ -515,3 +537,30 @@ a:hover {
   color: #7b344a;
 }
 
+.three-dots{
+  float:right;
+}
+
+.rubric-transition-enter {
+  transform: translate(100%);
+}
+
+.rubric-transition-enter.rubric-transition-enter-active {
+  transform: translate(0%);
+  transition: transform 700ms ease-in;
+}
+
+.rubric-transition-leave {
+  transform: translate(0%);
+}
+
+.rubric-transition-leave.rubric-transition-leave-active {
+  transform: translate(100%);
+  transition: transform 700ms ease-out;
+}
+
+.animation-table {
+  position: 'fixed';
+      top: 0;
+      /* z-index: -1000; */
+}

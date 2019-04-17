@@ -9,9 +9,14 @@ import {
 import { Link } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faEdit,
+  faCheckCircle,
+  faTimesCircle
+} from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
-library.add(faPlus, faEdit);
+library.add(faPlus, faEdit, faCheckCircle, faTimesCircle);
 
 class EditableOutcomeList extends Component {
   constructor(props) {
@@ -102,7 +107,40 @@ class EditableOutcomeList extends Component {
             </Button>
           </Form>
         ) : (
-          <ListGroup key={this.props.value.Outcome_ID} className="edit-post">
+          <ListGroup
+            key={this.props.value.Outcome_ID}
+            className="edit-post list-lines"
+          >
+            <div
+              style={{
+                display: "inline",
+                alignSelf: "center",
+                padding: "0px 15px",
+                cursor: "pointer"
+              }}
+            >
+              {this.props.value.Outcome_Success === "true" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Passing</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="status success"
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Failing</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="times-circle"
+                    className="status fail"
+                  />
+                </OverlayTrigger>
+              )}
+            </div>
             <Link
               to={`/dashboard/cycles/${this.props.cycleID}/outcome/${
                 this.props.value.Outcome_ID
@@ -113,22 +151,27 @@ class EditableOutcomeList extends Component {
                 {this.state.textValue}
               </ListGroup.Item>
             </Link>
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>Edit Outcome</Tooltip>}
+
+            <div
+              style={{
+                display: "inline",
+                alignSelf: "center",
+                padding: "0px 5px",
+                cursor: "pointer"
+              }}
             >
-              <div
-                style={{
-                  display: "inline",
-                  alignSelf: "center",
-                  padding: "0px 5px",
-                  cursor: "pointer"
-                }}
-                onClick={this.editHandler}
+              <br />
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Edit Outcome</Tooltip>}
               >
-                <FontAwesomeIcon icon="edit" className="edit" />
-              </div>
-            </OverlayTrigger>
+                <FontAwesomeIcon
+                  icon="edit"
+                  className="edit"
+                  onClick={this.editHandler}
+                />
+              </OverlayTrigger>
+            </div>
           </ListGroup>
         )}
       </>

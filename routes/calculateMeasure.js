@@ -4,6 +4,8 @@ const db = require("../config/connection");
 const passport = require("passport");
 const secret = require("../config/secret");
 
+const updateOutcome = require("./updateOutcome");
+
 let calculateMeasure = Rubric_Measure_ID => {
   //sql to get the target and threshold
   sql =
@@ -63,6 +65,23 @@ let calculateMeasure = Rubric_Measure_ID => {
 
               db.query(sql, (err, result) => {
                 if (err) throw err;
+                sql =
+                  "SELECT Measure_ID FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+                  Rubric_Measure_ID;
+                db.query(sql, (err, result) => {
+                  if (err) throw err;
+                  let Measure_ID = result[0].Measure_ID;
+
+                  sql =
+                    "UPDATE MEASURES SET isSuccess=" +
+                    Measure_Success +
+                    " WHERE Measure_ID=" +
+                    Measure_ID;
+                  db.query(sql, (err, result) => {
+                    if (err) throw err;
+                    updateOutcome(Measure_ID);
+                  });
+                });
               });
             }
           });

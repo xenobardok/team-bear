@@ -125,3 +125,43 @@ export const listAssignedTests = () => dispatch => {
       });
     });
 };
+
+export const gradeStudentTestMeasure = (
+  TestMeasureID,
+  studentID,
+  Score
+) => dispatch => {
+  // console.log(RubricMeasureID, studentID, Score);
+  // dispatch(setRubricsLoading());
+  axios
+    .post(
+      `/api/evaluations/testMeasure/${TestMeasureID}/student/${studentID}`,
+      { Score: Score }
+    )
+    .then(res => {
+      // dispatch({
+      //   type: GRADE_STUDENT_RUBRIC_MEASURE,
+      //   payload: res.data
+      // });
+      toastr.success("Student Graded!");
+    })
+    .catch(err => {
+      toastr.error(err.response.data);
+    });
+};
+
+export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
+  dispatch(setRubricsLoading());
+  console.log(Test_Measure_ID, file);
+  axios
+    .post(`/api/evaluations/testMeasure/${Test_Measure_ID}/fileUpload`, file, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+    .then(res => dispatch(listAssignedTests()))
+    .catch(err => {
+      dispatch(listAssignedTests());
+      toastr.error("Error occured", "Student grade not added");
+    });
+};
