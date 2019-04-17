@@ -18,6 +18,8 @@ const updateStudentsScore = require("../updateStudentsScore");
 const calculateTestMeasure = require("../calculateTestMeasure");
 const updateStudentsTestScore = require("../updateStudentsTestScore");
 
+const updateOutcome = require("../updateOutcome");
+
 const validateUpdateRubric = require("../../validation/rubricMeasure");
 const validateUpdateTest = require("../../validation/testMeasure");
 
@@ -199,7 +201,8 @@ router.get(
                 outcome = {
                   Outcome_ID: row.Outcome_ID,
                   Outcome_Name: row.Outcome_Name,
-                  Outcome_Index: row.Outcome_Index
+                  Outcome_Index: row.Outcome_Index,
+                  Outcome_Success: row.Outcome_Success
                 };
 
                 Cycle.data.push(outcome);
@@ -404,6 +407,7 @@ router.get(
 
           Outcome.Outcome_ID = Outcome_ID;
           Outcome.Cycle_ID = result[0].Cycle_ID;
+
           Outcome.data = [];
           sql =
             "SELECT * FROM MEASURES WHERE Outcome_ID= " +
@@ -418,9 +422,10 @@ router.get(
                   Measure_ID: row.Measure_ID,
                   Measure_Name: row.Measure_label,
                   Measure_Index: row.Measure_Index,
-                  Measure_type: row.Measure_type
+                  Measure_type: row.Measure_type,
+                  Measure_Success: row.isSuccess
                 };
-
+                updateOutcome(row.Measure_ID);
                 Outcome.data.push(measure);
               });
 
@@ -525,6 +530,7 @@ router.post(
                           Measure_ID: Measure_ID,
                           Rubric_Measure_ID: Rubric_Measure_ID
                         };
+                        // updateOutcome(outcomeID);
                         return res.status(200).json(Rubric_Measure);
                       }
                     });
@@ -586,6 +592,9 @@ router.get(
         " AND Measure_ID=" +
         Measure_ID;
 
+      // updateOutcome(Measure_ID);
+
+      // console.log(sql);
       db.query(sql, (err, result) => {
         if (err) res.send(err);
         else {
@@ -791,7 +800,7 @@ router.get(
 
                           Measure.Evaluators = [];
                           db.query(sql, (err, result) => {
-                            console.log("Here");
+                            // console.log("Here");
                             if (err) res.status(400).json(err);
                             result.forEach(row => {
                               evaluator = {
@@ -799,10 +808,36 @@ router.get(
                                 Evaluator_Name: row.FullName
                               };
                               Measure.Evaluators.push(evaluator);
+
+                              sql =
+                                "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " ORDER BY S.Student_Name";
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                Measure.Unevaluated = [];
+
+                                if (result.length > 0) {
+                                  Evaluator = {
+                                    Evaluator_Name:
+                                      Measure.Evaluators[0].Evaluator_Name,
+                                    Student_List: []
+                                  };
+                                  result.forEach(row => {
+                                    Evaluator.Student_List.push(
+                                      row.Student_Name
+                                    );
+                                  });
+
+                                  Measure.Unevaluated.push(Evaluator);
+                                  return res.status(200).json(Measure);
+                                } else {
+                                  return res.status(200).json(Measure);
+                                }
+                              });
                             });
 
                             // console.log(Measure);
-                            return res.status(200).json(Measure);
                           });
                         });
                       }
@@ -1274,6 +1309,11 @@ router.post(
                       .status(400)
                       .json({ error: "There was message adding an evaluator" });
                   } else {
+                    if (result.length > 0) {
+                      return res.status(400).json({
+                        error: "An evaluator has already been assigned."
+                      });
+                    }
                     if (isEmpty(Evaluator_Email)) {
                       errors.Evaluator_Email =
                         "Evaluator email cannot be empty";

@@ -113,7 +113,7 @@ router.get(
                             sql =
                               "SELECT * FROM RUBRIC_STUDENTS S LEFT OUTER JOIN  STUDENTS_RUBRIC_ROWS_GRADE G ON S.Rubric_Student_ID = G.Rubric_Student_ID JOIN Evaluators E on E.Email=G.Evaluator_Email WHERE Rubric_Measure_ID=" +
                               Rubric_Measure_ID +
-                              " ORDER BY G.Rubric_Student_ID,G.Evaluator_Email,G.Rubric_Row_ID;";
+                              " ORDER BY S.Student_Name,G.Evaluator_Email,G.Rubric_Row_ID;";
 
                             db.query(sql, (err, result) => {
                               if (err) {
