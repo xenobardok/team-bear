@@ -606,6 +606,7 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   upload.single("StudentsGrade"),
   (req, res) => {
+    // console.log(here);
     const fileRows = [];
 
     // open uploaded file
@@ -629,6 +630,7 @@ router.post(
           "SELECT * FROM TEST_MEASURES WHERE Test_Measure_ID=" +
           Test_Measure_ID;
 
+        // console.log(sql);
         db.query(sql, (err, result) => {
           if (err) {
             return res.status(400).json(err);
@@ -645,7 +647,7 @@ router.post(
               fileRows.forEach(function(element) {
                 uploadedStudents.push(new Array(element[0], element[1]));
               });
-              console.log(uploadedStudents);
+              // console.log(uploadedStudents);
 
               sql =
                 "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
@@ -657,7 +659,10 @@ router.post(
                   let regStudent = new Map();
 
                   result.forEach(row => {
-                    regStudent.set(row.Student_ID, row.Test_Student_ID);
+                    regStudent.set(
+                      db.escape(row.Student_ID),
+                      row.Test_Student_ID
+                    );
                   });
 
                   sql =
@@ -672,15 +677,20 @@ router.post(
                       result.forEach(row => {
                         gradedStudents.push(row.Test_Student_ID);
                       });
+                      // console.log("Graded:" + gradedStudents);
+                      // console.log("Uploaded" + uploadedStudents);
+                      // console.log("Registered:" + regStudent);
 
                       invalidStudents = [];
-                      AddStudentsGrade = [];
+                      addStudentsSql = "";
                       updateStudentsSql = "";
                       //iterate through uploadedStudents to see if they are registered
                       uploadedStudents.forEach(student => {
                         let StudentID = student[0];
                         let StudentGrade = student[1];
-
+                        // console.log(StudentID);
+                        // console.log(regStudent);
+                        // console.log(regStudent.has(StudentID));
                         if (regStudent.has(StudentID)) {
                           let Test_Student_ID = regStudent.get(StudentID);
                           if (Test_Type == "score") {
@@ -709,28 +719,30 @@ router.post(
                             }
                           }
 
-                          if (gradedStudents.include(Test_Student_ID)) {
-                            UpdateStudentsGrade.push(
-                              (updateStudentsSql +=
-                                " UPDATE STUDENTS_TEST,GRADE SET Score=" +
-                                StudentGrade +
-                                " WHERE Test_Measure_ID=" +
-                                Test_Measure_ID +
-                                " AND Test_Measure_ID=" +
-                                Test_Measure_ID +
-                                " AND Evaluator_Email=" +
-                                email +
-                                " ; ")
-                            );
+                          // console.log(Test_Student_ID);
+                          if (gradedStudents.includes(Test_Student_ID)) {
+                            updateStudentsSql +=
+                              " UPDATE STUDENTS_TEST_GRADE SET Score=" +
+                              StudentGrade +
+                              " WHERE Test_Measure_ID=" +
+                              Test_Measure_ID +
+                              " AND Test_Student_ID=" +
+                              Test_Student_ID +
+                              " AND Evaluator_Email=" +
+                              email +
+                              " ; ";
+                          } else {
+                            addStudentsSql +=
+                              " INSERT INTO STUDENTS_TEST_GRADE (Test_Measure_ID, Test_Student_ID,Evaluator_Email,Score) VALUES (" +
+                              Test_Measure_ID +
+                              "," +
+                              Test_Student_ID +
+                              "," +
+                              email +
+                              "," +
+                              StudentGrade +
+                              "); ";
                           }
-                          AddStudentsGrade.push(
-                            new Array(
-                              Test_Measure_ID,
-                              Test_Student_ID,
-                              email,
-                              StudentGrade
-                            )
-                          );
                         } else {
                           invalidStudents.push(StudentID);
                         }
@@ -739,26 +751,19 @@ router.post(
                       if (invalidStudents.length > 0) {
                         return res.status(400).json(invalidStudents);
                       } else {
-                        sql =
-                          "INSERT INTO STUDENTS_TEST_GRADE (Test_Measure_ID, Test_Student_ID,Evaluator_Email,Score) VALUES  ?";
-
-                        db.query(sql, [AddStudentsGrade], (err, result) => {
+                        sql = updateStudentsSql + addStudentsSql;
+                        // console.log(sql);
+                        db.query(sql, (err, result) => {
+                          // console.log(err);
                           if (err) {
                             errors.students =
                               "There was some problem adding the evaluatees. Please check your csv file and try again.";
                             return res.status(400).json(errors);
                           } else {
-                            db.query(updateStudentsSql, (err, result) => {
-                              if (err) res.status(400).json(err);
-
-                              updateStudentsTestScore(
-                                Test_Measure_ID,
-                                () => {}
-                              );
-                              return res
-                                .status(200)
-                                .json({ message: "successfully updated" });
-                            });
+                            updateStudentsTestScore(Test_Measure_ID, () => {});
+                            return res
+                              .status(200)
+                              .json({ message: "successfully updated" });
                           }
                         });
                       }
