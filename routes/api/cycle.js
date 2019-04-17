@@ -808,10 +808,36 @@ router.get(
                                 Evaluator_Name: row.FullName
                               };
                               Measure.Evaluators.push(evaluator);
+
+                              sql =
+                                "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " ORDER BY S.Student_Name";
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                Measure.Unevaluated = [];
+
+                                if (result.length > 0) {
+                                  Evaluator = {
+                                    Evaluator_Name:
+                                      Measure.Evaluators[0].Evaluator_Name,
+                                    Student_List: []
+                                  };
+                                  result.forEach(row => {
+                                    Evaluator.Student_List.push(
+                                      row.Student_Name
+                                    );
+                                  });
+
+                                  Measure.Unevaluated.push(Evaluator);
+                                  return res.status(200).json(Measure);
+                                } else {
+                                  return res.status(200).json(Measure);
+                                }
+                              });
                             });
 
                             // console.log(Measure);
-                            return res.status(200).json(Measure);
                           });
                         });
                       }
