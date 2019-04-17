@@ -10,11 +10,19 @@ export default function SampleRubric(props) {
       let children = [];
       //Inner loop to create children
       for (let j = 0; j < props.Column_Num; j++) {
-        children.push(
-          <td className="borderedCell text-center" key={i + j}>
-            SAMPLE
-          </td>
-        );
+        if (j == 0) {
+          children.push(
+            <td className="borderedCell text-center measureTitle" key={i + j}>
+              Criteria #{i + 1}
+            </td>
+          );
+        } else {
+          children.push(
+            <td className="borderedCell text-center" key={i + j}>
+              SAMPLE
+            </td>
+          );
+        }
       }
       if (props.weighted === "true") {
         children.push(

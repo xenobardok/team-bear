@@ -31,7 +31,7 @@ class Scales extends Component {
               name={this.props.name + ".value"}
               value={this.props.value.value}
               onChange={this.changeHandler.bind(this)}
-              required
+              disabled
             />
           </Col>
         </Row>
@@ -47,11 +47,15 @@ class CreateRubric extends Component {
     this.state = {
       Rubric_Name: "",
       Rows_Num: "5",
-      Column_Num: "2",
+      Column_Num: "3",
       Scale: [
         {
           label: "",
           value: 1
+        },
+        {
+          label: "",
+          value: 2
         }
       ],
       errors: {},
