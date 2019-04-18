@@ -62,6 +62,7 @@ router.post("/register", (req, res) => {
           db.escape("true") +
           " WHERE Email = " +
           email;
+        console.log(sql);
         db.query(sql, function(err, result) {
           console.log(err);
           if (result) {
@@ -106,9 +107,7 @@ router.delete(
           sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
-            return res
-              .status(200)
-              .json({ message: "Successfully canceled the invitation" });
+            return res.status(200).json({ Email: req.body.removeEmail });
           });
         } else {
           errors.email = "User not found";

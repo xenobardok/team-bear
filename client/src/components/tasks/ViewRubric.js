@@ -177,6 +177,11 @@ class ViewRubric extends Component {
 
   onSubmitGradeHandler = e => {
     let { rubricMeasureId } = this.props.match.params;
+    console.log(
+      rubricMeasureId,
+      this.state.Student_ID,
+      this.state.Student_Grades
+    );
     this.props.gradeStudentRubricMeasure(
       rubricMeasureId,
       this.state.Student_ID,

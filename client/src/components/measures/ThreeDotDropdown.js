@@ -36,11 +36,12 @@ export default function ThreeDotDropdown(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item eventKey="1">
-          <Link to={"/dashboard/reports/measure/" + props.Measure_ID}>
-            Generate Report
-          </Link>
-        </Dropdown.Item>
+        <Link
+          to={"/dashboard/reports/measure/" + props.Measure_ID}
+          className="dropdown-item"
+        >
+          Generate Report
+        </Link>
       </Dropdown.Menu>
     </Dropdown>
   );

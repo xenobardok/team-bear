@@ -5,9 +5,10 @@ import {
   GET_ERRORS,
   CLEAR_CURRENT_PROFILE,
   GET_EVALUATORS,
-  ADD_EVALUATOR
+  ADD_EVALUATOR,
+  CANCEL_EVALUATOR_INVITE
 } from "./types";
-
+import { toastr } from "react-redux-toastr";
 // Get Current Profile
 
 export const getCurrentProfile = () => dispatch => {
@@ -56,16 +57,45 @@ export const getEvaluators = () => dispatch => {
 export const addEvaluator = newEmail => dispatch => {
   axios
     .post("/api/users/addEvaluator", { newEmail: newEmail })
-    .then(res =>
+    .then(res => {
       dispatch({
         type: ADD_EVALUATOR,
         payload: res.data
-      })
-    )
+      });
+      toastr.success(
+        "Evaluator added!",
+        `We've sent email to ${res.data.Email} with instructions to register!`
+      );
+    })
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
       })
     );
+};
+
+export const removeEvaluator = removeEmail => dispatch => {
+  axios
+    .delete("/api/users/cancelInvite", { data: { removeEmail: removeEmail } })
+    .then(res => {
+      dispatch({
+        type: CANCEL_EVALUATOR_INVITE,
+        payload: res.data
+      });
+      toastr.success(
+        "Evaluator invite removed!",
+        `We've removed ${res.data.Email} from the list of evaluators!`
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      toastr.danger(
+        "An error occured",
+        `Your process could not be processed at the moment`
+      );
+    });
 };

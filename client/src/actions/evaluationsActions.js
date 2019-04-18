@@ -82,7 +82,7 @@ export const gradeStudentRubricMeasure = (
   studentID,
   Score
 ) => dispatch => {
-  // console.log(RubricMeasureID, studentID, Score);
+  console.log(RubricMeasureID, studentID, Score);
   // dispatch(setRubricsLoading());
   axios
     .post(
@@ -90,13 +90,20 @@ export const gradeStudentRubricMeasure = (
       { Score: Score }
     )
     .then(res => {
-      dispatch({
-        type: GRADE_STUDENT_RUBRIC_MEASURE,
-        payload: res.data
-      });
+      // dispatch({
+      //   type: GRADE_STUDENT_RUBRIC_MEASURE,
+      //   payload: res.data
+      // });
+      console.log(res.data);
+      console.log("Successful");
       toastr.success("Student Graded!");
     })
     .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      console.log("error");
       toastr.error(err.response.data);
     });
 };

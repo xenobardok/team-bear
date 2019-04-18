@@ -10,11 +10,13 @@
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "i": "^0.3.6",
+    "immutable": "^4.0.0-rc.12",
     "jwt-decode": "^2.2.0",
     "node-emoji": "^1.10.0",
     "nodemon": "^1.18.10",
     "npm": "^6.8.0",
     "react": "^16.8.3",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-bootstrap-table": "^4.3.1",
     "react-burger-menu": "^2.6.5",
@@ -26,7 +28,10 @@
     "react-toggle": "^4.0.2",
     "react-transition-group": "^1.2.1",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "slate": "^0.45.0",
+    "slate-plain-serializer": "^0.6.38",
+    "slate-react": "^0.21.20"
   },
   "scripts": {
     "start": "react-scripts start",

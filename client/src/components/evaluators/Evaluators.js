@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { Card, ListGroup, Badge } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getEvaluators, addEvaluator } from "../../actions/profileActions";
+import {
+  getEvaluators,
+  addEvaluator,
+  removeEvaluator
+} from "../../actions/profileActions";
 import isEmpty from "../../validation/isEmpty";
 import Spinner from "../../common/Spinner";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -21,6 +25,10 @@ class Evaluators extends Component {
   componentDidMount() {
     this.props.getEvaluators();
   }
+  removeEvaluator = removeEmail => {
+    console.log(removeEmail);
+    this.props.removeEvaluator(removeEmail);
+  };
   render() {
     let modalClose = () => this.setState({ modalShow: false });
     let { evaluators, loading } = this.props.profile;
@@ -41,7 +49,12 @@ class Evaluators extends Component {
                 </Badge>
                 &nbsp;&nbsp;
                 <Badge variant="danger" style={{ cursor: "pointer" }}>
-                  <span style={{ fontWeight: "400" }}>Cancel Invite</span>
+                  <span
+                    style={{ fontWeight: "400" }}
+                    onClick={this.removeEvaluator.bind(this, value.Email)}
+                  >
+                    Cancel Invite
+                  </span>
                 </Badge>
               </div>
             </ListGroup.Item>
@@ -86,5 +99,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getEvaluators, addEvaluator }
+  { getEvaluators, addEvaluator, removeEvaluator }
 )(Evaluators);

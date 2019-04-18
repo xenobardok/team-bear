@@ -1,6 +1,5 @@
 import React from "react";
 import { Table, FormControl, Button } from "react-bootstrap";
-
 export default function SampleRubric(props) {
   let createTable = () => {
     let table = [];
