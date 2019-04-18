@@ -757,8 +757,9 @@ router.get(
                   "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
                   Test_Measure_ID;
 
-                // console.log(sql);
                 db.query(sql, (err, result) => {
+                  // console.log(sql);
+
                   if (err) throw err;
                   else {
                     const Total_Students = result[0].Total;
@@ -772,6 +773,8 @@ router.get(
                       Measure.Target;
 
                     db.query(sql, (err, result) => {
+                      // console.log(sql);
+
                       if (err) throw err;
                       else {
                         Measure.Student_Achieved_Target_Count =
@@ -785,6 +788,8 @@ router.get(
                         Measure.Students = [];
                         db.query(sql, (err, result) => {
                           if (err) res.status(400).json(err);
+                          console.log(result);
+
                           result.forEach(row => {
                             student = {
                               Student_ID: row.Student_ID,
@@ -792,49 +797,45 @@ router.get(
                             };
                             Measure.Students.push(student);
                           });
+
                           sql =
                             " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
                             Test_Measure_ID;
 
-                          // console.log(sql);
-
                           Measure.Evaluators = [];
                           db.query(sql, (err, result) => {
-                            // console.log("Here");
                             if (err) res.status(400).json(err);
+
                             result.forEach(row => {
                               evaluator = {
                                 Evaluator_Email: row.Evaluator_Email,
                                 Evaluator_Name: row.FullName
                               };
                               Measure.Evaluators.push(evaluator);
+                            });
+                            sql =
+                              "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                              Test_Measure_ID +
+                              " ORDER BY S.Student_Name";
+                            db.query(sql, (err, result) => {
+                              if (err) res.status(400).json(err);
+                              Measure.Unevaluated = [];
 
-                              sql =
-                                "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
-                                Test_Measure_ID +
-                                " ORDER BY S.Student_Name";
-                              db.query(sql, (err, result) => {
-                                if (err) res.status(400).json(err);
-                                Measure.Unevaluated = [];
+                              if (result.length > 0) {
+                                Evaluator = {
+                                  Evaluator_Name:
+                                    Measure.Evaluators[0].Evaluator_Name,
+                                  Student_List: []
+                                };
+                                result.forEach(row => {
+                                  Evaluator.Student_List.push(row.Student_Name);
+                                });
 
-                                if (result.length > 0) {
-                                  Evaluator = {
-                                    Evaluator_Name:
-                                      Measure.Evaluators[0].Evaluator_Name,
-                                    Student_List: []
-                                  };
-                                  result.forEach(row => {
-                                    Evaluator.Student_List.push(
-                                      row.Student_Name
-                                    );
-                                  });
-
-                                  Measure.Unevaluated.push(Evaluator);
-                                  return res.status(200).json(Measure);
-                                } else {
-                                  return res.status(200).json(Measure);
-                                }
-                              });
+                                Measure.Unevaluated.push(Evaluator);
+                                return res.status(200).json(Measure);
+                              } else {
+                                return res.status(200).json(Measure);
+                              }
                             });
 
                             // console.log(Measure);
