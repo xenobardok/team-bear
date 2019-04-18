@@ -59,9 +59,12 @@ class Login extends Component {
   render() {
     const { errors } = this.state;
     return (
-      <Container>
+      <Container
+        className="login"
+        style={{ margin: "100px auto", padding: "50px 50px 50px 50px" }}
+      >
         <Form onSubmit={this.onSubmit}>
-          <div className="text-center mt-4 mb-4">
+          <div className="text-center mb-4">
             <h2>Login</h2>
             <p>Enter your email address and password</p>
           </div>

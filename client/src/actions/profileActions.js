@@ -64,7 +64,7 @@ export const addEvaluator = newEmail => dispatch => {
       });
       toastr.success(
         "Evaluator added!",
-        `We've sent email to ${res.data} with instructions to register!`
+        `We've sent email to ${res.data.Email} with instructions to register!`
       );
     })
     .catch(err =>
@@ -78,16 +78,24 @@ export const addEvaluator = newEmail => dispatch => {
 export const removeEvaluator = removeEmail => dispatch => {
   axios
     .delete("/api/users/cancelInvite", { data: { removeEmail: removeEmail } })
-    .then(res =>
+    .then(res => {
       dispatch({
         type: CANCEL_EVALUATOR_INVITE,
         payload: res.data
-      })
-    )
-    .catch(err =>
+      });
+      toastr.success(
+        "Evaluator invite removed!",
+        `We've removed ${res.data.Email} from the list of evaluators!`
+      );
+    })
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+      toastr.danger(
+        "An error occured",
+        `Your process could not be processed at the moment`
+      );
+    });
 };
