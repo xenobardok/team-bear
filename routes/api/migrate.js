@@ -85,11 +85,9 @@ router.post(
                 db.query(sql, (err, result) => {
                   if (err) {
                     {
-                      return res
-                        .status(400)
-                        .json({
-                          error: "Something went wrong. Please try again."
-                        });
+                      return res.status(400).json({
+                        error: "Something went wrong. Please try again."
+                      });
                     }
                   } else {
                     result.forEach(row => {
@@ -231,11 +229,9 @@ duplicateMeasures = (
               db.query(sql, (err, result) => {
                 if (err) {
                   {
-                    return res
-                      .status(400)
-                      .json({
-                        error: "Something went wrong. Please try again."
-                      });
+                    return res.status(400).json({
+                      error: "Something went wrong. Please try again."
+                    });
                   }
                 } else {
                   let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
@@ -257,11 +253,9 @@ duplicateMeasures = (
               db.query(sql, (err, result) => {
                 if (err) {
                   {
-                    return res
-                      .status(400)
-                      .json({
-                        error: "Something went wrong. Please try again."
-                      });
+                    return res.status(400).json({
+                      error: "Something went wrong. Please try again."
+                    });
                   }
                 } else {
                   let Test_Measure_ID = result[0].Test_Measure_ID;

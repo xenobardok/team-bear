@@ -788,7 +788,7 @@ router.get(
                         Measure.Students = [];
                         db.query(sql, (err, result) => {
                           if (err) res.status(400).json(err);
-                          console.log(result);
+                          // console.log(result);
 
                           result.forEach(row => {
                             student = {
