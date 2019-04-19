@@ -47,16 +47,16 @@ router.get(
           };
           Scales = [
             {
-              Score_label: result[i].Score_label,
-              Value: result[i].Value
+              label: result[i].Score_label,
+              value: result[i].Value
             }
           ];
 
           for (j = 0; j < ScaleSize - 1; j++) {
             i++;
             score = {
-              Score_label: result[i].Score_label,
-              Value: result[i].Value
+              label: result[i].Score_label,
+              value: result[i].Value
             };
             Scales.push(score);
           }

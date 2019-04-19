@@ -27,7 +27,7 @@ import {
   addStudentsFromCSV,
   removeEvaluatorMeasure
 } from "../../actions/measureActions";
-import { getRubrics, getSingleRubric } from "../../actions/rubricsActions";
+import { getRubrics } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import EvaluatorBox from "./EvaluatorBox";
@@ -113,6 +113,7 @@ class Measure extends Component {
     }
 
     if (this.props.rubrics.rubric !== prevProps.rubrics.rubric) {
+      console.log(this.props.rubrics.rubric.Scale);
       this.setState({
         rubricScales: this.props.rubrics.rubric.Scale
       });
@@ -133,7 +134,20 @@ class Measure extends Component {
   }
 
   getSingleRubricScale = id => {
-    this.props.getSingleRubric(id);
+    let scales;
+    console.log(id);
+    this.props.rubrics.allRubrics.map(rubric => {
+      if (Number(rubric.Rubric_ID) === Number(id)) {
+        console.log(rubric.Scales);
+        scales = rubric.Scales;
+      }
+    });
+
+    console.log(scales);
+    this.setState({
+      rubricScales: scales
+    });
+    // this.props.getSingleRubric(id);
   };
 
   addEvaluator = () => {
@@ -526,7 +540,6 @@ export default connect(
     getEvaluators,
     assignEvaluatorToMeasure,
     getRubrics,
-    getSingleRubric,
     defineMeasure,
     addStudent,
     removeStudent,
