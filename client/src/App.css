@@ -464,6 +464,10 @@ section#evaluators .singleEvaluator:hover{
   margin: 0px 5px;
 }
 
+.edit-cycle{
+  padding: 0px 15px!important;
+}
+
 .status.success {
   color: green;
 }
@@ -581,4 +585,9 @@ a:hover {
   position: 'fixed';
       top: 0;
       /* z-index: -1000; */
+}
+
+.card-body .form-control {
+  width: 98%;
+  border: 1px solid #6c757c;
 }

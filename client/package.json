@@ -31,7 +31,8 @@
     "redux-thunk": "^2.3.0",
     "slate": "^0.45.0",
     "slate-plain-serializer": "^0.6.38",
-    "slate-react": "^0.21.20"
+    "slate-react": "^0.21.20",
+    "sweetalert2": "^8.8.5"
   },
   "scripts": {
     "start": "react-scripts start",

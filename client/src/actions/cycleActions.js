@@ -8,6 +8,7 @@ import {
   CREATE_CYCLE
 } from "./types";
 import { toastr } from "react-redux-toastr";
+import Swal from "sweetalert2";
 
 export const getCycles = () => dispatch => {
   axios.get("/api/cycle").then(res =>
@@ -84,6 +85,24 @@ export const migrateCycle = migrateCycleID => dispatch => {
         payload: err.response.data
       })
     );
+};
+
+export const deleteCycle = cycleID => dispatch => {
+  axios
+    .delete(`/api/cycle/${cycleID}`)
+    .then(res => {
+      Swal.fire("Deleted!", "Your cycle has been deleted.", "success");
+      dispatch(getCycles());
+    })
+    .catch(err => {
+      if (err.response.data.Outcomes) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The cycle contains outcomes. Please delete them first!"
+        });
+      }
+    });
 };
 
 export const createNewOutcome = (id, Outcome_Name) => dispatch => {

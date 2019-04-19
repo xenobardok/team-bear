@@ -257,7 +257,7 @@ router.delete(
               if (result.length > 0) {
                 return res
                   .status(404)
-                  .json({ error: "Please delete outcomes first" });
+                  .json({ Outcomes: "Please delete outcomes first" });
               } else {
                 sql = "DELETE FROM ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
 

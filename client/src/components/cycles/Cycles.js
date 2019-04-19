@@ -3,7 +3,7 @@ import Spinner from "../../common/Spinner";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getCycles, createCycle } from "../../actions/cycleActions";
+import { getCycles, deleteCycle } from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
 
@@ -61,7 +61,11 @@ class Cycles extends Component {
         //   Check if logged in user has cycles to view
         if (Object.keys(allCycles).length > 0) {
           cyclesList = allCycles.map(value => (
-            <EditableCycleList key={value.Cycle_ID} value={value} />
+            <EditableCycleList
+              key={value.Cycle_ID}
+              value={value}
+              deleteCycle={this.props.deleteCycle}
+            />
           ));
         } else {
           cyclesList = (
@@ -118,5 +122,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCycles }
+  { getCycles, deleteCycle }
 )(Cycles);
