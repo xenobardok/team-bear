@@ -219,6 +219,65 @@ router.get(
   }
 );
 
+// @route   DElETE api/cycle/cycle:handle
+// @desc    DELETE a cycle if there is no outcome
+// @access  Private route
+router.delete(
+  "/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    if (type == "Admin") {
+      const Cycle_ID = req.params.handle;
+      const Cycle = {};
+
+      let sql =
+        "SELECT * FROM ASSESSMENT_CYCLE WHERE DEPT_ID =" +
+        dept +
+        " AND Cycle_ID = " +
+        Cycle_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            return res.status(404).json({ error: "Cycle Not Found" });
+          }
+
+          sql =
+            "SELECT * FROM OUTCOMES WHERE Cycle_ID = " +
+            Cycle_ID +
+            " ORDER BY Outcome_Index";
+
+          db.query(sql, (err, result) => {
+            if (err) res.send(err);
+            else {
+              if (result.length > 0) {
+                return res
+                  .status(404)
+                  .json({ error: "Please delete outcomes first" });
+              } else {
+                sql = "DELETE FROM ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) return res.status(400).json(err);
+                  else {
+                    return res.status(200).json({ message: "Cycle deleted" });
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/cycle/:cycleID/outcome/create
 // @desc    Create a new outcome
 // @access  Private
