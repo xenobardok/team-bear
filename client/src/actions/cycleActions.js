@@ -68,6 +68,24 @@ export const createCycle = cycleName => dispatch => {
     });
 };
 
+export const migrateCycle = migrateCycleID => dispatch => {
+  axios
+    .post(`/api/migrate/cycle/${migrateCycleID}`)
+    .then(res => {
+      dispatch(getCycles());
+      toastr.success(
+        "New Cycle Created!",
+        "Cycle migration completed successfully!"
+      );
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 export const createNewOutcome = (id, Outcome_Name) => dispatch => {
   console.log(id, Outcome_Name);
   axios
