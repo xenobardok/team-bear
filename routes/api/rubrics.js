@@ -19,28 +19,52 @@ router.get(
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
+    Rubrics = [];
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM Evaluators natural join Department natural join RUBRIC where isVisible = 'true' AND Admin_Email = Email and Email =  ('" +
+        "SELECT * FROM Evaluators natural join Department natural join RUBRIC natural join RUBRIC_SCALE where isVisible = 'true' AND Admin_Email = Email and Email =  ('" +
         email +
-        "') order by Rubric_ID";
+        "') order by Rubric_ID,Value";
 
+      console.log(sql);
       db.query(sql, (err, result) => {
-        var Rubrics = [];
+        // var RubricsIDToObject=new Map();
+
         if (err) return res.send(err);
-        else if (result.length > 0) {
-          result.forEach(row => {
-            aRubric = {
-              Rubric_ID: row.Rubric_ID,
-              Rubrics_Name: row.Rubric_Name,
-              Rows_Num: row.Rows_Num,
-              Column_Num: row.Column_Num,
-              isWeighted: row.isWeighted,
-              Scale: row.Scale
+
+        let i = 0;
+
+        while (i < result.length) {
+          let Rubric_ID = result[i].Rubric_ID;
+          let ScaleSize = result[i].Scale;
+          aRubric = {
+            Rubric_ID: result[i].Rubric_ID,
+            Rubrics_Name: result[i].Rubric_Name,
+            Rows_Num: result[i].Rows_Num,
+            Column_Num: result[i].Column_Num,
+            isWeighted: result[i].isWeighted,
+            ScaleSize: result[i].Scale
+          };
+          Scales = [
+            {
+              Score_label: result[i].Score_label,
+              Value: result[i].Value
+            }
+          ];
+
+          for (j = 0; j < ScaleSize - 1; j++) {
+            i++;
+            score = {
+              Score_label: result[i].Score_label,
+              Value: result[i].Value
             };
-            Rubrics.push(aRubric);
-          });
+            Scales.push(score);
+          }
+          aRubric.Scales = Scales;
+          Rubrics.push(aRubric);
+          i++;
         }
+
         res.json(Rubrics);
       });
     } else {
