@@ -378,6 +378,70 @@ router.post(
   }
 );
 
+// @route   DElETE api/cycle/:cycleID/outcome/:outcomeID
+// @desc    DELETE an outcome if there is no measure
+// @access  Private route
+router.delete(
+  "/:cycleID/outcome/:outcomeID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    if (type == "Admin") {
+      const Cycle_ID = req.params.cycleID;
+      const Outcome_ID = req.params.outcomeID;
+
+      const Cycle = {};
+
+      let sql =
+        "SELECT * FROM ASSESSMENT_CYCLE NATURAL JOIN OUTCOMES WHERE DEPT_ID =" +
+        dept +
+        " AND Cycle_ID = " +
+        Cycle_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            return res.status(404).json({ error: "Outcome Not Found" });
+          }
+
+          sql =
+            "SELECT * FROM MEASURES WHERE Outcome_ID = " +
+            Outcome_ID +
+            " ORDER BY Measure_Index";
+
+          db.query(sql, (err, result) => {
+            if (err) res.send(err);
+            else {
+              if (result.length > 0) {
+                return res
+                  .status(404)
+                  .json({ Outcomes: "Please delete measures first" });
+              } else {
+                sql = "DELETE FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) return res.status(400).json(err);
+                  else {
+                    // console.log(sql);
+                    return res.status(200).json({ message: "Outcome deleted" });
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/cycle/:cycleID/outcome/update
 // @desc    Update an old outcome
 // @access  Private
@@ -622,6 +686,171 @@ router.post(
               });
             }
           });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   DElETE api/cycle/outcome/:outcomeID/measure/:measureID
+// @desc    DELETE a measure if there is no information
+// @access  Private route
+router.delete(
+  "/outcome/:outcomeID/measure/:measureID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    if (type == "Admin") {
+      const Outcome_ID = req.params.outcomeID;
+      const Measure_ID = req.params.measureID;
+
+      let sql =
+        "SELECT * FROM OUTCOMES NATURAL JOIN MEASURES WHERE Outcome_ID=" +
+        Outcome_ID +
+        " AND Measure_ID=" +
+        Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            return res.status(404).json({ error: "Measure Not Found" });
+          } else {
+            let Measure_Type = result[0].Measure_type;
+            if (Measure_Type == "rubric") {
+              sql =
+                "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure_ID;
+
+              db.query(sql, (err, result) => {
+                if (err) {
+                  return res.status(400).json(err);
+                } else {
+                  let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                  sql =
+                    "SELECT * FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                    Rubric_Measure_ID;
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json(err);
+                    } else {
+                      if (result.length > 0) {
+                        return res
+                          .status(400)
+                          .json({ error: "Please delete Students First" });
+                      } else {
+                        sql =
+                          "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
+                          Rubric_Measure_ID;
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json(err);
+                          } else {
+                            if (result.length > 0) {
+                              return res.status(400).json({
+                                error: "Please delete Evaluators First"
+                              });
+                            } else {
+                              sql =
+                                "DELETE FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+                                Rubric_Measure_ID;
+                              db.query(sql, (err, result) => {
+                                if (err) {
+                                  return res.status(400).json(err);
+                                } else {
+                                  sql =
+                                    "DELETE FROM MEASURES WHERE Measure_ID=" +
+                                    Measure_ID;
+                                  db.query(sql, (err, result) => {
+                                    if (err) {
+                                      return res.status(400).json(err);
+                                    } else {
+                                      return res.status(200).json({
+                                        message: "Measure successfully deleted"
+                                      });
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
+              });
+            } else {
+              sql =
+                "SELECT * FROM TEST_MEASURES WHERE Measure_ID=" + Measure_ID;
+
+              db.query(sql, (err, result) => {
+                if (err) {
+                  return res.status(400).json(err);
+                } else {
+                  let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                  sql =
+                    "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                    Test_Measure_ID;
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json(err);
+                    } else {
+                      if (result.length > 0) {
+                        return res
+                          .status(400)
+                          .json({ error: "Please delete Students First" });
+                      } else {
+                        sql =
+                          "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID=" +
+                          Test_Measure_ID;
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json(err);
+                          } else {
+                            if (result.length > 0) {
+                              return res.status(400).json({
+                                error: "Please delete Evaluators First"
+                              });
+                            } else {
+                              sql =
+                                "DELETE FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+                                Test_Measure_ID;
+                              db.query(sql, (err, result) => {
+                                if (err) {
+                                  return res.status(400).json(err);
+                                } else {
+                                  sql =
+                                    "DELETE FROM MEASURES WHERE Measure_ID=" +
+                                    Measure_ID;
+                                  db.query(sql, (err, result) => {
+                                    if (err) {
+                                      return res.status(400).json(err);
+                                    } else {
+                                      return res.status(200).json({
+                                        message: "Measure successfully deleted"
+                                      });
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
+              });
+            }
+          }
         }
       });
     } else {
@@ -2072,7 +2301,7 @@ router.delete(
                 Student_ID = db.escape(Student_ID);
 
                 sql =
-                  "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
+                  "SELECT * FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Student_ID=" +
                   Student_ID;
@@ -2118,6 +2347,93 @@ router.delete(
                           sql =
                             "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
                             Rubric_Measure_ID;
+
+                          db.query(sql, (err, result) => {
+                            if (err) res.status(400).json(err);
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
+                            return res.status(200).json(Students);
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
+              }
+            });
+          } else {
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                Student_ID = req.body.Student_ID;
+
+                if (isEmpty(Student_ID)) {
+                  errors.Student_ID = "Evaluatee ID cannot be empty";
+                }
+
+                if (!isEmpty(errors)) {
+                  return res.status(404).json(errors);
+                }
+
+                Student_ID = db.escape(Student_ID);
+
+                sql =
+                  "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                  Test_Measure_ID +
+                  " AND Student_ID=" +
+                  Student_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem removing the Evaluatee"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res.status(400).json({ error: "Student not found" });
+                  }
+
+                  let Test_Student_ID = result[0].Test_Student_ID;
+
+                  sql =
+                    "DELETE FROM STUDENTS_TEST_GRADE WHERE Test_Student_ID=" +
+                    Test_Student_ID;
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json({
+                        error: "There was some problem removing the Evaluatee"
+                      });
+                    } else {
+                      sql =
+                        "DELETE FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                        Test_Measure_ID +
+                        " AND Student_ID=" +
+                        Student_ID;
+
+                      db.query(sql, (err, result) => {
+                        if (err) {
+                          return res.status(400).json({
+                            error: "There was some problem adding the Evaluatee"
+                          });
+                        } else {
+                          updateStudentsTestScore(Test_Measure_ID, () => {});
+
+                          Students = [];
+
+                          sql =
+                            "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
+                            Test_Measure_ID;
 
                           db.query(sql, (err, result) => {
                             if (err) res.status(400).json(err);

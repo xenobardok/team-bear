@@ -26,7 +26,7 @@ router.get(
         email +
         "') order by Rubric_ID,Value";
 
-      console.log(sql);
+      // console.log(sql);
       db.query(sql, (err, result) => {
         // var RubricsIDToObject=new Map();
 
