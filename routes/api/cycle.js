@@ -37,7 +37,7 @@ router.get(
     const dept = req.user.dept;
 
     let sql =
-      "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = ('" +
+      "SELECT * FROM ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Dept_ID = ('" +
       dept +
       "') order by Dept_ID DESC";
     db.query(sql, (err, result) => {
@@ -53,7 +53,8 @@ router.get(
           cycles.push(aCycle);
         });
       }
-      res.json(cycles);
+      // console.log(cycles);
+      res.status(200).json(cycles);
     });
   }
 );
@@ -87,6 +88,50 @@ router.get(
         });
       }
       res.json(cycles);
+    });
+  }
+);
+
+// @route   PUT api/cycle/:cycleID/submit
+// @desc    Gets the lists of all active rubrics
+// @access  Private
+router.put(
+  "/:cycleID/submit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Cycle_ID = req.params.cycleID;
+
+    let sql =
+      "SELECT * FROM ASSESSMENT_CYCLE WHERE DEPT_ID =" +
+      dept +
+      " AND Cycle_ID = " +
+      Cycle_ID;
+
+    db.query(sql, (err, result) => {
+      if (err) res.send(err);
+      else {
+        if (result.length < 1) {
+          return res.status(404).json({ error: "Cycle Not Found" });
+        } else {
+          sql =
+            "UPDATE ASSESSMENT_CYCLE SET isSubmitted='true' WHERE Cycle_ID=" +
+            Cycle_ID;
+          db.query(sql, (err, result) => {
+            if (err)
+              return res
+                .status(400)
+                .json({ error: "There was some problem adding it" });
+            else {
+              return res
+                .status(200)
+                .json({ message: "Cycle Successfully Submitted" });
+            }
+          });
+        }
+      }
     });
   }
 );
