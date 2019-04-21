@@ -20,6 +20,7 @@ import ViewRubric from "../tasks/ViewRubric";
 import ViewTest from "../tasks/ViewTest";
 import Evaluators from "../evaluators/Evaluators";
 import ReportContents from "../reports/ReportContents";
+import AdminTools from "../admin/AdminTools";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -66,6 +67,11 @@ class Dashboard extends Component {
                 exact
                 path="/dashboard/rubrics/:id(\d+)"
                 component={ShowRubric}
+              />
+              <Route
+                exact
+                path="/dashboard/admin-tools"
+                component={AdminTools}
               />
             </div>
           </Container>

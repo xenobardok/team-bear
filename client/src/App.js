@@ -15,7 +15,6 @@ import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./common/PrivateRoute";
 import FourOFour from "./common/FourOFour";
-import Admin from "./components/admin/Admin";
 import { Container } from "react-bootstrap";
 // Code that checks for token
 if (localStorage.jwtToken) {
@@ -50,7 +49,6 @@ class App extends Component {
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <PrivateRoute path="/dashboard" component={Dashboard} />
-              <Route path="/admin" component={Admin} />
               <Route style={{ paddingTop: "50px" }} component={FourOFour} />
             </Switch>
             {/* <Route path="/rubrics" component={Rubrics} /> */}
