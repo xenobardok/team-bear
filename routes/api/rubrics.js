@@ -19,14 +19,16 @@ router.get(
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
     Rubrics = [];
     if (type == "Admin") {
       let sql =
-        "SELECT * FROM Evaluators natural join Department natural join RUBRIC natural join RUBRIC_SCALE where isVisible = 'true' AND Admin_Email = Email and Email =  ('" +
-        email +
-        "') order by Rubric_ID,Value";
+        "SELECT * FROM RUBRIC natural join RUBRIC_SCALE where isVisible = 'true' AND Dept_ID = " +
+        dept +
+        " order by Rubric_ID, Value";
 
-      // console.log(sql);
+      console.log(sql);
       db.query(sql, (err, result) => {
         // var RubricsIDToObject=new Map();
 
@@ -65,6 +67,7 @@ router.get(
           i++;
         }
 
+        console.log(Rubrics);
         res.json(Rubrics);
       });
     } else {
