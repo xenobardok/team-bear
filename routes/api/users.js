@@ -213,7 +213,7 @@ router.post("/login", (req, res) => {
         password +
         ") AND E.Dept_ID = D.Dept_ID AND D.Dept_ID=A.Dept_ID";
       db.query(sql, (err, result) => {
-        console.log(sql);
+        // console.log(sql);
         if (err) return res.send(err);
         else if (result.length > 0) {
           // User found
@@ -222,7 +222,9 @@ router.post("/login", (req, res) => {
             errors.email = "Email is not verified. Please verify the email.";
             res.status(404).json(errors);
           } else {
-            if (result[0].Email == result[0].Admin_Email) {
+            if (result[0].isSuperUser == "true") {
+              level = "Developer";
+            } else if (result[0].Email == result[0].Admin_Email) {
               level = "Admin";
             } else {
               level = "Evaluator";
