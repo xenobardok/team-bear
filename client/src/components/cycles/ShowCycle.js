@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import {
   getSingleCycle,
   createNewOutcome,
-  updateOutcome
+  updateOutcome,
+  deleteOutcome
 } from "../../actions/cycleActions";
 import { getMeasures } from "../../actions/measureActions";
 import {
@@ -111,6 +112,7 @@ class ShowCycle extends Component {
             cycleID={this.props.cycles.cycle.Cycle_ID}
             updateOutcome={this.props.updateOutcome}
             errors={this.props.errors}
+            deleteOutcome={this.props.deleteOutcome}
           />
         ));
       }
@@ -200,5 +202,11 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getSingleCycle, getMeasures, createNewOutcome, updateOutcome }
+  {
+    getSingleCycle,
+    getMeasures,
+    createNewOutcome,
+    updateOutcome,
+    deleteOutcome
+  }
 )(ShowCycle);

@@ -465,7 +465,7 @@ router.delete(
               if (result.length > 0) {
                 return res
                   .status(404)
-                  .json({ Outcomes: "Please delete measures first" });
+                  .json({ Measures: "Please delete measures first" });
               } else {
                 sql = "DELETE FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
 

@@ -8,6 +8,7 @@ import {
   ButtonGroup
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -84,7 +85,25 @@ class EditableOutcomeList extends Component {
       this.state.textValue
     );
   };
-
+  deleteButtonHandler = () => {
+    let { cycleID, value } = this.props;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        console.log(cycleID, value.Outcome_ID);
+        this.props.deleteOutcome(cycleID, value.Outcome_ID);
+        this.editHandler();
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { isEditable } = this.state;
     return (
@@ -110,7 +129,10 @@ class EditableOutcomeList extends Component {
               <Button variant="secondary" onClick={this.cancelHandler}>
                 Cancel
               </Button>
-              <Button variant="outline-danger" onClick={this.deleteHandler}>
+              <Button
+                variant="outline-danger"
+                onClick={this.deleteButtonHandler}
+              >
                 Delete
               </Button>
             </ButtonGroup>
