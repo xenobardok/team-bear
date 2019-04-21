@@ -3,10 +3,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
-  createMeasure,
-  updateMeasureLabel
-} from "../../actions/measureActions";
-import {
   Card,
   ListGroup,
   Button,
@@ -15,7 +11,12 @@ import {
   ButtonGroup
 } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
-import { getMeasures } from "../../actions/measureActions";
+import {
+  getMeasures,
+  deleteMeasure,
+  createMeasure,
+  updateMeasureLabel
+} from "../../actions/measureActions";
 import classnames from "classnames";
 import isEmpty from "../../validation/isEmpty";
 import EditableMeasureList from "./EditableMeasureList";
@@ -90,6 +91,7 @@ class ShowMeasures extends Component {
           outcomeID={outcomeID}
           updateMeasureLabel={this.props.updateMeasureLabel}
           measureID={value.Measure_ID}
+          deleteMeasure={this.props.deleteMeasure}
         />
       ));
     } else {
@@ -181,5 +183,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMeasures, createMeasure, updateMeasureLabel }
+  { getMeasures, createMeasure, updateMeasureLabel, deleteMeasure }
 )(ShowMeasures);
