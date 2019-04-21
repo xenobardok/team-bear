@@ -5,13 +5,18 @@ import {
   Card,
   Button,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  ButtonGroup
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+// import ThreeDotOM from "./ThreeDotOM";
+import ThreeDotCycle from "./ThreeDotCycle";
+
+import classnames from "classnames";
 library.add(faPlus, faEdit);
 
 class EditableMeasureList extends Component {
@@ -19,7 +24,8 @@ class EditableMeasureList extends Component {
     super(props);
     this.state = {
       isEditable: false,
-      Measure_Name: this.props.value.Measure_Name
+      Measure_Name: this.props.value.Measure_Name,
+      errors: {}
     };
   }
 
@@ -58,19 +64,30 @@ class EditableMeasureList extends Component {
         {isEditable ? (
           <Form onSubmit={this.updateMeasureLabel} style={{ padding: "10px" }}>
             <Form.Control
+              rows="3"
+              className={classnames("mt-1 ml-1 mr-1", {
+                "is-invalid": this.state.errors.Measure_Name
+              })}
               name="Measure_Name"
               type="text"
               as="textarea"
-              rows="2"
               value={this.state.Measure_Name}
               onChange={this.onChangeHandler}
             />
-            <Button variant="primary" onClick={this.updateMeasureLabel}>
-              Update
-            </Button>
-            <Button variant="secondary" onClick={this.editHandler}>
-              Cancel
-            </Button>
+            <Form.Control.Feedback type="invalid">
+              {this.state.errors.Measure_Name}
+            </Form.Control.Feedback>
+            <ButtonGroup size="sm" className="mt-1 mb-1">
+              <Button variant="primary" onClick={this.updateMeasureLabel}>
+                Update
+              </Button>
+              <Button variant="secondary" onClick={this.editHandler}>
+                Cancel
+              </Button>
+              <Button variant="outline-danger" onClick={this.deleteHandler}>
+                Delete
+              </Button>
+            </ButtonGroup>
           </Form>
         ) : (
           <ListGroup key={this.props.value.Measure_ID} className="edit-post">
@@ -78,7 +95,7 @@ class EditableMeasureList extends Component {
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 15px",
+                padding: "0px 10px 0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -119,26 +136,26 @@ class EditableMeasureList extends Component {
                 {this.state.Measure_Name}
               </ListGroup.Item>
             </Link>
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit Measure</Tooltip>}
             >
-              <br />
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Edit Outcome</Tooltip>}
+              <div
+                style={{
+                  display: "flex",
+                  alignSelf: "center",
+                  padding: "0px 5px",
+                  cursor: "pointer"
+                }}
               >
-                <FontAwesomeIcon
+                <ThreeDotCycle editHandler={this.editHandler} type="Measure" />
+                {/* <FontAwesomeIcon
                   icon="edit"
                   className="edit"
                   onClick={this.editHandler}
-                />
-              </OverlayTrigger>
-            </div>
+                /> */}
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>

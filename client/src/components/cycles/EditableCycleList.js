@@ -88,12 +88,12 @@ class Editable extends Component {
             >
               <div
                 style={{
-                  display: "inline",
+                  display: "flex",
                   alignSelf: "center",
                   cursor: "pointer"
                 }}
               >
-                <ThreeDotCycle editHandler={this.editHandler} />
+                <ThreeDotCycle editHandler={this.editHandler} type="Cycle" />
                 {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
               </div>
             </OverlayTrigger>

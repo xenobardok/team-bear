@@ -367,7 +367,7 @@ table.report th, table.report td{
 }
 
 .cycle-outcome a{
-  color: inherit;
+  /* color: inherit; */
 }
 
 .cycle-outcome a:hover{
@@ -379,7 +379,7 @@ table.report th, table.report td{
 }
 
 .cycle-view .btn{
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 .login-register a{
@@ -466,6 +466,7 @@ section#evaluators .singleEvaluator:hover{
 
 .edit-cycle{
   padding: 0px 15px!important;
+  display: flex;
 }
 
 .status.success {
@@ -490,7 +491,7 @@ section#evaluators .singleEvaluator:hover{
 
 
 .cycle-view .list-group-item{
-  padding: 0.75rem 0.25rem 0.75rem 0.1rem;
+  padding: 0.75rem 0.25rem 0.75rem 0.5rem;
 }
 
 .addEvaluatorIcon{
@@ -590,4 +591,13 @@ a:hover {
 .card-body .form-control {
   width: 98%;
   border: 1px solid #6c757c;
+}
+
+.arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  
+  border-bottom: 5px solid black;
 }

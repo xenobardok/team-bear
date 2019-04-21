@@ -4,7 +4,8 @@ import {
   ListGroup,
   Button,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  ButtonGroup
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -16,6 +17,8 @@ import {
   faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
+// import ThreeDotOM from "./ThreeDotOM";
+import ThreeDotCycle from "./ThreeDotCycle";
 library.add(faPlus, faEdit, faCheckCircle, faTimesCircle);
 
 class EditableOutcomeList extends Component {
@@ -89,33 +92,40 @@ class EditableOutcomeList extends Component {
         {isEditable ? (
           <Form>
             <Form.Control
-              type="text"
+              as="textarea"
+              rows="3"
               value={this.state.textValue}
               onChange={e => this.setState({ textValue: e.target.value })}
-              className={classnames("", {
+              className={classnames("mt-1 ml-1 mr-1", {
                 "is-invalid": this.state.errors.Outcome_Name
               })}
             />
             <Form.Control.Feedback type="invalid">
               {this.state.errors.Outcome_Name}
             </Form.Control.Feedback>
-            <Button variant="primary" onClick={this.updateOutcomeButton}>
-              Update
-            </Button>
-            <Button variant="secondary" onClick={this.cancelHandler}>
-              Cancel
-            </Button>
+            <ButtonGroup size="sm" className="mt-1 mb-1">
+              <Button variant="primary" onClick={this.updateOutcomeButton}>
+                Update
+              </Button>
+              <Button variant="secondary" onClick={this.cancelHandler}>
+                Cancel
+              </Button>
+              <Button variant="outline-danger" onClick={this.deleteHandler}>
+                Delete
+              </Button>
+            </ButtonGroup>
           </Form>
         ) : (
           <ListGroup
             key={this.props.value.Outcome_ID}
-            className="edit-post list-lines"
+            // className="edit-post list-lines"
+            className="edit-post"
           >
             <div
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 15px",
+                padding: "0px 10px 0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -151,27 +161,25 @@ class EditableOutcomeList extends Component {
                 {this.state.textValue}
               </ListGroup.Item>
             </Link>
-
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit Outcome</Tooltip>}
             >
-              <br />
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Edit Outcome</Tooltip>}
+              <div
+                style={{
+                  display: "flex",
+                  alignSelf: "center",
+                  cursor: "pointer"
+                }}
               >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon="edit"
                   className="edit"
                   onClick={this.editHandler}
-                />
-              </OverlayTrigger>
-            </div>
+                /> */}
+                <ThreeDotCycle editHandler={this.editHandler} type="Outcome" />
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>

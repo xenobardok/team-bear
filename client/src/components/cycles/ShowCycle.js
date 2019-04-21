@@ -8,7 +8,13 @@ import {
   updateOutcome
 } from "../../actions/cycleActions";
 import { getMeasures } from "../../actions/measureActions";
-import { Card, ListGroup, Button, FormControl } from "react-bootstrap";
+import {
+  Card,
+  ListGroup,
+  Button,
+  FormControl,
+  ButtonGroup
+} from "react-bootstrap";
 import isEmpty from "../../validation/isEmpty";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
@@ -117,45 +123,49 @@ class ShowCycle extends Component {
           <div>
             <Card className="text-center cycle">
               <Card.Header>List of Outcomes</Card.Header>
+              <Card.Body style={{ padding: "0px" }}>
+                <ListGroup variant="flush">
+                  {outcomes}
+                  {this.state.showNewOutcome ? (
+                    <div>
+                      <FormControl
+                        name="new-outcome"
+                        as="textarea"
+                        aria-label="With textarea"
+                        value={this.state.newOutcome}
+                        placeholder="Enter new Outcome"
+                        onChange={e =>
+                          this.setState({ newOutcome: e.target.value })
+                        }
+                        className={classnames("mt-1 ml-1 mr-1", {
+                          "is-invalid": this.state.errors.Outcome_Name
+                        })}
+                      />
+                      <FormControl.Feedback type="invalid">
+                        {this.state.errors.Outcome_Name}
+                      </FormControl.Feedback>
+                      <ButtonGroup size="sm" className="mt-1 mb-1">
+                        <Button
+                          variant="primary"
+                          onClick={this.saveButtonHandler}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            this.setState({ showNewOutcome: false });
+                            this.setState({ errors: "" });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </ButtonGroup>
+                    </div>
+                  ) : null}
+                </ListGroup>
+              </Card.Body>
 
-              <ListGroup variant="flush">{outcomes}</ListGroup>
-              {this.state.showNewOutcome ? (
-                <div>
-                  <FormControl
-                    name="new-outcome"
-                    as="textarea"
-                    aria-label="With textarea"
-                    value={this.state.newOutcome}
-                    placeholder="Enter new Outcome"
-                    onChange={e =>
-                      this.setState({ newOutcome: e.target.value })
-                    }
-                    className={classnames("", {
-                      "is-invalid": this.state.errors.Outcome_Name
-                    })}
-                  />
-                  <FormControl.Feedback type="invalid">
-                    {this.state.errors.Outcome_Name}
-                  </FormControl.Feedback>
-                  <Button
-                    variant="primary"
-                    onClick={this.saveButtonHandler}
-                    size="sm"
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      this.setState({ showNewOutcome: false });
-                      this.setState({ errors: "" });
-                    }}
-                    size="sm"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              ) : null}
               <Card.Footer
                 style={{ cursor: "pointer" }}
                 onClick={this.createNewOutcome}
