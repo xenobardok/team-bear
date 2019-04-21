@@ -5,13 +5,18 @@ import {
   Card,
   Button,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  ButtonGroup
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+// import ThreeDotOM from "./ThreeDotOM";
+import ThreeDotCycle from "./ThreeDotCycle";
+
+import classnames from "classnames";
 library.add(faPlus, faEdit);
 
 class EditableMeasureList extends Component {
@@ -19,7 +24,8 @@ class EditableMeasureList extends Component {
     super(props);
     this.state = {
       isEditable: false,
-      Measure_Name: this.props.value.Measure_Name
+      Measure_Name: this.props.value.Measure_Name,
+      errors: {}
     };
   }
 
@@ -50,6 +56,26 @@ class EditableMeasureList extends Component {
       [e.target.name]: e.target.value
     });
   };
+
+  deleteButtonHandler = () => {
+    let { outcomeID, measureID } = this.props;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        console.log(outcomeID, measureID);
+        this.props.deleteMeasure(outcomeID, measureID);
+        this.editHandler();
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { isEditable } = this.state;
 
@@ -58,19 +84,33 @@ class EditableMeasureList extends Component {
         {isEditable ? (
           <Form onSubmit={this.updateMeasureLabel} style={{ padding: "10px" }}>
             <Form.Control
+              rows="3"
+              className={classnames("mt-1 ml-1 mr-1", {
+                "is-invalid": this.state.errors.Measure_Name
+              })}
               name="Measure_Name"
               type="text"
               as="textarea"
-              rows="2"
               value={this.state.Measure_Name}
               onChange={this.onChangeHandler}
             />
-            <Button variant="primary" onClick={this.updateMeasureLabel}>
-              Update
-            </Button>
-            <Button variant="secondary" onClick={this.editHandler}>
-              Cancel
-            </Button>
+            <Form.Control.Feedback type="invalid">
+              {this.state.errors.Measure_Name}
+            </Form.Control.Feedback>
+            <ButtonGroup size="sm" className="mt-1 mb-1">
+              <Button variant="primary" onClick={this.updateMeasureLabel}>
+                Update
+              </Button>
+              <Button variant="secondary" onClick={this.editHandler}>
+                Cancel
+              </Button>
+              <Button
+                variant="outline-danger"
+                onClick={this.deleteButtonHandler}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
           </Form>
         ) : (
           <ListGroup key={this.props.value.Measure_ID} className="edit-post">
@@ -78,7 +118,7 @@ class EditableMeasureList extends Component {
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 15px",
+                padding: "0px 10px 0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -119,26 +159,26 @@ class EditableMeasureList extends Component {
                 {this.state.Measure_Name}
               </ListGroup.Item>
             </Link>
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit Measure</Tooltip>}
             >
-              <br />
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Edit Outcome</Tooltip>}
+              <div
+                style={{
+                  display: "flex",
+                  alignSelf: "center",
+                  padding: "0px 5px",
+                  cursor: "pointer"
+                }}
               >
-                <FontAwesomeIcon
+                <ThreeDotCycle editHandler={this.editHandler} type="Measure" />
+                {/* <FontAwesomeIcon
                   icon="edit"
                   className="edit"
                   onClick={this.editHandler}
-                />
-              </OverlayTrigger>
-            </div>
+                /> */}
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>

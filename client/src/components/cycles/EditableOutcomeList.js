@@ -4,9 +4,11 @@ import {
   ListGroup,
   Button,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  ButtonGroup
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,6 +18,8 @@ import {
   faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
+// import ThreeDotOM from "./ThreeDotOM";
+import ThreeDotCycle from "./ThreeDotCycle";
 library.add(faPlus, faEdit, faCheckCircle, faTimesCircle);
 
 class EditableOutcomeList extends Component {
@@ -81,7 +85,25 @@ class EditableOutcomeList extends Component {
       this.state.textValue
     );
   };
-
+  deleteButtonHandler = () => {
+    let { cycleID, value } = this.props;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        console.log(cycleID, value.Outcome_ID);
+        this.props.deleteOutcome(cycleID, value.Outcome_ID);
+        this.editHandler();
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { isEditable } = this.state;
     return (
@@ -89,33 +111,43 @@ class EditableOutcomeList extends Component {
         {isEditable ? (
           <Form>
             <Form.Control
-              type="text"
+              as="textarea"
+              rows="3"
               value={this.state.textValue}
               onChange={e => this.setState({ textValue: e.target.value })}
-              className={classnames("", {
+              className={classnames("mt-1 ml-1 mr-1", {
                 "is-invalid": this.state.errors.Outcome_Name
               })}
             />
             <Form.Control.Feedback type="invalid">
               {this.state.errors.Outcome_Name}
             </Form.Control.Feedback>
-            <Button variant="primary" onClick={this.updateOutcomeButton}>
-              Update
-            </Button>
-            <Button variant="secondary" onClick={this.cancelHandler}>
-              Cancel
-            </Button>
+            <ButtonGroup size="sm" className="mt-1 mb-1">
+              <Button variant="primary" onClick={this.updateOutcomeButton}>
+                Update
+              </Button>
+              <Button variant="secondary" onClick={this.cancelHandler}>
+                Cancel
+              </Button>
+              <Button
+                variant="outline-danger"
+                onClick={this.deleteButtonHandler}
+              >
+                Delete
+              </Button>
+            </ButtonGroup>
           </Form>
         ) : (
           <ListGroup
             key={this.props.value.Outcome_ID}
-            className="edit-post list-lines"
+            // className="edit-post list-lines"
+            className="edit-post"
           >
             <div
               style={{
                 display: "inline",
                 alignSelf: "center",
-                padding: "0px 15px",
+                padding: "0px 10px 0px 15px",
                 cursor: "pointer"
               }}
             >
@@ -151,27 +183,25 @@ class EditableOutcomeList extends Component {
                 {this.state.textValue}
               </ListGroup.Item>
             </Link>
-
-            <div
-              style={{
-                display: "inline",
-                alignSelf: "center",
-                padding: "0px 5px",
-                cursor: "pointer"
-              }}
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Edit Outcome</Tooltip>}
             >
-              <br />
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Edit Outcome</Tooltip>}
+              <div
+                style={{
+                  display: "flex",
+                  alignSelf: "center",
+                  cursor: "pointer"
+                }}
               >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon="edit"
                   className="edit"
                   onClick={this.editHandler}
-                />
-              </OverlayTrigger>
-            </div>
+                /> */}
+                <ThreeDotCycle editHandler={this.editHandler} type="Outcome" />
+              </div>
+            </OverlayTrigger>
           </ListGroup>
         )}
       </>

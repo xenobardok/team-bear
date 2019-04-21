@@ -14,6 +14,8 @@ import {
   REMOVE_EVALUATOR_MEASURE
 } from "./types";
 import { toastr } from "react-redux-toastr";
+import Swal from "sweetalert2";
+
 export const getMeasures = id => dispatch => {
   dispatch(setMeasureLoading());
   axios
@@ -208,4 +210,34 @@ export const removeEvaluatorMeasure = (
         payload: err.response.data
       })
     );
+};
+
+export const deleteMeasure = (outcomeID, measureID) => dispatch => {
+  axios
+    .delete(`/api/cycle/outcome/${outcomeID}/measure/${measureID}`)
+    .then(res => {
+      Swal.fire("Deleted!", "Your measure has been deleted.", "success");
+      dispatch(getMeasures(outcomeID));
+    })
+    .catch(err => {
+      if (err.response.data.students) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The measure contains students. Please delete them first!"
+        });
+      } else if (err.response.data.evaluators) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The measure contains evaluators. Please delete them first!"
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "Internal server error. Please contact app developers!"
+        });
+      }
+    });
 };

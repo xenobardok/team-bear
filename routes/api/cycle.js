@@ -465,7 +465,7 @@ router.delete(
               if (result.length > 0) {
                 return res
                   .status(404)
-                  .json({ Outcomes: "Please delete measures first" });
+                  .json({ Measures: "Please delete measures first" });
               } else {
                 sql = "DELETE FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
 
@@ -787,7 +787,7 @@ router.delete(
                       if (result.length > 0) {
                         return res
                           .status(400)
-                          .json({ error: "Please delete Students First" });
+                          .json({ students: "Please delete Students First" });
                       } else {
                         sql =
                           "SELECT * FROM RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
@@ -798,7 +798,7 @@ router.delete(
                           } else {
                             if (result.length > 0) {
                               return res.status(400).json({
-                                error: "Please delete Evaluators First"
+                                evaluators: "Please delete Evaluators First"
                               });
                             } else {
                               sql =
@@ -851,7 +851,7 @@ router.delete(
                       if (result.length > 0) {
                         return res
                           .status(400)
-                          .json({ error: "Please delete Students First" });
+                          .json({ students: "Please delete Students First" });
                       } else {
                         sql =
                           "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID=" +
@@ -862,7 +862,7 @@ router.delete(
                           } else {
                             if (result.length > 0) {
                               return res.status(400).json({
-                                error: "Please delete Evaluators First"
+                                evaluators: "Please delete Evaluators First"
                               });
                             } else {
                               sql =

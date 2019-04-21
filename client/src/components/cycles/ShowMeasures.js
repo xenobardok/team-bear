@@ -3,12 +3,20 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
+  Card,
+  ListGroup,
+  Button,
+  FormControl,
+  Form,
+  ButtonGroup
+} from "react-bootstrap";
+import Spinner from "../../common/Spinner";
+import {
+  getMeasures,
+  deleteMeasure,
   createMeasure,
   updateMeasureLabel
 } from "../../actions/measureActions";
-import { Card, ListGroup, Button, FormControl, Form } from "react-bootstrap";
-import Spinner from "../../common/Spinner";
-import { getMeasures } from "../../actions/measureActions";
 import classnames from "classnames";
 import isEmpty from "../../validation/isEmpty";
 import EditableMeasureList from "./EditableMeasureList";
@@ -83,6 +91,7 @@ class ShowMeasures extends Component {
           outcomeID={outcomeID}
           updateMeasureLabel={this.props.updateMeasureLabel}
           measureID={value.Measure_ID}
+          deleteMeasure={this.props.deleteMeasure}
         />
       ));
     } else {
@@ -93,53 +102,61 @@ class ShowMeasures extends Component {
         <Card className="text-center cycle">
           <Card.Header>List of Measures</Card.Header>
 
-          <ListGroup variant="flush">{measures}</ListGroup>
-          {this.state.showNewMeasure ? (
-            <Form className="create">
-              <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>Name of the measure:</Form.Label>
-                <FormControl
-                  name="new-outcome"
-                  as="textarea"
-                  aria-label="With textarea"
-                  value={this.state.newMeasure}
-                  placeholder="Enter new measure"
-                  onChange={e => this.setState({ newMeasure: e.target.value })}
-                  className={classnames("", {
-                    "is-invalid": this.state.errors.Measure_Name
-                  })}
-                />
-                <FormControl.Feedback type="invalid">
-                  {this.state.errors.Measure_Name}
-                </FormControl.Feedback>
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>Type of the measure</Form.Label>
-                <FormControl
-                  as="select"
-                  onChange={e =>
-                    this.setState({ newMeasureType: e.target.value })
-                  }
-                  value={this.state.newMeasureType}
-                >
-                  <option value="rubric">Rubric</option>
-                  <option value="test">Test</option>
-                </FormControl>
-              </Form.Group>
-              <Button variant="primary" onClick={this.saveButtonHandler}>
-                Save
-              </Button>
-              &nbsp;
-              <Button
-                variant="primary"
-                onClick={() => {
-                  this.setState({ showNewMeasure: false, errors: "" });
-                }}
-              >
-                Cancel
-              </Button>
-            </Form>
-          ) : null}
+          <Card.Body style={{ padding: "0px" }}>
+            <ListGroup variant="flush">
+              {measures}
+              {this.state.showNewMeasure ? (
+                <Form className="create">
+                  <Form.Group controlId="exampleForm.ControlSelect1">
+                    <Form.Label>Name of the measure:</Form.Label>
+                    <FormControl
+                      name="new-outcome"
+                      as="textarea"
+                      aria-label="With textarea"
+                      value={this.state.newMeasure}
+                      placeholder="Enter new measure"
+                      onChange={e =>
+                        this.setState({ newMeasure: e.target.value })
+                      }
+                      className={classnames("mt-1 ml-1 mr-1", {
+                        "is-invalid": this.state.errors.Measure_Name
+                      })}
+                    />
+                    <FormControl.Feedback type="invalid">
+                      {this.state.errors.Measure_Name}
+                    </FormControl.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlSelect1">
+                    <Form.Label>Type of the measure</Form.Label>
+                    <FormControl
+                      as="select"
+                      onChange={e =>
+                        this.setState({ newMeasureType: e.target.value })
+                      }
+                      value={this.state.newMeasureType}
+                    >
+                      <option value="rubric">Rubric</option>
+                      <option value="test">Test</option>
+                    </FormControl>
+                  </Form.Group>
+
+                  <ButtonGroup size="sm" className="mt-1">
+                    <Button variant="primary" onClick={this.saveButtonHandler}>
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        this.setState({ showNewMeasure: false, errors: "" });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </ButtonGroup>
+                </Form>
+              ) : null}
+            </ListGroup>
+          </Card.Body>
           <Card.Footer
             style={{ cursor: "pointer" }}
             onClick={this.createNewMeasure.bind(this)}
@@ -166,5 +183,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMeasures, createMeasure, updateMeasureLabel }
+  { getMeasures, createMeasure, updateMeasureLabel, deleteMeasure }
 )(ShowMeasures);

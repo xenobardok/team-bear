@@ -136,3 +136,28 @@ export const updateOutcome = (cycleID, outcomeID, Outcome_Name) => dispatch => {
       })
     );
 };
+
+export const deleteOutcome = (cycleID, outcomeID) => dispatch => {
+  axios
+    .delete(`/api/cycle/${cycleID}/outcome/${outcomeID}`)
+    .then(res => {
+      console.log(res.data);
+      Swal.fire("Deleted!", "Your outcome has been deleted.", "success");
+      dispatch(getSingleCycle(cycleID));
+    })
+    .catch(err => {
+      if (err.response.data.Measures) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The outcome contains measures. Please delete them first!"
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "Internal server error. Please contact app developers!"
+        });
+      }
+    });
+};
