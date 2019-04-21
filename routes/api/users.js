@@ -207,12 +207,13 @@ router.post("/login", (req, res) => {
       res.status(404).json(errors);
     } else {
       sql =
-        "SELECT * from Evaluators E, Department D where E.email=" +
+        "SELECT * from Evaluators E, Department D,  PROGRAM_ADMIN A where E.email=" +
         email +
         " and E.password = password(" +
         password +
-        ") AND E.Dept_ID = D.Dept_ID";
+        ") AND E.Dept_ID = D.Dept_ID AND D.Dept_ID=A.Dept_ID";
       db.query(sql, (err, result) => {
+        console.log(sql);
         if (err) return res.send(err);
         else if (result.length > 0) {
           // User found
