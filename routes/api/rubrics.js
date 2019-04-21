@@ -26,7 +26,7 @@ router.get(
       let sql =
         "SELECT * FROM RUBRIC natural join RUBRIC_SCALE where isVisible = 'true' AND Dept_ID = " +
         dept +
-        " order by Rubric_ID, Value";
+        " order by Rubric_Name";
 
       console.log(sql);
       db.query(sql, (err, result) => {
