@@ -222,9 +222,7 @@ router.post("/login", (req, res) => {
             errors.email = "Email is not verified. Please verify the email.";
             res.status(404).json(errors);
           } else {
-            if (result[0].isSuperUser == "true") {
-              level = "Developer";
-            } else if (result[0].Email == result[0].Admin_Email) {
+            if (result[0].Email == result[0].Admin_Email) {
               level = "Admin";
             } else {
               level = "Evaluator";

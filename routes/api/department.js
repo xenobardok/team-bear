@@ -307,24 +307,20 @@ router.delete(
                   if (err) return res.status(400).json(err);
                   else {
                     if (result.length > 0) {
-                      return res
-                        .status(400)
-                        .json({
-                          Dept_ID:
-                            "There are Assessment Cycles associated with this department. Please delete them first."
-                        });
+                      return res.status(400).json({
+                        Dept_ID:
+                          "There are Assessment Cycles associated with this department. Please delete them first."
+                      });
                     } else {
                       sql = "SELECT * FROM RUBRIC WHERE Dept_ID=" + Dept_ID;
                       db.query(sql, (err, result) => {
                         if (err) return res.status(400).json(err);
 
                         if (result.length > 0) {
-                          return res
-                            .status(400)
-                            .json({
-                              Dept_ID:
-                                "There are Rubric associated with this department. Please delete them first."
-                            });
+                          return res.status(400).json({
+                            Dept_ID:
+                              "There are Rubric associated with this department. Please delete them first."
+                          });
                         } else {
                           sql =
                             "SELECT * FROM Evaluators WHERE Dept_ID=" + Dept_ID;
@@ -333,12 +329,10 @@ router.delete(
                             if (err) return res.status(400).json(err);
 
                             if (result.length > 0) {
-                              return res
-                                .status(400)
-                                .json({
-                                  Dept_ID:
-                                    "There are Evaluators and Program Administrators associated with this department. Please delete them first."
-                                });
+                              return res.status(400).json({
+                                Dept_ID:
+                                  "There are Evaluators and Program Administrators associated with this department. Please delete them first."
+                              });
                             } else {
                               sql =
                                 "DELETE  FROM PROGRAM_ADMIN WHERE Dept_ID=" +
@@ -374,4 +368,5 @@ router.delete(
     });
   }
 );
+
 module.exports = router;
