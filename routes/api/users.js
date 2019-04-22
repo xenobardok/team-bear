@@ -104,10 +104,23 @@ router.delete(
           errors.email = "User already registered, please delete the user!";
           return res.status(400).json(errors);
         } else if (result.length > 0 && result[0].isActive == "false") {
-          sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+          sql = "SELECT * FROM PROGRAM_ADMIN where Admin_Email=" + removeEmail;
+
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
-            return res.status(200).json({ Email: req.body.removeEmail });
+            if (result.length > 0) {
+              errors.email =
+                "User is also an admin of the department. Please remove as Program Administrator first.";
+              return res.status(400).json(errors);
+            } else {
+              sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+              db.query(sql, (err, result) => {
+                console.log(sql);
+                if (err) return res.status(400).json(err);
+
+                return res.status(200).json({ Email: req.body.removeEmail });
+              });
+            }
           });
         } else {
           errors.email = "User not found";
