@@ -1,4 +1,8 @@
-import { PROGRAM_LOADING, GET_PROGRAMS } from "../actions/types";
+import {
+  PROGRAM_LOADING,
+  GET_PROGRAMS,
+  GET_SINGLE_PROGRAM
+} from "../actions/types";
 
 const initialState = {
   programs: null,
@@ -17,6 +21,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         programs: action.payload,
+        loading: false
+      };
+    case GET_SINGLE_PROGRAM:
+      return {
+        ...state,
+        program: action.payload,
         loading: false
       };
     default:

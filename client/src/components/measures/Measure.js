@@ -496,10 +496,10 @@ class Measure extends Component {
                           />
                         </OverlayTrigger>
                         Students yet to be evaluated by{" "}
-                      </p>
-                      <ol>
                         {this.state.unevaluatedStudents.Evaluator_Name}
                         {": "}
+                      </p>
+                      <ol>
                         {this.state.unevaluatedStudents.students.map(
                           (student, index) => (
                             <li key={index + 5000}>{student}</li>
