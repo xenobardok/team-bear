@@ -39,8 +39,9 @@ class EditableMeasureList extends Component {
 
   updateMeasureLabel = e => {
     e.preventDefault();
-    let { outcomeID, measureID } = this.props;
+    let { id, outcomeID, measureID } = this.props;
     this.props.updateMeasureLabel(
+      id,
       outcomeID,
       measureID,
       this.state.Measure_Name
@@ -58,7 +59,7 @@ class EditableMeasureList extends Component {
   };
 
   deleteButtonHandler = () => {
-    let { outcomeID, measureID } = this.props;
+    let { id, outcomeID, measureID } = this.props;
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -69,8 +70,8 @@ class EditableMeasureList extends Component {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        console.log(outcomeID, measureID);
-        this.props.deleteMeasure(outcomeID, measureID);
+        console.log(id, outcomeID, measureID);
+        this.props.deleteMeasure(id, outcomeID, measureID);
         this.editHandler();
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");
       }

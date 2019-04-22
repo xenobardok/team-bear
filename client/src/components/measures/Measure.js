@@ -127,8 +127,8 @@ class Measure extends Component {
   };
 
   componentDidMount() {
-    let { outcomeID, measureID } = this.props.match.params;
-    this.props.getSingleMeasure(outcomeID, measureID);
+    let { id, outcomeID, measureID } = this.props.match.params;
+    this.props.getSingleMeasure(id, outcomeID, measureID);
     this.props.getEvaluators();
     this.props.getRubrics();
   }
@@ -157,21 +157,18 @@ class Measure extends Component {
   };
 
   addButtonEvaluator = email => {
+    let { id, outcomeID, measureID } = this.props.match.params;
     console.log(this.props.match.params.measureID, email);
     if (!isEmpty(email)) {
-      this.props.assignEvaluatorToMeasure(
-        this.props.match.params.measureID,
-        email
-      );
-
+      this.props.assignEvaluatorToMeasure(id, outcomeID, measureID, email);
       this.setState({ newEvaluator: false });
     }
   };
 
   measureDefination = defination => {
-    let { outcomeID, measureID } = this.props.match.params;
+    let { id, outcomeID, measureID } = this.props.match.params;
     // console.log("Reached defineMeasure method");
-    this.props.defineMeasure(outcomeID, measureID, defination);
+    this.props.defineMeasure(id, outcomeID, measureID, defination);
   };
 
   toggleAddStudentButton = e => {
@@ -192,8 +189,8 @@ class Measure extends Component {
       Student_Name: this.state.Student_Name,
       Student_ID: this.state.Student_ID
     };
-    let { measureID } = this.props.match.params;
-    this.props.addStudent(measureID, student);
+    let { id, outcomeID, measureID } = this.props.match.params;
+    this.props.addStudent(id, outcomeID, measureID, student);
     this.setState({
       addStudentBox: !this.state.addStudentBox
     });
@@ -201,9 +198,10 @@ class Measure extends Component {
 
   fileUploadHandler = file => {
     if (file !== "") {
+      let { id, outcomeID, measureID } = this.props.match.params;
       const data = new FormData();
       data.append("students", file);
-      this.props.addStudentsFromCSV(this.state.Measure_ID, data);
+      this.props.addStudentsFromCSV(id, outcomeID, this.state.Measure_ID, data);
       this.setState({
         fileUpload: false,
         addStudentBox: false
@@ -213,7 +211,8 @@ class Measure extends Component {
     }
   };
   removeStudentButton = Student_ID => {
-    this.props.removeStudent(this.state.Measure_ID, Student_ID);
+    let { id, outcomeID, measureID } = this.props.match.params;
+    this.props.removeStudent(id, outcomeID, this.state.Measure_ID, Student_ID);
   };
 
   getUnevaluatedStudents = (name, e) => {
@@ -332,6 +331,8 @@ class Measure extends Component {
                       getUnevaluatedStudents={this.getUnevaluatedStudents}
                       Measure_ID={this.state.Measure_ID}
                       removeEvaluatorMeasure={this.props.removeEvaluatorMeasure}
+                      cycleID={this.props.match.params.id}
+                      outcomeID={this.props.match.params.outcomeID}
                     />
                   ))
                 : null}

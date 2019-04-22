@@ -37,24 +37,24 @@ class ShowMeasures extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    let { id, outcomeID } = this.props.match.params;
     if (this.props.errors !== prevProps.errors) {
       this.setState({
         errors: this.props.errors
       });
     }
 
-    if (this.props.match.params.outcomeID) {
-      if (
-        this.props.match.params.outcomeID !== prevProps.match.params.outcomeID
-      ) {
-        this.props.getMeasures(this.props.match.params.outcomeID);
+    if (outcomeID) {
+      if (outcomeID !== prevProps.match.params.outcomeID) {
+        this.props.getMeasures(id, outcomeID);
       }
     }
   }
 
   componentDidMount() {
-    if (this.props.match.params.outcomeID) {
-      this.props.getMeasures(this.props.match.params.outcomeID);
+    let { id, outcomeID } = this.props.match.params;
+    if ((id, outcomeID)) {
+      this.props.getMeasures(id, outcomeID);
     }
   }
 
@@ -66,9 +66,9 @@ class ShowMeasures extends Component {
 
   saveButtonHandler = () => {
     let { newMeasure, newMeasureType } = this.state;
-    let { outcomeID } = this.props.match.params;
+    let { id, outcomeID } = this.props.match.params;
     if (newMeasureType) {
-      this.props.createMeasure(outcomeID, newMeasure, newMeasureType);
+      this.props.createMeasure(id, outcomeID, newMeasure, newMeasureType);
       this.setState({
         showNewMeasure: false,
         newMeasure: ""

@@ -23,6 +23,8 @@ class EvaluatorBox extends Component {
 
   removeEvaluatorMeasureButton = () => {
     this.props.removeEvaluatorMeasure(
+      this.props.cycleID,
+      this.props.outcomeID,
       this.props.Measure_ID,
       this.props.Evaluator_Email
     );
