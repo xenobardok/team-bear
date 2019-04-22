@@ -35,7 +35,9 @@ router.get(
     if (type == "Admin") {
       const Measure_ID = req.params.measureID;
       const Measure = {};
-      let sql = "SELECT * FROM  MEASURES WHERE Measure_ID =" + Measure_ID;
+      let sql =
+        "SELECT * FROM  MEASURES NATURAL JOIN OUTCOMES WHERE Measure_ID =" +
+        Measure_ID;
 
       db.query(sql, (err, result) => {
         if (err) res.send(err);
@@ -48,6 +50,8 @@ router.get(
           Measure.Measure_ID = Measure_ID;
           Measure.Measure_Label = result[0].Measure_label;
           Measure.Measure_Type = result[0].Measure_type;
+
+          Measure.Outcome_Name = result[0].Outcome_Name;
 
           if (Measure.Measure_Type == "rubric") {
             sql =
@@ -208,70 +212,50 @@ router.get(
                 Measure.Test_Name = result[0].Exam_Name;
                 Measure.Test_Type = result[0].Test_Type;
 
+                if (Measure.Test_Type == "pass/fail") {
+                  if (Measure.Target == 0) {
+                    Measure.Target = "Fail";
+                  } else {
+                    Measure.Target = "Pass";
+                  }
+                }
+
                 calculateTestMeasure(Test_Measure_ID);
+
+                Measure.data = [];
+
                 sql =
-                  "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
-                  Test_Measure_ID;
+                  "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
+                  Test_Measure_ID +
+                  " ORDER BY S.Student_Name ";
 
                 // console.log(sql);
                 db.query(sql, (err, result) => {
-                  if (err) throw err;
+                  if (err) return res.status(400).json(err);
                   else {
-                    const Total_Students = result[0].Total;
-                    Measure.Total_Students = Total_Students;
+                    result.forEach(student => {
+                      let Student_ID = student.Student_ID;
+                      let Student_Name = student.Student_Name;
+                      let Grade = student.Score;
 
-                    //sql to find the count of students with required or better grade
-                    sql =
-                      "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                      Test_Measure_ID +
-                      " AND Student_Avg_Grade>=" +
-                      Measure.Target;
+                      if (Grade != null) {
+                        if (Measure.Test_Type == "pass/fail") {
+                          if (Grade == 0) {
+                            Grade = "Fail";
+                          } else {
+                            Grade = "Pass";
+                          }
+                        }
 
-                    db.query(sql, (err, result) => {
-                      if (err) throw err;
-                      else {
-                        Measure.Student_Achieved_Target_Count =
-                          result[0].Success_Count;
-
-                        sql =
-                          "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
-                          Test_Measure_ID +
-                          " ORDER BY Student_Name ASC";
-
-                        Measure.Students = [];
-                        db.query(sql, (err, result) => {
-                          if (err) res.status(400).json(err);
-                          result.forEach(row => {
-                            student = {
-                              Student_ID: row.Student_ID,
-                              Student_Name: row.Student_Name
-                            };
-                            Measure.Students.push(student);
-                          });
-                          sql =
-                            " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
-                            Test_Measure_ID;
-
-                          console.log(sql);
-
-                          Measure.Evaluators = [];
-                          db.query(sql, (err, result) => {
-                            console.log("Here");
-                            if (err) res.status(400).json(err);
-                            result.forEach(row => {
-                              evaluator = {
-                                Evaluator_Email: row.Evaluator_Email,
-                                Evaluator_Name: row.FullName
-                              };
-                              Measure.Evaluators.push(evaluator);
-                            });
-
-                            // console.log(Measure);
-                            return res.status(200).json(Measure);
-                          });
-                        });
+                        let astudent = {
+                          Student_ID: Student_ID,
+                          Student_Name: Student_Name,
+                          Score: Grade
+                        };
+                        Measure.data.push(astudent);
                       }
                     });
+                    res.status(200).json(Measure);
                   }
                 });
               }

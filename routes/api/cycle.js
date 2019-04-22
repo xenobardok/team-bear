@@ -382,19 +382,12 @@ router.post(
                     if (err) {
                       return res.status(404).json(err);
                     }
-                    let Outcome_Index = 0;
-                    if (result.length != 0) {
-                      Outcome_Index =
-                        result[result.length - 1].Outcome_Index + 1;
-                    }
 
                     sql =
-                      "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name, Outcome_Index) VALUES(" +
+                      "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name) VALUES(" +
                       Cycle_ID +
                       "," +
                       Outcome_Name +
-                      "," +
-                      Outcome_Index +
                       ")";
 
                     db.query(sql, (err, result) => {
@@ -665,21 +658,14 @@ router.post(
                 else {
                   let isSuccess = db.escape("false");
                   let isCompleted = db.escape("false");
-                  let Measure_Index = 0;
-
-                  if (result.length != 0) {
-                    Measure_Index = result[result.length - 1].Measure_Index + 1;
-                  }
 
                   sql =
-                    "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_Index,Measure_type) VALUES(" +
+                    "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_type) VALUES(" +
                     Measure_Name +
                     "," +
                     isSuccess +
                     "," +
                     outcomeID +
-                    "," +
-                    Measure_Index +
                     "," +
                     db.escape(Measure_Type) +
                     ")";
@@ -1008,16 +994,17 @@ router.get(
                           result[0].Success_Count;
 
                         sql =
-                          " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
+                          " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
                           Rubric_Measure_ID;
-                        // console.log(sql);
+                        //console.log(sql);
                         Measure.Evaluators = [];
                         db.query(sql, (err, result) => {
                           if (err) res.status(400).json(err);
                           result.forEach(row => {
                             evaluator = {
                               Evaluator_Email: row.Evaluator_Email,
-                              Evaluator_Name: row.FullName
+                              Evaluator_Name: row.FullName,
+                              hasSubmitted: row.Did_Submit
                             };
                             Measure.Evaluators.push(evaluator);
                           });
@@ -1157,7 +1144,7 @@ router.get(
                           });
 
                           sql =
-                            " SELECT Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
+                            " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
                             Test_Measure_ID;
 
                           Measure.Evaluators = [];
@@ -1167,10 +1154,12 @@ router.get(
                             result.forEach(row => {
                               evaluator = {
                                 Evaluator_Email: row.Evaluator_Email,
-                                Evaluator_Name: row.FullName
+                                Evaluator_Name: row.FullName,
+                                hasSubmitted: row.Did_Submit
                               };
                               Measure.Evaluators.push(evaluator);
                             });
+                            // console.log(sql);
                             sql =
                               "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
                               Test_Measure_ID +
@@ -1605,13 +1594,20 @@ router.post(
           //for rubric Measure Type
           if (result[0].Measure_type == "rubric") {
             sql =
-              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
+              "SELECT * FROM RUBRIC_MEASURES  M JOIN RUBRIC R ON R.Rubric_ID=M.Rubric_ID WHERE Measure_ID =" +
+              Measure_ID;
 
             // console.log(sql);
             db.query(sql, (err, result) => {
               if (err) res.send(err);
               else {
+                if (result.length < 1) {
+                  errors.Measure = "Measure needs to be  defined first";
+                  return res.status(400).json(errors);
+                }
                 let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+                let Class_Name = result[0].Class_Name;
+                let Rubric_Name = result[0].Rubric_Name;
 
                 if (isEmpty(Evaluator_Email)) {
                   errors.Evaluator_Email = "Evaluator email cannot be empty";
@@ -1644,7 +1640,7 @@ router.post(
                     Rubric_Measure_ID +
                     " AND Evaluator_Email=" +
                     Evaluator_Email;
-                  console.log(sql);
+
                   db.query(sql, (err, result) => {
                     if (err) {
                       return res.status(400).json({
@@ -1671,10 +1667,33 @@ router.post(
                         });
                       } else {
                         updateStudentsScore(Rubric_Measure_ID, () => {});
-                        return res.status(200).json({
-                          // message: "Evaluator has successfully been assigned."
-                          Evaluator_Email: req.body.Evaluator_Email,
-                          Evaluator_Name: Evaluator_Name
+                        message =
+                          " have been assigned to evaluate the Rubric " +
+                          Rubric_Name +
+                          " in class " +
+                          Class_Name +
+                          ".";
+                        sql =
+                          "INSERT INTO ACTIVITY_LOG(From_Dept_ID,To_Email,Message) VALUES(" +
+                          dept +
+                          "," +
+                          Evaluator_Email +
+                          "," +
+                          db.escape(message) +
+                          ")";
+                        // console.log(sql);
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding  the evaluator"
+                            });
+                          }
+                          return res.status(200).json({
+                            // message: "Evaluator has successfully been assigned."
+                            Evaluator_Email: req.body.Evaluator_Email,
+                            Evaluator_Name: Evaluator_Name
+                          });
                         });
                       }
                     });
@@ -1690,7 +1709,12 @@ router.post(
             db.query(sql, (err, result) => {
               if (err) res.send(err);
               else {
+                if (result.length < 1) {
+                  errors.Measure = "Measure needs to be  defined first";
+                  return res.status(400).json(errors);
+                }
                 let Test_Measure_ID = result[0].Test_Measure_ID;
+                let Test_Name = result[0].Exam_Name;
 
                 sql =
                   "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID = " +
@@ -1754,10 +1778,31 @@ router.post(
                         } else {
                           updateStudentsTestScore(Test_Measure_ID, () => {});
 
-                          return res.status(200).json({
-                            // message: "Evaluator has successfully been assigned."
-                            Evaluator_Email: req.body.Evaluator_Email,
-                            Evaluator_Name: Evaluator_Name
+                          message =
+                            " have been assigned to evaluate scores for the test  " +
+                            Test_Name +
+                            ".";
+                          sql =
+                            "INSERT INTO ACTIVITY_LOG(From_Dept_ID,To_Email,Message) VALUES(" +
+                            dept +
+                            "," +
+                            Evaluator_Email +
+                            "," +
+                            db.escape(message) +
+                            ")";
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            if (err) {
+                              return res.status(400).json({
+                                error:
+                                  "There was some problem adding  the evaluator"
+                              });
+                            }
+                            return res.status(200).json({
+                              // message: "Evaluator has successfully been assigned."
+                              Evaluator_Email: req.body.Evaluator_Email,
+                              Evaluator_Name: Evaluator_Name
+                            });
                           });
                         }
                       });
@@ -1813,13 +1858,16 @@ router.delete(
           //for rubric Measure Type
           if (result[0].Measure_type == "rubric") {
             sql =
-              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
+              "SELECT * FROM RUBRIC_MEASURES M JOIN RUBRIC R ON R.Rubric_ID=M.Rubric_ID  WHERE Measure_ID =" +
+              Measure_ID;
 
             // console.log(sql);
             db.query(sql, (err, result) => {
               if (err) res.send(err);
               else {
                 let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+                let Class_Name = result[0].Class_Name;
+                let Rubric_Name = result[0].Rubric_Name;
 
                 if (isEmpty(Evaluator_Email)) {
                   errors.Evaluator_Email = "Evaluator email cannot be empty";
@@ -1874,10 +1922,33 @@ router.delete(
                           });
                         } else {
                           updateStudentsScore(Rubric_Measure_ID, () => {});
-                          return res.status(200).json({
-                            // message: "Evaluator has successfully been assigned."
-                            Evaluator_Email: Evaluator_Email,
-                            Evaluator_Name: Evaluator_Name
+                          message =
+                            " have been removed from evaluation of the Rubric " +
+                            Rubric_Name +
+                            " in class " +
+                            Class_Name +
+                            ".";
+                          sql =
+                            "INSERT INTO ACTIVITY_LOG(From_Dept_ID,To_Email,Message) VALUES(" +
+                            dept +
+                            "," +
+                            db.escape(Evaluator_Email) +
+                            "," +
+                            db.escape(message) +
+                            ")";
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            if (err) {
+                              return res.status(400).json({
+                                error:
+                                  "There was some problem removing  the evaluator"
+                              });
+                            }
+                            return res.status(200).json({
+                              // message: "Evaluator has successfully been assigned."
+                              Evaluator_Email: req.body.Evaluator_Email,
+                              Evaluator_Name: Evaluator_Name
+                            });
                           });
                         }
                       });
@@ -1896,6 +1967,7 @@ router.delete(
               if (err) res.send(err);
               else {
                 let Test_Measure_ID = result[0].Test_Measure_ID;
+                let Test_Name = result[0].Exam_Name;
 
                 if (isEmpty(Evaluator_Email)) {
                   errors.Evaluator_Email = "Evaluator email cannot be empty";
@@ -1951,12 +2023,31 @@ router.delete(
                               "There was some problem removing the evaluator"
                           });
                         } else {
-                          updateStudentsTestScore(Test_Measure_ID, () => {});
-
-                          return res.status(200).json({
-                            // message: "Evaluator has successfully been assigned."
-                            Evaluator_Email: Evaluator_Email,
-                            Evaluator_Name: Evaluator_Name
+                          message =
+                            " have been removed from the evaluation of the test  " +
+                            Test_Name +
+                            ".";
+                          sql =
+                            "INSERT INTO ACTIVITY_LOG(From_Dept_ID,To_Email,Message) VALUES(" +
+                            dept +
+                            "," +
+                            db.escape(Evaluator_Email) +
+                            "," +
+                            db.escape(message) +
+                            ")";
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            if (err) {
+                              return res.status(400).json({
+                                error:
+                                  "There was some problem removing the evaluator"
+                              });
+                            }
+                            return res.status(200).json({
+                              // message: "Evaluator has successfully been assigned."
+                              Evaluator_Email: req.body.Evaluator_Email,
+                              Evaluator_Name: Evaluator_Name
+                            });
                           });
                         }
                       });
