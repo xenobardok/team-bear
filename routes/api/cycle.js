@@ -548,11 +548,11 @@ router.post(
   }
 );
 
-// @route   GET api/cycle/outcome/outcome:handle
+// @route   GET api/cycle/:cycleID/outcome/outcome:handle
 // @desc    get the list of measures of a given cycle
 // @access  Private route
 router.get(
-  "/outcome/:handle",
+  "/:cycleID/outcome/:handle",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -560,10 +560,15 @@ router.get(
     const dept = db.escape(req.user.dept);
     let errors = {};
     if (type == "Admin") {
+      const Cycle_ID = req.params.cycleID;
       const Outcome_ID = req.params.handle;
       const Outcome = {};
 
-      let sql = "SELECT * FROM OUTCOMES WHERE Outcome_ID =" + Outcome_ID;
+      let sql =
+        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Outcome_ID =" +
+        Outcome_ID +
+        "  AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) res.send(err);
@@ -608,17 +613,18 @@ router.get(
   }
 );
 
-// @route   POST api/cycle/outcome/:outcomeID/measure/create
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/create
 // @desc    Create a new Rubric Measure
 // @access  Private
 router.post(
-  "/outcome/:outcomeID/measure/create",
+  "/:cycleID/outcome/:outcomeID/measure/create",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const outcomeID = db.escape(req.params.outcomeID);
+    const Cycle_ID = req.params.cycleID;
     let Measure_Name = req.body.Measure_Name;
     let Measure_Type = req.body.Measure_Type;
     const errors = {};
@@ -629,104 +635,114 @@ router.post(
         errors.Measure_Name = "Measure Name cannot be empty";
         return res.status(404).json(errors);
       }
-      Measure_Name = db.escape(Measure_Name);
-      let sql =
-        "SELECT * FROM MEASURES WHERE Outcome_ID =" +
-        outcomeID +
-        " AND Measure_label=" +
-        Measure_Name;
-
-      // console.log(sql);
+      let sql = " SELECT * FROM  ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
       db.query(sql, (err, result) => {
         if (err) res.send(err);
-        else {
-          if (result.length > 0) {
-            errors.Measure_Name = "Measure Name with that name already exists.";
-            return res.status(404).json(errors);
-          }
+        if (result[0].iSubmitted == "true") {
+          errors.Measure_Name = "Cycle is already closed.";
+          return res.status(400).json(errors);
+        } else {
+          Measure_Name = db.escape(Measure_Name);
+          sql =
+            "SELECT * FROM MEASURES WHERE Outcome_ID =" +
+            outcomeID +
+            " AND Measure_label=" +
+            Measure_Name;
 
-          sql = "SELECT * FROM MEASURES WHERE Outcome_ID =" + outcomeID;
+          // console.log(sql);
           db.query(sql, (err, result) => {
             if (err) res.send(err);
             else {
-              let isSuccess = db.escape("false");
-              let isCompleted = db.escape("false");
-              let Measure_Index = 0;
-
-              if (result.length != 0) {
-                Measure_Index = result[result.length - 1].Measure_Index + 1;
+              if (result.length > 0) {
+                errors.Measure_Name =
+                  "Measure Name with that name already exists.";
+                return res.status(404).json(errors);
               }
 
-              sql =
-                "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_Index,Measure_type) VALUES(" +
-                Measure_Name +
-                "," +
-                isSuccess +
-                "," +
-                outcomeID +
-                "," +
-                Measure_Index +
-                "," +
-                db.escape(Measure_Type) +
-                ")";
+              sql = "SELECT * FROM MEASURES WHERE Outcome_ID =" + outcomeID;
               db.query(sql, (err, result) => {
-                if (err)
-                  return res
-                    .status(400)
-                    .json({ error: "There was some problem adding it" });
+                if (err) res.send(err);
                 else {
-                  let Measure_ID = db.escape(result.insertId);
+                  let isSuccess = db.escape("false");
+                  let isCompleted = db.escape("false");
+                  let Measure_Index = 0;
 
-                  //If Measure_Type is rubric, create a rubric measure
-                  if (Measure_Type === "rubric") {
-                    sql =
-                      "INSERT INTO RUBRIC_MEASURES(Measure_ID,Is_Success ) VALUES(" +
-                      Measure_ID +
-                      "," +
-                      isSuccess +
-                      ")";
-
-                    db.query(sql, (err, result) => {
-                      if (err)
-                        return res
-                          .status(400)
-                          .json({ error: "There was some problem adding it" });
-                      else {
-                        Rubric_Measure_ID = db.escape(result.insertId);
-
-                        Rubric_Measure = {
-                          Measure_ID: Measure_ID,
-                          Rubric_Measure_ID: Rubric_Measure_ID
-                        };
-                        // updateOutcome(outcomeID);
-                        return res.status(200).json(Rubric_Measure);
-                      }
-                    });
-                  } else {
-                    //Create a Test Measure
-                    sql =
-                      "INSERT INTO TEST_MEASURES(Measure_ID,Is_Success ) VALUES(" +
-                      Measure_ID +
-                      "," +
-                      isSuccess +
-                      ")";
-
-                    db.query(sql, (err, result) => {
-                      if (err)
-                        return res
-                          .status(400)
-                          .json({ error: "There was some problem adding it" });
-                      else {
-                        Test_Measure_ID = db.escape(result.insertId);
-
-                        Test_Measure = {
-                          Measure_ID: Measure_ID,
-                          Test_Measure_ID: Test_Measure_ID
-                        };
-                        return res.status(200).json(Test_Measure);
-                      }
-                    });
+                  if (result.length != 0) {
+                    Measure_Index = result[result.length - 1].Measure_Index + 1;
                   }
+
+                  sql =
+                    "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_Index,Measure_type) VALUES(" +
+                    Measure_Name +
+                    "," +
+                    isSuccess +
+                    "," +
+                    outcomeID +
+                    "," +
+                    Measure_Index +
+                    "," +
+                    db.escape(Measure_Type) +
+                    ")";
+                  db.query(sql, (err, result) => {
+                    if (err)
+                      return res
+                        .status(400)
+                        .json({ error: "There was some problem adding it" });
+                    else {
+                      let Measure_ID = db.escape(result.insertId);
+
+                      //If Measure_Type is rubric, create a rubric measure
+                      if (Measure_Type === "rubric") {
+                        sql =
+                          "INSERT INTO RUBRIC_MEASURES(Measure_ID,Is_Success ) VALUES(" +
+                          Measure_ID +
+                          "," +
+                          isSuccess +
+                          ")";
+
+                        db.query(sql, (err, result) => {
+                          if (err)
+                            return res.status(400).json({
+                              error: "There was some problem adding it"
+                            });
+                          else {
+                            Rubric_Measure_ID = db.escape(result.insertId);
+
+                            Rubric_Measure = {
+                              Measure_ID: Measure_ID,
+                              Rubric_Measure_ID: Rubric_Measure_ID
+                            };
+                            // updateOutcome(outcomeID);
+                            return res.status(200).json(Rubric_Measure);
+                          }
+                        });
+                      } else {
+                        //Create a Test Measure
+                        sql =
+                          "INSERT INTO TEST_MEASURES(Measure_ID,Is_Success ) VALUES(" +
+                          Measure_ID +
+                          "," +
+                          isSuccess +
+                          ")";
+
+                        db.query(sql, (err, result) => {
+                          if (err)
+                            return res.status(400).json({
+                              error: "There was some problem adding it"
+                            });
+                          else {
+                            Test_Measure_ID = db.escape(result.insertId);
+
+                            Test_Measure = {
+                              Measure_ID: Measure_ID,
+                              Test_Measure_ID: Test_Measure_ID
+                            };
+                            return res.status(200).json(Test_Measure);
+                          }
+                        });
+                      }
+                    }
+                  });
                 }
               });
             }
@@ -739,11 +755,11 @@ router.post(
   }
 );
 
-// @route   DElETE api/cycle/outcome/:outcomeID/measure/:measureID
+// @route   DElETE api/cycle/:cycleID/outcome/:outcomeID/measure/:measureID
 // @desc    DELETE a measure if there is no information
 // @access  Private route
 router.delete(
-  "/outcome/:outcomeID/measure/:measureID",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -752,18 +768,23 @@ router.delete(
     if (type == "Admin") {
       const Outcome_ID = req.params.outcomeID;
       const Measure_ID = req.params.measureID;
+      const Cycle_ID = req.params.cycleID;
 
       let sql =
-        "SELECT * FROM OUTCOMES NATURAL JOIN MEASURES WHERE Outcome_ID=" +
+        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE NATURAL JOIN MEASURES WHERE isSubmitted='false' Outcome_ID=" +
         Outcome_ID +
         " AND Measure_ID=" +
-        Measure_ID;
+        Measure_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) res.send(err);
         else {
           if (result.length < 1) {
-            return res.status(404).json({ error: "Measure Not Found" });
+            return res
+              .status(404)
+              .json({ error: "Measure Not Found OR Cycle is Closed" });
           } else {
             let Measure_Type = result[0].Measure_type;
             if (Measure_Type == "rubric") {
@@ -904,11 +925,11 @@ router.delete(
   }
 );
 
-// @route   GET api/cycle/outcome/:outcomeID/measure/:MeasureID
+// @route   GET api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID
 // @desc    get the details of a given measure
 // @access  Private route
 router.get(
-  "/outcome/:outcomeID/measure/:measureID",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -918,12 +939,15 @@ router.get(
     if (type == "Admin") {
       const Outcome_ID = req.params.outcomeID;
       const Measure_ID = req.params.measureID;
+      const Cycle_ID = req.params.cycleID;
       const Measure = {};
       let sql =
-        "SELECT * FROM OUTCOMES NATURAL JOIN MEASURES WHERE Outcome_ID =" +
+        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE NATURAL JOIN MEASURES WHERE Outcome_ID =" +
         Outcome_ID +
         " AND Measure_ID=" +
-        Measure_ID;
+        Measure_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       // updateOutcome(Measure_ID);
 
@@ -1189,11 +1213,11 @@ router.get(
   }
 );
 
-// @route   POST api/cycle/outcome/:outcomeID/measure/:MeasureID/edit
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/edit
 // @desc    Update a new Rubric Measure
 // @access  Private
 router.post(
-  "/outcome/:outcomeID/measure/:MeasureID/edit",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/edit",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1202,43 +1226,56 @@ router.post(
     const outcomeID = db.escape(req.params.outcomeID);
     let Measure_Name = req.body.Measure_Name;
     const Measure_ID = req.params.MeasureID;
+    const Cycle_ID = req.params.cycleID;
+
     const errors = {};
     if (type == "Admin") {
-      //console.log(isEmpty(Outcome_Name));
-      if (isEmpty(Measure_Name)) {
-        return res
-          .status(404)
-          .json((errors.Measure_Name = "Measure Name cannot be empty"));
-      }
-      Measure_Name = db.escape(Measure_Name);
-      let sql =
-        "SELECT * FROM MEASURES WHERE Outcome_ID =" +
-        outcomeID +
-        " AND Measure_ID=" +
-        Measure_ID;
-      // console.log(sql);
+      let sql = " SELECT * FROM  ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
       db.query(sql, (err, result) => {
         if (err) res.send(err);
-        else {
-          if (result.length < 1) {
-            errors.Measure_Name = "Measure does not exist.";
-            return res.status(404).json(errors);
+        if (result[0].iSubmitted == "true") {
+          errors.Measure_Name = "Cycle is already closed.";
+          return res.status(400).json(errors);
+        } else {
+          //console.log(isEmpty(Outcome_Name));
+          if (isEmpty(Measure_Name)) {
+            return res
+              .status(404)
+              .json((errors.Measure_Name = "Measure Name cannot be empty"));
           }
-          // console.log(result[0]);
+          Measure_Name = db.escape(Measure_Name);
           sql =
-            "UPDATE MEASURES SET Measure_label=" +
-            Measure_Name +
-            " WHERE Outcome_ID =" +
+            "SELECT * FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Outcome_ID =" +
             outcomeID +
             " AND Measure_ID=" +
-            Measure_ID;
-
+            Measure_ID +
+            " AND Cycle_ID=" +
+            Cycle_ID;
+          // console.log(sql);
           db.query(sql, (err, result) => {
             if (err) res.send(err);
             else {
-              return res
-                .status(200)
-                .json({ message: "Successfully renamed the Measure." });
+              if (result.length < 1) {
+                errors.Measure_Name = "Measure does not exist.";
+                return res.status(404).json(errors);
+              }
+              // console.log(result[0]);
+              sql =
+                "UPDATE MEASURES SET Measure_label=" +
+                Measure_Name +
+                " WHERE Outcome_ID =" +
+                outcomeID +
+                " AND Measure_ID=" +
+                Measure_ID;
+
+              db.query(sql, (err, result) => {
+                if (err) res.send(err);
+                else {
+                  return res
+                    .status(200)
+                    .json({ message: "Successfully renamed the Measure." });
+                }
+              });
             }
           });
         }
@@ -1249,11 +1286,11 @@ router.post(
   }
 );
 
-// @route   POST api/cycle/measures/:measureID/update
+// @route   POST api/cycle//:cycleID/outcome/:outcomeID/measure/:MeasureID/update
 // @desc    Update a Measure details
 // @access  Private
 router.post(
-  "/measure/:measureID/update",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/update",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1261,17 +1298,24 @@ router.post(
     const dept = db.escape(req.user.dept);
     // const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Measure_ID = req.params.measureID;
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
 
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.error = "Measure Not found";
+            errors.error = "Measure Not found or  Cycle is Closed";
             return res.status(404).json(errors);
           }
           //for rubric Measure Type
@@ -1516,11 +1560,11 @@ router.post(
   }
 );
 
-// @route   POST api/cycle/measures/:measureID/addEvaluator
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/addEvaluator
 // @desc    Add an evaluator to a Rubric Measure
 // @access  Private
 router.post(
-  "/measure/:measureID/addEvaluator",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1528,19 +1572,27 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Measure_ID = db.escape(req.params.measureID);
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
+
     Evaluator_Email = req.body.Evaluator_Email;
 
     const errors = {};
 
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.error = "Measure Not found";
+            errors.error = "Measure Not found OR  Cycle is Closed";
             return res.status(404).json(errors);
           }
           //for rubric Measure Type
@@ -1716,11 +1768,11 @@ router.post(
   }
 );
 
-// @route   DELETE api/cycle/measures/:measureID/removeEvaluator
+// @route   DELETE api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeEvaluator
 // @desc    Removes an evaluator to a Rubric Measure
 // @access  Private
 router.delete(
-  "/measure/:measureID/removeEvaluator",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1728,19 +1780,27 @@ router.delete(
     const dept = db.escape(req.user.dept);
     const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
     const Measure_ID = db.escape(req.params.measureID);
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
+
     Evaluator_Email = req.body.Evaluator_Email;
 
     const errors = {};
 
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.error = "Measure Not found";
+            errors.error = "Measure Not found Or the  cycle is closed";
             return res.status(404).json(errors);
           }
           //for rubric Measure Type
@@ -1907,28 +1967,34 @@ router.delete(
   }
 );
 
-// @route   POST api/cycle/addStudent
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent
 // @desc    Add a student to a Rubric Measure
 // @access  Private
 router.post(
-  "/measure/:measureID/addStudent",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const Measure_ID = db.escape(req.params.measureID);
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
 
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
-
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.error = "Measure Not found";
+            errors.error = "Measure Not found Or the cycle is closed";
             return res.status(404).json(errors);
           }
           //for rubric Measure Type
@@ -2082,11 +2148,11 @@ router.post(
   }
 );
 
-// @route   POST api/cycle//measure/:measureID/addStudent/fileUpload
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent/fileUpload
 // @desc    Add a student to a Rubric Measure using file upload
 // @access  Private
 router.post(
-  "/measure/:measureID/addStudent/fileUpload",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent/fileUpload",
   passport.authenticate("jwt", { session: false }),
   upload.single("students"),
   (req, res) => {
@@ -2106,18 +2172,24 @@ router.post(
         const type = req.user.type;
         const dept = db.escape(req.user.dept);
         const Measure_ID = db.escape(req.params.measureID);
+        const Outcome_ID = req.params.outcomeID;
+        const Cycle_ID = req.params.cycleID;
 
         const errors = {};
         if (type == "Admin") {
           let sql =
-            "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " +
-            Measure_ID;
+            "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+            Measure_ID +
+            " AND Outcome_ID=" +
+            Outcome_ID +
+            " AND Cycle_ID=" +
+            Cycle_ID;
 
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
             else {
               if (result.length < 1) {
-                errors.error = "Measure Not found";
+                errors.error = "Measure Not found or the cycle is closed";
                 return res.status(404).json(errors);
               }
               //for rubric Measure Type
@@ -2298,28 +2370,35 @@ router.post(
   }
 );
 
-// @route   DELETE api/cycle/removeStudent
+// @route   DELETE api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeStudent
 // @desc    Add a student to a Rubric Measure
 // @access  Private
 router.delete(
-  "/measure/:measureID/removeStudent",
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeStudent",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const Measure_ID = db.escape(req.params.measureID);
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
 
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES WHERE Measure_ID = " + Measure_ID;
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
 
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
           if (result.length < 1) {
-            errors.error = "Measure Not found";
+            errors.error = "Measure Not found Or the cycle is closed.";
             return res.status(404).json(errors);
           }
           //for rubric Measure Type
