@@ -115,10 +115,106 @@ router.delete(
             } else {
               sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
               db.query(sql, (err, result) => {
-                console.log(sql);
+                // console.log(sql);
                 if (err) return res.status(400).json(err);
 
                 return res.status(200).json({ Email: req.body.removeEmail });
+              });
+            }
+          });
+        } else {
+          errors.email = "User not found";
+          return res.status(400).json(errors);
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   DELETE api/users/removeEvaluator
+// @desc    Remove Invited user
+// @access  Public
+router.delete(
+  "/removeEvaluator",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Check for validation
+    const dept = db.escape(req.user.dept);
+    const type = req.user.type;
+    let email = db.escape(req.user.email);
+    let removeEmail = db.escape(req.body.removeEmail);
+
+    errors = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM Evaluators WHERE email = " +
+        removeEmail +
+        " AND Dept_ID=" +
+        dept;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (result.length > 0) {
+          sql = "SELECT * FROM PROGRAM_ADMIN where Admin_Email=" + removeEmail;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            if (result.length > 0) {
+              errors.email =
+                "User is also an admin of the department. Please remove as Program Administrator first.";
+              return res.status(400).json(errors);
+            } else {
+              sql =
+                "SELECT *  FROM RUBRIC_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                removeEmail;
+
+              db.query(sql, (err, result) => {
+                if (err) return res.status(400).json(err);
+                if (result.length > 0) {
+                  sql =
+                    "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                    removeEmail;
+
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+
+                    return res
+                      .status(200)
+                      .json({ Email: req.body.removeEmail });
+                  });
+                } else {
+                  sql =
+                    "SELECT *  FROM TEST_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                    removeEmail;
+
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+                    if (result.length > 0) {
+                      sql =
+                        "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                        removeEmail;
+
+                      db.query(sql, (err, result) => {
+                        if (err) return res.status(400).json(err);
+
+                        return res
+                          .status(200)
+                          .json({ Email: req.body.removeEmail });
+                      });
+                    } else {
+                      sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+
+                      db.query(sql, (err, result) => {
+                        if (err) return res.status(400).json(err);
+
+                        return res
+                          .status(200)
+                          .json({ Email: req.body.removeEmail });
+                      });
+                    }
+                  });
+                }
               });
             }
           });
