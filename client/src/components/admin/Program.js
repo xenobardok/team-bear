@@ -49,20 +49,9 @@ class Measure extends Component {
   }
 }
 
-Measure.propTypes = {
-  getSingleMeasure: PropTypes.func.isRequired,
-  measures: PropTypes.object.isRequired,
-  getEvaluators: PropTypes.func.isRequired,
-  defineMeasure: PropTypes.func.isRequired
-};
+Measure.propTypes = {};
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors,
-  measures: state.measures,
-  profile: state.profile,
-  rubrics: state.rubrics
-});
+const mapStateToProps = state => ({});
 
 export default connect(
   mapStateToProps,
