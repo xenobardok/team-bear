@@ -771,13 +771,14 @@ router.delete(
       const Cycle_ID = req.params.cycleID;
 
       let sql =
-        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE NATURAL JOIN MEASURES WHERE isSubmitted='false' Outcome_ID=" +
+        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE NATURAL JOIN MEASURES WHERE isSubmitted='false' AND Outcome_ID=" +
         Outcome_ID +
         " AND Measure_ID=" +
         Measure_ID +
         " AND Cycle_ID=" +
         Cycle_ID;
 
+      // console.log(sql);
       db.query(sql, (err, result) => {
         if (err) res.send(err);
         else {
@@ -1178,7 +1179,11 @@ router.get(
                               if (err) res.status(400).json(err);
                               Measure.Unevaluated = [];
 
-                              if (result.length > 0) {
+                              // console.log(sql);
+                              if (
+                                result.length > 0 &&
+                                Measure.Evaluators.length > 0
+                              ) {
                                 Evaluator = {
                                   Evaluator_Name:
                                     Measure.Evaluators[0].Evaluator_Name,
@@ -1217,7 +1222,7 @@ router.get(
 // @desc    Update a new Rubric Measure
 // @access  Private
 router.post(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/edit",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/edit",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1225,7 +1230,7 @@ router.post(
     const dept = db.escape(req.user.dept);
     const outcomeID = db.escape(req.params.outcomeID);
     let Measure_Name = req.body.Measure_Name;
-    const Measure_ID = req.params.MeasureID;
+    const Measure_ID = req.params.measureID;
     const Cycle_ID = req.params.cycleID;
 
     const errors = {};
@@ -1290,7 +1295,7 @@ router.post(
 // @desc    Update a Measure details
 // @access  Private
 router.post(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/update",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/update",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1301,16 +1306,18 @@ router.post(
     const Outcome_ID = req.params.outcomeID;
     const Cycle_ID = req.params.cycleID;
 
+    console.log(req.params);
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
         Measure_ID +
         " AND Outcome_ID=" +
         Outcome_ID +
         " AND Cycle_ID=" +
         Cycle_ID;
 
+      console.log(sql);
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
@@ -1564,7 +1571,7 @@ router.post(
 // @desc    Add an evaluator to a Rubric Measure
 // @access  Private
 router.post(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addEvaluator",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/addEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1581,7 +1588,7 @@ router.post(
 
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
         Measure_ID +
         " AND Outcome_ID=" +
         Outcome_ID +
@@ -1772,7 +1779,7 @@ router.post(
 // @desc    Removes an evaluator to a Rubric Measure
 // @access  Private
 router.delete(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeEvaluator",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/removeEvaluator",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1789,7 +1796,7 @@ router.delete(
 
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
         Measure_ID +
         " AND Outcome_ID=" +
         Outcome_ID +
@@ -1971,7 +1978,7 @@ router.delete(
 // @desc    Add a student to a Rubric Measure
 // @access  Private
 router.post(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/addStudent",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -1984,7 +1991,7 @@ router.post(
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
         Measure_ID +
         " AND Outcome_ID=" +
         Outcome_ID +
@@ -2152,7 +2159,7 @@ router.post(
 // @desc    Add a student to a Rubric Measure using file upload
 // @access  Private
 router.post(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent/fileUpload",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/addStudent/fileUpload",
   passport.authenticate("jwt", { session: false }),
   upload.single("students"),
   (req, res) => {
@@ -2178,7 +2185,7 @@ router.post(
         const errors = {};
         if (type == "Admin") {
           let sql =
-            "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+            "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
             Measure_ID +
             " AND Outcome_ID=" +
             Outcome_ID +
@@ -2374,7 +2381,7 @@ router.post(
 // @desc    Add a student to a Rubric Measure
 // @access  Private
 router.delete(
-  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/removeStudent",
+  "/:cycleID/outcome/:outcomeID/measure/:measureID/removeStudent",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = db.escape(req.user.email);
@@ -2387,7 +2394,7 @@ router.delete(
     const errors = {};
     if (type == "Admin") {
       let sql =
-        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' Measure_ID = " +
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
         Measure_ID +
         " AND Outcome_ID=" +
         Outcome_ID +

@@ -28,7 +28,7 @@ router.get(
         dept +
         " order by Rubric_Name";
 
-      console.log(sql);
+      // console.log(sql);
       db.query(sql, (err, result) => {
         // var RubricsIDToObject=new Map();
 
@@ -67,7 +67,7 @@ router.get(
           i++;
         }
 
-        console.log(Rubrics);
+        // console.log(Rubrics);
         res.json(Rubrics);
       });
     } else {

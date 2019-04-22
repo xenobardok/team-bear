@@ -236,9 +236,12 @@ export const removeEvaluatorMeasure = (
 ) => dispatch => {
   console.log(measureID, Evaluator_Email);
   axios
-    .delete(`/api/cycle/measure/${measureID}/removeEvaluator`, {
-      data: { Evaluator_Email: Evaluator_Email }
-    })
+    .delete(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/removeEvaluator`,
+      {
+        data: { Evaluator_Email: Evaluator_Email }
+      }
+    )
     .then(res =>
       dispatch({
         type: REMOVE_EVALUATOR_MEASURE,
