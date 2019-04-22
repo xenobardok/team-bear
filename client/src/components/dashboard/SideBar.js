@@ -63,7 +63,7 @@ class SideBar extends Component {
             &nbsp;&nbsp;Home
           </Link>
           {this.props.auth.user.isSuperUser === "true" ? (
-            <Link className="menu-item" to="/dashboard/admin-tools">
+            <Link className="menu-item" to="/dashboard/programs">
               <FontAwesomeIcon icon="user-cog" />
               &nbsp;&nbsp;Admin Tools
             </Link>

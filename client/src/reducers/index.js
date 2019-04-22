@@ -8,6 +8,7 @@ import cycleReducer from "./cycleReducer";
 import measureReducer from "./measureReducer";
 import evaluationsReducer from "./evaluationsReducer";
 import reportsReducer from "./reportsReducer";
+import programReducer from "./programReducer";
 
 export default combineReducers({
   toastr: toastrReducer,
@@ -18,5 +19,6 @@ export default combineReducers({
   cycles: cycleReducer,
   measures: measureReducer,
   evaluations: evaluationsReducer,
-  reports: reportsReducer
+  reports: reportsReducer,
+  programs: programReducer
 });

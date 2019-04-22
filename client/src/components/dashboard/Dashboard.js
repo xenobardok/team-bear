@@ -68,11 +68,7 @@ class Dashboard extends Component {
                 path="/dashboard/rubrics/:id(\d+)"
                 component={ShowRubric}
               />
-              <Route
-                exact
-                path="/dashboard/admin-tools"
-                component={AdminTools}
-              />
+              <Route exact path="/dashboard/programs" component={AdminTools} />
             </div>
           </Container>
           <div style={{ margin: "0px 5vw" }}>

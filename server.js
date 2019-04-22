@@ -17,7 +17,7 @@ const cycle = require("./routes/api/cycle");
 const evaluations = require("./routes/api/evaluations");
 const reports = require("./routes/api/reports");
 const migrate = require("./routes/api/migrate");
-const department = require("./routes/api/department");
+const program = require("./routes/api/program");
 
 //passport middleware
 app.use(passport.initialize());
@@ -35,7 +35,7 @@ app.use("/api/dashboard", dashboard);
 app.use("/api/evaluations", evaluations);
 app.use("/api/reports", reports);
 app.use("/api/migrate", migrate);
-app.use("/api/department", department);
+app.use("/api/program", program);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

@@ -335,7 +335,7 @@ table.report th, table.report td{
   text-align: left;
 }
 
-.createCycle {
+.createCycle, .createProgram {
   padding: 10px;
 }
 
