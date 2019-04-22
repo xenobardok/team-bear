@@ -4,8 +4,10 @@ import {
   GET_ERRORS,
   PROGRAM_LOADING,
   CREATE_PROGRAM,
-  GET_SINGLE_PROGRAM
+  GET_SINGLE_PROGRAM,
+  ADD_PROGRAM_ADMIN
 } from "./types";
+import Swal from "sweetalert2";
 import { toastr } from "react-redux-toastr";
 
 // Get Current Profile
@@ -27,7 +29,7 @@ export const getProgramsWithoutLoading = () => dispatch => {
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data //res?? not sure
+        payload: err.response.data
       })
     );
 };
@@ -40,7 +42,7 @@ export const createProgram = (deptID, deptName) => dispatch => {
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data //res?? not sure
+        payload: err.response.data
       })
     );
 };
@@ -65,7 +67,56 @@ export const getProgram = deptName => dispatch => {
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data //res?? not sure
+        payload: err.response.data
       })
     );
+};
+
+export const addProgramAdmin = (deptName, adminEmail) => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .post(`/api/program/${deptName}/addAdmin`, { adminEmail: adminEmail })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: ADD_PROGRAM_ADMIN,
+        payload: res.data.admin
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const removeProgramAdmin = (deptID, adminEmail) => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .delete(`/api/program/${deptID}/deleteAdmin`, {
+      data: { adminEmail: adminEmail }
+    })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: ADD_PROGRAM_ADMIN,
+        payload: res.data.admin
+      });
+      Swal.fire("Deleted!", `${adminEmail} has been deleted.`, "success");
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+
+      if (err.response.data.Outcomes) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: err.response.data
+        });
+      }
+    });
 };

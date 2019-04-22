@@ -473,8 +473,13 @@ section#evaluators .singleEvaluator:hover{
   color: green;
 }
 
-.status.fail {
+.status.fail  {
   color: #dc3545;
+}
+
+.program .trash:hover{
+  cursor: pointer;
+  color: #dc3545
 }
 
 .crossIcon:hover{
@@ -500,7 +505,7 @@ section#evaluators .singleEvaluator:hover{
   transition: 0.2s all;
 }
 
-.single-measure{
+.single-measure, .program{
   background: white;
     border: 2px solid #7b344a2e;
     /* background-color: white; */
@@ -508,6 +513,22 @@ section#evaluators .singleEvaluator:hover{
     box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75) ;
     border-radius: 10px;
     padding: 30px;
+}
+.program table{
+  width: 100%;
+}
+
+.program table td{
+  padding:.75rem!important;
+  /* width: 25%; */
+}
+
+.program table td:nth-child(1), .program table td:nth-child(4), .program table th:nth-child(1), .program table th:nth-child(4){
+  width: 10%
+}
+
+.program table .form-group{
+  margin-bottom: 0px;
 }
 
 .btn-primary.disabled, .btn-primary:disabled,.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle{

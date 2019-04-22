@@ -40,7 +40,7 @@ export default function ThreeDotDropdown(props) {
           to={"/dashboard/reports/measure/" + props.Measure_ID}
           className="dropdown-item"
         >
-          Generate Report
+          Edit Program
         </Link>
       </Dropdown.Menu>
     </Dropdown>

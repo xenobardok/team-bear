@@ -1,7 +1,8 @@
 import {
   PROGRAM_LOADING,
   GET_PROGRAMS,
-  GET_SINGLE_PROGRAM
+  GET_SINGLE_PROGRAM,
+  ADD_PROGRAM_ADMIN
 } from "../actions/types";
 
 const initialState = {
@@ -27,6 +28,15 @@ export default function(state = initialState, action) {
       return {
         ...state,
         program: action.payload,
+        loading: false
+      };
+    case ADD_PROGRAM_ADMIN:
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          admin: action.payload
+        },
         loading: false
       };
     default:

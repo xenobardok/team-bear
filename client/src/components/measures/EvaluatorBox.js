@@ -32,7 +32,12 @@ class EvaluatorBox extends Component {
   render() {
     let { Evaluator_Name, Evaluator_Email } = this.props;
     let content = "";
-    if (!isEmpty(this.props.Evaluator_Name)) {
+    console.log("HERERERER");
+    console.log(Evaluator_Name, Evaluator_Email);
+    if (
+      !isEmpty(this.props.Evaluator_Name) ||
+      !isEmpty(this.props.Evaluator_Email)
+    ) {
       content = (
         <div className="singleEvaluator">
           <FontAwesomeIcon

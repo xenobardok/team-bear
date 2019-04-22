@@ -7,6 +7,7 @@ const router = express.Router(),
   nodemailer = require("nodemailer");
 
 // Loading Input Validation
+var validator = require("validator");
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
@@ -454,178 +455,187 @@ router.post(
     const Dept_ID = db.escape(req.params.DeptID);
     const New_Admin_Email = db.escape(req.body.adminEmail);
 
-    let sql =
-      "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
-      db.escape(email);
+    if (!validator.isEmail(req.body.adminEmail)) {
+      res.status(400).json({
+        Dept_ID: "Email is not valid"
+      });
+    } else {
+      let sql =
+        "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
+        db.escape(email);
 
-    db.query(sql, (err, result) => {
-      if (err) return res.status(400).json(err);
-      else {
-        if (result.length < 1) {
-          return res
-            .status(400)
-            .json({ User: "You do not have enough privileges" });
-        } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
-          //   console.log(sql);
-          db.query(sql, (err, result) => {
-            if (err) return res.status(400).json(err);
-            else {
-              if (result.length < 1) {
-                return res
-                  .status(400)
-                  .json({ Dept_ID: "Department Not found" });
-              } else {
-                sql =
-                  "SELECT * FROM Evaluators WHERE Dept_ID=" +
-                  Dept_ID +
-                  " AND Email =" +
-                  New_Admin_Email;
-                db.query(sql, (err, result) => {
-                  if (err) return res.status(400).json(err);
-                  else {
-                    //User Already exists, check if admin or not, if not just make them Admin for that dept
-                    if (result.length > 0) {
-                      sql =
-                        "SELECT *  FROM PROGRAM_ADMIN  WHERE Admin_Email=" +
-                        New_Admin_Email +
-                        " AND Dept_ID=" +
-                        Dept_ID;
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          if (result.length < 1) {
+            return res
+              .status(400)
+              .json({ User: "You do not have enough privileges" });
+          } else {
+            sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+            //   console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+              else {
+                if (result.length < 1) {
+                  return res
+                    .status(400)
+                    .json({ Dept_ID: "Department Not found" });
+                } else {
+                  sql =
+                    "SELECT * FROM Evaluators WHERE Dept_ID=" +
+                    Dept_ID +
+                    " AND Email =" +
+                    New_Admin_Email;
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+                    else {
+                      //User Already exists, check if admin or not, if not just make them Admin for that dept
+                      if (result.length > 0) {
+                        sql =
+                          "SELECT *  FROM PROGRAM_ADMIN  WHERE Admin_Email=" +
+                          New_Admin_Email +
+                          " AND Dept_ID=" +
+                          Dept_ID;
 
-                      db.query(sql, (err, result) => {
-                        if (err) return res.status(400).json(err);
-                        else {
-                          if (result.length > 0) {
-                            return res
-                              .status(400)
-                              .json({ Dept_ID: "User is already the admin" });
-                          }
-
-                          sql =
-                            "INSERT INTO PROGRAM_ADMIN(Admin_Email, Dept_ID) VALUES(" +
-                            New_Admin_Email +
-                            "," +
-                            Dept_ID +
-                            ")";
-                          db.query(sql, (err, result) => {
-                            if (err) return res.status(400).json(err);
-                            else {
-                              sql =
-                                "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
-                                Dept_ID;
-                              db.query(sql, (err, result) => {
-                                if (err) return res.status(400).json(err);
-                                else {
-                                  department = {
-                                    Dept_ID: result[0].Dept_ID,
-                                    admin: []
-                                  };
-                                  result.forEach(row => {
-                                    Fname = row.Fname;
-                                    Lname = row.Lname;
-                                    if (Fname == null) {
-                                      Fname = "";
-                                    }
-                                    if (Lname == null) {
-                                      Lname = "";
-                                    }
-                                    Admin = {
-                                      Admin_Name: Fname + " " + Lname,
-                                      Admin_Email: row.Admin_Email
-                                    };
-                                    department.admin.push(Admin);
-                                  });
-
-                                  return res.status(200).json(department);
-                                }
-                              });
-                            }
-                          });
-                        }
-                      });
-                    } else {
-                      //User does not exist in that department
-                      sql =
-                        "SELECT *  FROM Evaluators WHERE Email=" +
-                        New_Admin_Email;
-
-                      db.query(sql, (err, result) => {
-                        if (err) return res.status(400).json(err);
-                        else {
-                          //if user belongs to another department
-                          if (result.length > 0) {
-                            return res.status(400).json({
-                              error:
-                                "Evaluator with that email exists in another department"
-                            });
-                          }
-                          //User with that  email  does not  exist at all
+                        db.query(sql, (err, result) => {
+                          if (err) return res.status(400).json(err);
                           else {
+                            if (result.length > 0) {
+                              return res
+                                .status(400)
+                                .json({ Dept_ID: "User is already the admin" });
+                            }
+
                             sql =
-                              "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
+                              "INSERT INTO PROGRAM_ADMIN(Admin_Email, Dept_ID) VALUES(" +
                               New_Admin_Email +
                               "," +
                               Dept_ID +
-                              ",'false')";
-
+                              ")";
                             db.query(sql, (err, result) => {
                               if (err) return res.status(400).json(err);
                               else {
                                 sql =
-                                  "INSERT INTO PROGRAM_ADMIN(Admin_Email, Dept_ID) VALUES(" +
-                                  New_Admin_Email +
-                                  "," +
-                                  Dept_ID +
-                                  ")";
-
+                                  "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                  Dept_ID;
                                 db.query(sql, (err, result) => {
                                   if (err) return res.status(400).json(err);
                                   else {
-                                    sql =
-                                      "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
-                                      Dept_ID;
-                                    db.query(sql, (err, result) => {
-                                      if (err) return res.status(400).json(err);
-                                      else {
-                                        department = {
-                                          Dept_ID: result[0].Dept_ID,
-                                          admin: []
-                                        };
-                                        result.forEach(row => {
-                                          Fname = row.Fname;
-                                          Lname = row.Lname;
-                                          if (Fname == null) {
-                                            Fname = "";
-                                          }
-                                          if (Lname == null) {
-                                            Lname = "";
-                                          }
-                                          Admin = {
-                                            Admin_Name: Fname + " " + Lname,
-                                            Admin_Email: row.Admin_Email
-                                          };
-                                          department.admin.push(Admin);
-                                        });
-
-                                        return res.status(200).json(department);
+                                    department = {
+                                      Dept_ID: result[0].Dept_ID,
+                                      admin: []
+                                    };
+                                    result.forEach(row => {
+                                      Fname = row.Fname;
+                                      Lname = row.Lname;
+                                      if (Fname == null) {
+                                        Fname = "";
                                       }
+                                      if (Lname == null) {
+                                        Lname = "";
+                                      }
+                                      Admin = {
+                                        Admin_Name: Fname + " " + Lname,
+                                        Admin_Email: row.Admin_Email
+                                      };
+                                      department.admin.push(Admin);
                                     });
+
+                                    return res.status(200).json(department);
                                   }
                                 });
                               }
                             });
                           }
-                        }
-                      });
+                        });
+                      } else {
+                        //User does not exist in that department
+                        sql =
+                          "SELECT *  FROM Evaluators WHERE Email=" +
+                          New_Admin_Email;
+
+                        db.query(sql, (err, result) => {
+                          if (err) return res.status(400).json(err);
+                          else {
+                            //if user belongs to another department
+                            if (result.length > 0) {
+                              return res.status(400).json({
+                                email:
+                                  "Evaluator with that email exists in another department"
+                              });
+                            }
+                            //User with that  email  does not  exist at all
+                            else {
+                              sql =
+                                "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
+                                New_Admin_Email +
+                                "," +
+                                Dept_ID +
+                                ",'false')";
+
+                              db.query(sql, (err, result) => {
+                                if (err) return res.status(400).json(err);
+                                else {
+                                  sql =
+                                    "INSERT INTO PROGRAM_ADMIN(Admin_Email, Dept_ID) VALUES(" +
+                                    New_Admin_Email +
+                                    "," +
+                                    Dept_ID +
+                                    ")";
+
+                                  db.query(sql, (err, result) => {
+                                    if (err) return res.status(400).json(err);
+                                    else {
+                                      sql =
+                                        "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                        Dept_ID;
+                                      db.query(sql, (err, result) => {
+                                        if (err)
+                                          return res.status(400).json(err);
+                                        else {
+                                          department = {
+                                            Dept_ID: result[0].Dept_ID,
+                                            admin: []
+                                          };
+                                          result.forEach(row => {
+                                            Fname = row.Fname;
+                                            Lname = row.Lname;
+                                            if (Fname == null) {
+                                              Fname = "";
+                                            }
+                                            if (Lname == null) {
+                                              Lname = "";
+                                            }
+                                            Admin = {
+                                              Admin_Name: Fname + " " + Lname,
+                                              Admin_Email: row.Admin_Email
+                                            };
+                                            department.admin.push(Admin);
+                                          });
+
+                                          return res
+                                            .status(200)
+                                            .json(department);
+                                        }
+                                      });
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                          }
+                        });
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
-            }
-          });
+            });
+          }
         }
-      }
-    });
+      });
+    }
   }
 );
 
