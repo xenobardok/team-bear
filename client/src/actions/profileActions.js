@@ -9,6 +9,7 @@ import {
   CANCEL_EVALUATOR_INVITE
 } from "./types";
 import { toastr } from "react-redux-toastr";
+import Swal from "sweetalert2";
 // Get Current Profile
 
 export const getCurrentProfile = () => dispatch => {
@@ -83,19 +84,33 @@ export const removeEvaluator = removeEmail => dispatch => {
         type: CANCEL_EVALUATOR_INVITE,
         payload: res.data
       });
-      toastr.success(
-        "Evaluator invite removed!",
-        `We've removed ${res.data.Email} from the list of evaluators!`
+      Swal.fire(
+        "Deleted!",
+        `We've removed ${res.data.Email} from the list of evaluators!`,
+        "success"
       );
+      // toastr.success(
+      //   "Evaluator invite removed!",
+      //   `We've removed ${res.data.Email} from the list of evaluators!`
+      // );
     })
     .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
       });
-      toastr.danger(
-        "An error occured",
-        `Your process could not be processed at the moment`
-      );
+      if (err.response.data.email) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: err.response.data.email
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: `Your process could not be processed at the moment`
+        });
+      }
     });
 };

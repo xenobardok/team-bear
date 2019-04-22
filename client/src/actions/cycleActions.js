@@ -11,6 +11,16 @@ import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
 
 export const getCycles = () => dispatch => {
+  dispatch(setCycleLoading());
+  axios.get("/api/cycle").then(res =>
+    dispatch({
+      type: GET_CYCLES,
+      payload: res.data
+    })
+  );
+};
+
+export const getCyclesWithoutLoading = () => dispatch => {
   axios.get("/api/cycle").then(res =>
     dispatch({
       type: GET_CYCLES,
@@ -73,7 +83,7 @@ export const migrateCycle = migrateCycleID => dispatch => {
   axios
     .post(`/api/migrate/cycle/${migrateCycleID}`)
     .then(res => {
-      dispatch(getCycles());
+      dispatch(getCyclesWithoutLoading());
       toastr.success(
         "New Cycle Created!",
         "Cycle migration completed successfully!"
@@ -92,7 +102,7 @@ export const deleteCycle = cycleID => dispatch => {
     .delete(`/api/cycle/${cycleID}`)
     .then(res => {
       Swal.fire("Deleted!", "Your cycle has been deleted.", "success");
-      dispatch(getCycles());
+      dispatch(getCyclesWithoutLoading());
     })
     .catch(err => {
       if (err.response.data.Outcomes) {
