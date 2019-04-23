@@ -108,7 +108,6 @@ router.post(
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
       }
-      console.log(req.body.Scale);
 
       let isVisible = "true";
       let sql =
@@ -464,6 +463,109 @@ router.post(
         if (err) throw err;
         else {
           res.status(200).json({ message: "Successfully updated the cell" });
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   DELETE api/rubrics/:rubricID
+// @desc    Delete a given rubric
+// @access  Private route
+router.delete(
+  "/:rubricID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Get Fields
+
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    const Rubric_ID = req.params.rubricID;
+
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM RUBRIC WHERE Rubric_ID=" +
+        Rubric_ID +
+        " AND Dept_ID=" +
+        dept;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+          return res.status(400).json(err);
+        } else {
+          if (result.length < 1) {
+            return res.status(404).json({ Rubric_ID: "Rubric Not found" });
+          } else {
+            sql =
+              "SELECT  *  FROM RUBRIC_MEASURES WHERE Rubric_ID=" + Rubric_ID;
+
+            db.query(sql, (err, result) => {
+              if (err) {
+                return res.status(400).json(err);
+              }
+              if (result.length > 0) {
+                return res.status(400).json({
+                  Rubric_ID: "Rubric has been associated with cycles."
+                });
+              } else {
+                sql = "DELETE FROM RUBRIC_SCALE WHERE Rubric_ID=" + Rubric_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json(err);
+                  } else {
+                    sql =
+                      "SELECT  Rubric_Row_ID FROM RUBRIC_ROW WHERE Rubric_ID=" +
+                      Rubric_ID;
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json(err);
+                      } else {
+                        sql = "";
+                        result.forEach(row => {
+                          sql +=
+                            " DELETE FROM COLUMNS WHERE Rubric_Row_ID=" +
+                            row.Rubric_Row_ID +
+                            "; ";
+                        });
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json(err);
+                          } else {
+                            sql =
+                              "DELETE FROM RUBRIC_ROW WHERE Rubric_ID=" +
+                              Rubric_ID;
+                            db.query(sql, (err, result) => {
+                              if (err) {
+                                return res.status(400).json(err);
+                              } else {
+                                sql =
+                                  "DELETE  FROM RUBRIC WHERE Rubric_ID=" +
+                                  Rubric_ID;
+                                db.query(sql, (err, result) => {
+                                  if (err) {
+                                    return res.status(400).json(err);
+                                  } else {
+                                    return res.status(200).json({
+                                      Rubric_ID: "Rubric successfully  deleted"
+                                    });
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
         }
       });
     } else {
