@@ -784,4 +784,151 @@ router.post(
   }
 );
 
+// @route   POST api/evaluations/testMeasure/:TestMeasureID/submit
+// @desc   Submits the evaluation of a particular Test Measure
+// @access  Private route
+router.post(
+  "/testMeasure/:testMeasureID/submit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    const Test_Measure_ID = db.escape(req.params.testMeasureID);
+    let errors = {};
+    let sql =
+      "SELECT * FROM TEST_MEASURE_EVALUATOR NATURAL JOIN TEST_MEASURES  NATURAL JOIN MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Test_Measure_ID=" +
+      Test_Measure_ID +
+      " AND Evaluator_Email=" +
+      email;
+
+    // console.log(sql);
+    db.query(sql, (err, result) => {
+      if (err) {
+        errors.submit =
+          "There was some problem submitting the evaluation. Please try again later";
+        return res.status(400).json(errors);
+      }
+      if (result.length < 1) {
+        errors.submit = "You have not been assigned this evaluation.";
+        return res.status(400).json(errors);
+      } else {
+        let To_Dept = db.escape(result[0].Dept_ID);
+        let Test_Name = result[0].Exam_Name;
+        sql =
+          "UPDATE TEST_MEASURE_EVALUATOR SET Did_Submit='true' WHERE Evaluator_Email=" +
+          email +
+          " AND Test_Measure_ID=" +
+          Test_Measure_ID;
+
+        db.query(sql, (err, result) => {
+          if (err) {
+            errors.submit =
+              "There was some problem submitting the evaluation. Please try again later";
+            return res.status(400).json(errors);
+          }
+          message = " have been evlauted the test  " + Test_Name + ".";
+          sql =
+            "INSERT INTO ACTIVITY_LOG(To_Dept_ID,From_Email,Message) VALUES(" +
+            To_Dept +
+            "," +
+            email +
+            "," +
+            db.escape(message) +
+            ")";
+          // console.log(sql);
+          db.query(sql, (err, result) => {
+            if (err) {
+              return res.status(400).json({
+                error: "There was some problem adding  the evaluator"
+              });
+            }
+            return res
+              .status(200)
+              .json({ submit: "Evaluation successfully submitted" });
+          });
+        });
+      }
+    });
+  }
+);
+
+// @route   POST api/evaluations/rubricMeasure/:rubricMeasureID/submit
+// @desc   Submits the evaluation of a particular Test Measure
+// @access  Private route
+router.post(
+  "/rubricMeasure/:rubricMeasureID/submit",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    const Rubric_Measure_ID = db.escape(req.params.rubricMeasureID);
+    let errors = {};
+    let sql =
+      "SELECT * FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES M NATURAL JOIN MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE JOIN RUBRIC R ON R.Rubric_ID= M.Rubric_ID WHERE Rubric_Measure_ID=" +
+      Rubric_Measure_ID +
+      " AND Evaluator_Email=" +
+      email;
+
+    // console.log(sql);
+    db.query(sql, (err, result) => {
+      if (err) {
+        errors.submit =
+          "There was some problem submitting the evaluation. Please try again later";
+        return res.status(400).json(errors);
+      }
+      if (result.length < 1) {
+        errors.submit = "You have not been assigned this evaluation.";
+        return res.status(400).json(errors);
+      } else {
+        let To_Dept = db.escape(result[0].Dept_ID);
+        let Class_Name = result[0].Class_Name;
+        let Rubric_Name = result[0].Rubric_Name;
+
+        sql =
+          "UPDATE RUBRIC_MEASURE_EVALUATOR SET Did_Submit='true' WHERE Evaluator_Email=" +
+          email +
+          " AND Rubric_Measure_ID=" +
+          Rubric_Measure_ID;
+
+        db.query(sql, (err, result) => {
+          if (err) {
+            errors.submit =
+              "There was some problem submitting the evaluation. Please try again later";
+            return res.status(400).json(errors);
+          }
+          message =
+            " have been evlauted the rubric  " +
+            Rubric_Name +
+            " of the class " +
+            Class_Name +
+            " .";
+          sql =
+            "INSERT INTO ACTIVITY_LOG(To_Dept_ID,From_Email,Message) VALUES(" +
+            To_Dept +
+            "," +
+            email +
+            "," +
+            db.escape(message) +
+            ")";
+          // console.log(sql);
+          db.query(sql, (err, result) => {
+            if (err) {
+              return res.status(400).json({
+                error: "There was some problem adding  the evaluator"
+              });
+            }
+            return res
+              .status(200)
+              .json({ submit: "Evaluation successfully submitted" });
+          });
+        });
+      }
+    });
+  }
+);
+
 module.exports = router;
