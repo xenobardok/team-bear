@@ -36,12 +36,13 @@ export default function ThreeDotDropdown(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Link
-          to={"/dashboard/reports/measure/" + props.Measure_ID}
-          className="dropdown-item"
-        >
-          Edit Program
-        </Link>
+        <Dropdown.Item onClick={props.toggleDepartmentIDEdit}>
+          Edit Department ID
+        </Dropdown.Item>
+        <Dropdown.Item onClick={props.toggleDepartmentNameEdit}>
+          Edit Department Name
+        </Dropdown.Item>
+        <Dropdown.Item>Delete Program</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

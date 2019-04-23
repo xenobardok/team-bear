@@ -2,7 +2,9 @@ import {
   PROGRAM_LOADING,
   GET_PROGRAMS,
   GET_SINGLE_PROGRAM,
-  ADD_PROGRAM_ADMIN
+  ADD_PROGRAM_ADMIN,
+  UPDATE_PROGRAM_ID,
+  UPDATE_PROGRAM_NAME
 } from "../actions/types";
 
 const initialState = {
@@ -36,6 +38,26 @@ export default function(state = initialState, action) {
         program: {
           ...state.program,
           admin: action.payload
+        },
+        loading: false
+      };
+    case UPDATE_PROGRAM_ID:
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          Dept_ID: action.payload.Dept_ID,
+          Dept_Name: action.payload.Dept_Name
+        },
+        loading: false
+      };
+    case UPDATE_PROGRAM_NAME:
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          Dept_ID: action.payload.Dept_ID,
+          Dept_Name: action.payload.Dept_Name
         },
         loading: false
       };

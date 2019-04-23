@@ -263,8 +263,9 @@ router.put(
                             if (err) return res.status(400).json(err);
                             else {
                               newDept = {
-                                Department_ID: Department_ID,
-                                Dept_ID: New_Dept_ID,
+                                Department_ID: result[0].Department_ID,
+
+                                Dept_ID: result[0].Dept_ID,
                                 Dept_Name: result[0].Department_Name
                               };
                               res.status(200).json(newDept);
@@ -481,7 +482,7 @@ router.post(
 
     if (!validator.isEmail(req.body.adminEmail)) {
       res.status(400).json({
-        Department_ID: "Email is not valid"
+        email: "Email is not valid"
       });
     } else {
       let sql =
@@ -505,7 +506,7 @@ router.post(
                 if (result.length < 1) {
                   return res
                     .status(400)
-                    .json({ Dept_ID: "Department Not found" });
+                    .json({ email: "Department Not found" });
                 } else {
                   let Dept_ID = result[0].Dept_ID;
                   sql =
@@ -530,7 +531,7 @@ router.post(
                             if (result.length > 0) {
                               return res
                                 .status(400)
-                                .json({ Dept_ID: "User is already the admin" });
+                                .json({ email: "User is already the admin" });
                             }
 
                             sql =

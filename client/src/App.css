@@ -518,6 +518,20 @@ section#evaluators .singleEvaluator:hover{
   width: 100%;
 }
 
+.program .form-group{
+  margin-bottom: 0px;
+}
+.program .input-group{
+  width: 50%;
+  display: inline-flex;
+  margin-bottom: 0px;
+}
+
+.department .form-control{
+  display: inline;
+  width: 50%;
+}
+
 .program table td{
   padding:.75rem!important;
   /* width: 25%; */
