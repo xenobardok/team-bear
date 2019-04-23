@@ -11,6 +11,16 @@ import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
 
 export const getCycles = () => dispatch => {
+  dispatch(setCycleLoading());
+  axios.get("/api/cycle").then(res =>
+    dispatch({
+      type: GET_CYCLES,
+      payload: res.data
+    })
+  );
+};
+
+export const getCyclesWithoutLoading = () => dispatch => {
   axios.get("/api/cycle").then(res =>
     dispatch({
       type: GET_CYCLES,
@@ -73,7 +83,7 @@ export const migrateCycle = migrateCycleID => dispatch => {
   axios
     .post(`/api/migrate/cycle/${migrateCycleID}`)
     .then(res => {
-      dispatch(getCycles());
+      dispatch(getCyclesWithoutLoading());
       toastr.success(
         "New Cycle Created!",
         "Cycle migration completed successfully!"
@@ -92,7 +102,7 @@ export const deleteCycle = cycleID => dispatch => {
     .delete(`/api/cycle/${cycleID}`)
     .then(res => {
       Swal.fire("Deleted!", "Your cycle has been deleted.", "success");
-      dispatch(getCycles());
+      dispatch(getCyclesWithoutLoading());
     })
     .catch(err => {
       if (err.response.data.Outcomes) {
@@ -135,4 +145,29 @@ export const updateOutcome = (cycleID, outcomeID, Outcome_Name) => dispatch => {
         payload: err.response.data
       })
     );
+};
+
+export const deleteOutcome = (cycleID, outcomeID) => dispatch => {
+  axios
+    .delete(`/api/cycle/${cycleID}/outcome/${outcomeID}`)
+    .then(res => {
+      console.log(res.data);
+      Swal.fire("Deleted!", "Your outcome has been deleted.", "success");
+      dispatch(getSingleCycle(cycleID));
+    })
+    .catch(err => {
+      if (err.response.data.Measures) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The outcome contains measures. Please delete them first!"
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "Internal server error. Please contact app developers!"
+        });
+      }
+    });
 };

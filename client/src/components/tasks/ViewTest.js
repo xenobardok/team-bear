@@ -96,19 +96,26 @@ class ViewTest extends Component {
 
 const EditableSingleGrade = props => {
   let [grade, updateGrade] = useState(props.Grade);
-
+  let onChangeHandler = e => {
+    let value = e.target.value;
+    updateGrade(Number(value));
+    if (e.target.value) {
+      console.log(value);
+      setTimeout(function() {
+        props.gradeStudentTestMeasure(props.Student_ID, value);
+      }, 1000);
+    } else {
+      console.log(value);
+      setTimeout(function() {
+        props.gradeStudentTestMeasure(props.Student_ID, "0");
+      }, 1000);
+    }
+  };
   return (
     <Form>
       {props.Test_Type === "pass/fail" ? (
         <Form.Group controlId="exampleForm.ControlSelect1">
-          <Form.Control
-            as="select"
-            value={grade}
-            onChange={e => {
-              updateGrade(Number(e.target.value));
-              props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
-            }}
-          >
+          <Form.Control as="select" value={grade} onChange={onChangeHandler}>
             <option value="0">Fail</option>
             <option value="1">Pass</option>
           </Form.Control>
@@ -119,10 +126,7 @@ const EditableSingleGrade = props => {
             type="number"
             placeholder="Eg. 75"
             value={grade}
-            onChange={e => {
-              updateGrade(Number(e.target.value));
-              props.gradeStudentTestMeasure(props.Student_ID, e.target.value);
-            }}
+            onChange={onChangeHandler}
           />
         </Form.Group>
       )}

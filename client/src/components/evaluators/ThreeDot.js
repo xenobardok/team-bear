@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
 library.add(faEllipsisV);
 
 class CustomToggle extends React.Component {
@@ -29,6 +30,22 @@ class CustomToggle extends React.Component {
 }
 
 export default function ThreeDotCycle(props) {
+  let removeEvaluator = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        props.removeEvaluator(props.email);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   return (
     <Dropdown className="dropdown three-dots" alignRight>
       <Dropdown.Toggle id="dropdown-custom-components" as={CustomToggle}>
@@ -36,12 +53,11 @@ export default function ThreeDotCycle(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item onClick={props.editHandler}>
-          Edit {props.type}
-        </Dropdown.Item>
-        {props.type === "Cycle" ? (
-          <Dropdown.Item>Generate Report</Dropdown.Item>
-        ) : null}
+        {props.type === "invite" ? (
+          <Dropdown.Item onClick={removeEvaluator}>Cancel Invite</Dropdown.Item>
+        ) : (
+          <Dropdown.Item>Remove Evaluator</Dropdown.Item>
+        )}
       </Dropdown.Menu>
     </Dropdown>
   );

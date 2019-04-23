@@ -13,8 +13,8 @@ let calculateMeasure = Rubric_Measure_ID => {
     Rubric_Measure_ID;
 
   db.query(sql, (err, result) => {
-    if (err) throw err;
-    else {
+    if (err) {
+    } else {
       const Rubric_ID = result[0].Rubric_ID;
       const Target = result[0].Target;
       const Threshold = result[0].Threshold;
@@ -26,9 +26,10 @@ let calculateMeasure = Rubric_Measure_ID => {
         " AND Rubric_ID=" +
         Rubric_ID;
 
+      // console.log(sql);
       db.query(sql, (err, result) => {
-        if (err) throw err;
-        else {
+        if (err) {
+        } else {
           const Total_Students = result[0].Total;
 
           //sql to find the count of students with required or better grade
@@ -39,8 +40,8 @@ let calculateMeasure = Rubric_Measure_ID => {
             Target;
 
           db.query(sql, (err, result) => {
-            if (err) throw err;
-            else {
+            if (err) {
+            } else {
               const Success_Count = result[0].Success_Count;
 
               let percent_success = (Success_Count / Total_Students) * 100;
@@ -63,13 +64,14 @@ let calculateMeasure = Rubric_Measure_ID => {
                 " WHERE Rubric_Measure_ID=" +
                 Rubric_Measure_ID;
 
+              // console.log(sql);
               db.query(sql, (err, result) => {
-                if (err) throw err;
                 sql =
                   "SELECT Measure_ID FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
                   Rubric_Measure_ID;
                 db.query(sql, (err, result) => {
-                  if (err) throw err;
+                  if (err) {
+                  }
                   let Measure_ID = result[0].Measure_ID;
 
                   sql =
@@ -78,7 +80,6 @@ let calculateMeasure = Rubric_Measure_ID => {
                     " WHERE Measure_ID=" +
                     Measure_ID;
                   db.query(sql, (err, result) => {
-                    if (err) throw err;
                     updateOutcome(Measure_ID);
                   });
                 });

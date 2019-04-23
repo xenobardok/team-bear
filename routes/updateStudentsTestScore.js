@@ -13,8 +13,8 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
     Test_Measure_ID;
 
   db.query(sql, (err, result) => {
-    if (err) throw err;
-    else {
+    if (err) {
+    } else {
       result.forEach(row => {
         let Test_Student_ID = row.Test_Student_ID;
         let Student_ID = row.Student_ID;
@@ -26,8 +26,8 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
 
         // console.log(sql);
         db.query(sql, (err, result) => {
-          if (err) throw err;
-          else {
+          if (err) {
+          } else {
             let Total_Score = 0;
             let Count = 0;
 
@@ -51,9 +51,7 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
               db.escape(Test_Student_ID);
 
             // console.log(sql);
-            db.query(sql, (err, result) => {
-              if (err) throw err;
-            });
+            db.query(sql, (err, result) => {});
           }
         });
       });
@@ -62,8 +60,8 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
         Test_Measure_ID;
 
       db.query(sql, (err, result) => {
-        if (err) throw err;
-        else {
+        if (err) {
+        } else {
           const Target = result[0].Target;
           const Threshold = result[0].Threshold;
 
@@ -72,8 +70,8 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
             "SELECT Count(DISTINCT(Student_ID)) AS Total FROM  TEST_STUDENTS NATURAL JOIN STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
             Test_Measure_ID;
           db.query(sql, (err, result) => {
-            if (err) throw err;
-            else {
+            if (err) {
+            } else {
               const Total_Students = result[0].Total;
 
               //sql to find the count of students with required or better grade
@@ -84,8 +82,8 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
                 Target;
 
               db.query(sql, (err, result) => {
-                if (err) throw err;
-                else {
+                if (err) {
+                } else {
                   const Success_Count = result[0].Success_Count;
 
                   let percent_success = (Success_Count / Total_Students) * 100;
@@ -109,8 +107,6 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
                     Test_Measure_ID;
 
                   db.query(sql, (err, result) => {
-                    if (err) throw err;
-
                     callback();
                   });
                 }

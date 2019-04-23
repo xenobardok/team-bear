@@ -1,6 +1,7 @@
 import React from "react";
 import { Dropdown, DropdownButton, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
@@ -21,14 +22,31 @@ class CustomToggle extends React.Component {
 
   render() {
     return (
-      <a href="" onClick={this.handleClick} className="edit-cycle">
+      <a href="" onClick={this.handleClick}>
         {this.props.children}
       </a>
     );
   }
 }
 
-export default function ThreeDotCycle(props) {
+export default function ThreeDotDropdown(props) {
+  let deleteButtonHandler = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        console.log(props.Department_ID);
+        props.deleteProgram(props.Department_ID);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   return (
     <Dropdown className="dropdown three-dots" alignRight>
       <Dropdown.Toggle id="dropdown-custom-components" as={CustomToggle}>
@@ -36,12 +54,15 @@ export default function ThreeDotCycle(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item onClick={props.editHandler}>
-          Edit {props.type}
+        <Dropdown.Item onClick={props.toggleDepartmentIDEdit}>
+          Edit Department ID
         </Dropdown.Item>
-        {props.type === "Cycle" ? (
-          <Dropdown.Item>Generate Report</Dropdown.Item>
-        ) : null}
+        <Dropdown.Item onClick={props.toggleDepartmentNameEdit}>
+          Edit Department Name
+        </Dropdown.Item>
+        <Dropdown.Item onClick={deleteButtonHandler}>
+          Delete Program
+        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

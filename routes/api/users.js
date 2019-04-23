@@ -104,10 +104,119 @@ router.delete(
           errors.email = "User already registered, please delete the user!";
           return res.status(400).json(errors);
         } else if (result.length > 0 && result[0].isActive == "false") {
-          sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+          sql = "SELECT * FROM PROGRAM_ADMIN where Admin_Email=" + removeEmail;
+
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
-            return res.status(200).json({ Email: req.body.removeEmail });
+            if (result.length > 0) {
+              errors.email =
+                "User is also an admin of the department. Please remove as Program Administrator first.";
+              return res.status(400).json(errors);
+            } else {
+              sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+              db.query(sql, (err, result) => {
+                // console.log(sql);
+                if (err) return res.status(400).json(err);
+
+                return res.status(200).json({ Email: req.body.removeEmail });
+              });
+            }
+          });
+        } else {
+          errors.email = "User not found";
+          return res.status(400).json(errors);
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   DELETE api/users/removeEvaluator
+// @desc    Remove Invited user
+// @access  Public
+router.delete(
+  "/removeEvaluator",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //Check for validation
+    const dept = db.escape(req.user.dept);
+    const type = req.user.type;
+    let email = db.escape(req.user.email);
+    let removeEmail = db.escape(req.body.removeEmail);
+
+    errors = {};
+    if (type == "Admin") {
+      let sql =
+        "SELECT * FROM Evaluators WHERE email = " +
+        removeEmail +
+        " AND Dept_ID=" +
+        dept;
+      // console.log(sql);
+      db.query(sql, (err, result) => {
+        if (result.length > 0) {
+          sql = "SELECT * FROM PROGRAM_ADMIN where Admin_Email=" + removeEmail;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            if (result.length > 0) {
+              errors.email =
+                "User is also an admin of the department. Please remove as Program Administrator first.";
+              return res.status(400).json(errors);
+            } else {
+              sql =
+                "SELECT *  FROM RUBRIC_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                removeEmail;
+
+              db.query(sql, (err, result) => {
+                if (err) return res.status(400).json(err);
+                if (result.length > 0) {
+                  sql =
+                    "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                    removeEmail;
+
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+
+                    return res
+                      .status(200)
+                      .json({ Email: req.body.removeEmail });
+                  });
+                } else {
+                  sql =
+                    "SELECT *  FROM TEST_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                    removeEmail;
+
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+                    if (result.length > 0) {
+                      sql =
+                        "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                        removeEmail;
+
+                      db.query(sql, (err, result) => {
+                        if (err) return res.status(400).json(err);
+
+                        return res
+                          .status(200)
+                          .json({ Email: req.body.removeEmail });
+                      });
+                    } else {
+                      sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+
+                      db.query(sql, (err, result) => {
+                        if (err) return res.status(400).json(err);
+
+                        return res
+                          .status(200)
+                          .json({ Email: req.body.removeEmail });
+                      });
+                    }
+                  });
+                }
+              });
+            }
           });
         } else {
           errors.email = "User not found";
@@ -207,12 +316,13 @@ router.post("/login", (req, res) => {
       res.status(404).json(errors);
     } else {
       sql =
-        "SELECT * from Evaluators E, Department D where E.email=" +
+        "SELECT * from Evaluators E, Department D  where E.email=" +
         email +
         " and E.password = password(" +
         password +
         ") AND E.Dept_ID = D.Dept_ID";
       db.query(sql, (err, result) => {
+        // console.log(sql);
         if (err) return res.send(err);
         else if (result.length > 0) {
           // User found
@@ -221,33 +331,46 @@ router.post("/login", (req, res) => {
             errors.email = "Email is not verified. Please verify the email.";
             res.status(404).json(errors);
           } else {
-            if (result[0].Email == result[0].Admin_Email) {
-              level = "Admin";
-            } else {
-              level = "Evaluator";
-            }
-          }
+            //User exists
+            const payload = {
+              firstname: result[0].Fname,
+              lastname: result[0].Lname,
+              email: result[0].Email,
+              type: "",
+              dept: result[0].Dept_ID,
+              isSuperUser: result[0].isSuperUser
+            };
 
-          // res.json({msg: "Successfully logged in"})
-          const payload = {
-            firstname: result[0].Fname,
-            lastname: result[0].Lname,
-            email: result[0].Email,
-            type: level,
-            dept: result[0].Dept_ID,
-            isSuperUser: result[0].isSuperUser
-          };
-          jwt.sign(
-            payload,
-            secret.secretOrKey,
-            { expiresIn: 86400 },
-            (err, token) => {
-              res.json({
-                success: true,
-                token: "Bearer " + token
-              });
-            }
-          );
+            sql =
+              "SELECT  *  FROM PROGRAM_ADMIN WHERE Dept_ID=" +
+              db.escape(payload.dept) +
+              " AND Admin_Email=" +
+              email;
+
+            db.query(sql, (err, result) => {
+              if (err) return res.send(err);
+              if (result.length > 0) {
+                payload.type = "Admin";
+              } else {
+                payload.type = "Evaluator";
+              }
+
+              // res.json({msg: "Successfully logged in"})
+
+              // console.log(payload);
+              jwt.sign(
+                payload,
+                secret.secretOrKey,
+                { expiresIn: 86400 },
+                (err, token) => {
+                  res.json({
+                    success: true,
+                    token: "Bearer " + token
+                  });
+                }
+              );
+            });
+          }
         } else if (result.length < 1) {
           errors.password = "Password incorrect";
           res.status(404).json(errors);

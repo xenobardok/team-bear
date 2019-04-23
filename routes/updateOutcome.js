@@ -8,16 +8,12 @@ let updateOutcome = Measure_ID => {
   let sql = " SELECT Outcome_ID  FROM MEASURES WHERE Measure_ID=" + Measure_ID;
 
   db.query(sql, (err, result) => {
-    if (err) throw err;
-
     let Outcome_ID = result[0].Outcome_ID;
 
     sql =
       "SELECT COUNT(*) AS Total FROM MEASURES WHERE Outcome_ID=" + Outcome_ID;
 
     db.query(sql, (err, result) => {
-      if (err) throw err;
-
       let Total_Measures = result[0].Total;
 
       sql =
@@ -26,8 +22,6 @@ let updateOutcome = Measure_ID => {
         " AND isSuccess='true'";
       //   console.log(sql);
       db.query(sql, (err, result) => {
-        if (err) throw err;
-
         let Success_Measures = result[0].Success;
 
         let isSuccess = "false";
@@ -38,9 +32,13 @@ let updateOutcome = Measure_ID => {
 
         sql =
           "UPDATE OUTCOMES SET Outcome_Success=" +
-          isSuccess +
+          db.escape(isSuccess) +
           " WHERE Outcome_ID=" +
           Outcome_ID;
+
+        db.query(sql, (err, result) => {
+          // console.log(result);
+        });
       });
     });
   });

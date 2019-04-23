@@ -14,7 +14,8 @@ import {
   faEnvelope,
   faCircleNotch,
   faTable,
-  faUsers
+  faUsers,
+  faUserCog
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faBars,
@@ -25,7 +26,8 @@ library.add(
   faEnvelope,
   faCircleNotch,
   faTable,
-  faUsers
+  faUsers,
+  faUserCog
 );
 
 class SideBar extends Component {
@@ -60,6 +62,12 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="home" />
             &nbsp;&nbsp;Home
           </Link>
+          {this.props.auth.user.isSuperUser === "true" ? (
+            <Link className="menu-item" to="/dashboard/programs">
+              <FontAwesomeIcon icon="user-cog" />
+              &nbsp;&nbsp;Admin Tools
+            </Link>
+          ) : null}
           <Link className="menu-item" to="/dashboard/cycles">
             <FontAwesomeIcon icon="circle-notch" />
             &nbsp;&nbsp;My Cycle

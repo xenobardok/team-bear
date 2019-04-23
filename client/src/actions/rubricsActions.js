@@ -7,10 +7,11 @@ import {
   SET_DATA_VALUE,
   SET_MEASURE_VALUE,
   RUBRICS_BUTTON_LOADING,
-  CHANGE_RUBRIC_WEIGHT
+  CHANGE_RUBRIC_WEIGHT,
+  DELETE_RUBRIC
 } from "./types";
 import { toastr } from "react-redux-toastr";
-
+import Swal from "sweetalert2";
 export const getRubrics = () => dispatch => {
   dispatch(setRubricsLoading());
   axios
@@ -126,4 +127,31 @@ export const setDataValue = (id, value) => dispatch => {
       type: GET_ERRORS,
       payload: err.response.data
     }));
+};
+
+export const deleteRubric = rubricID => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .delete(`/api/rubrics/${rubricID}`)
+    .then(res => {
+      Swal.fire("Deleted!", `Rubric has been deleted.`, "success");
+      dispatch({
+        type: DELETE_RUBRIC,
+        payload: res.data.admin
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+
+      if (err.response.data.Rubric_ID) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: err.response.data.Rubric_ID
+        });
+      }
+    });
 };

@@ -80,16 +80,6 @@ class Cycles extends Component {
             </div>
           );
         }
-
-        newCycle = (
-          <Card.Footer
-            onClick={() => this.setState({ modalShow: true })}
-            style={{ cursor: "pointer" }}
-          >
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;&nbsp;&nbsp;Create a new cycle
-          </Card.Footer>
-        );
       }
     }
     return (
@@ -102,6 +92,13 @@ class Cycles extends Component {
               {newCycle}
             </ListGroup>
           </Card.Body>
+          <Card.Footer
+            onClick={() => this.setState({ modalShow: true })}
+            style={{ cursor: "pointer" }}
+          >
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;&nbsp;&nbsp;Create a new cycle
+          </Card.Footer>
         </Card>
 
         <CreateCycle show={this.state.modalShow} onHide={modalClose} />

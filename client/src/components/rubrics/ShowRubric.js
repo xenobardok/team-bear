@@ -6,11 +6,13 @@ import {
   getSingleRubric,
   setDataValue,
   setMeasureValue,
-  changeRubricWeight
+  changeRubricWeight,
+  deleteRubric
 } from "../../actions/rubricsActions";
 import { Table, FormControl, Button } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import ThreeDotDropdown from "./ThreeDotDropdown";
 
 let scalesRow, dataRow;
 
@@ -116,6 +118,10 @@ class AnalyseRubric extends Component {
     ));
     return (
       <div key={this.props.Rubric_ID}>
+        <ThreeDotDropdown
+          deleteRubric={this.props.deleteRubric}
+          Rubric_ID={this.props.Rubric_ID}
+        />
         <h2>{this.props.Rubric_Name}</h2>
         <br />
         <Table bordered striped>
@@ -156,6 +162,14 @@ class ShowRubric extends Component {
       this.props.getSingleRubric(this.props.match.params.id);
     }
   }
+
+  componentDidUpdate = prevProps => {
+    if (this.props.rubrics.rubric !== prevProps.rubrics.rubric) {
+      if (this.props.rubrics.rubric.deleted) {
+        this.props.history.push("/dashboard/rubrics");
+      }
+    }
+  };
   render() {
     let { rubric, loading } = this.props.rubrics;
     let displayRubric = "";
@@ -171,6 +185,7 @@ class ShowRubric extends Component {
             setMeasureValue={this.props.setMeasureValue}
             setDataValue={this.props.setDataValue}
             changeRubricWeight={this.props.changeRubricWeight}
+            deleteRubric={this.props.deleteRubric}
           />
         );
       } else {
@@ -196,5 +211,11 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getSingleRubric, setMeasureValue, setDataValue, changeRubricWeight }
+  {
+    getSingleRubric,
+    setMeasureValue,
+    setDataValue,
+    changeRubricWeight,
+    deleteRubric
+  }
 )(ShowRubric);

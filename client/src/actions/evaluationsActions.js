@@ -146,7 +146,8 @@ export const gradeStudentTestMeasure = (
       toastr.success("Student Graded!");
     })
     .catch(err => {
-      toastr.error(err.response.data);
+      console.log(err.response.data);
+      // toastr.error(err.response.data);
     });
 };
 

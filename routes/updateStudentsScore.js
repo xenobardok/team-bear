@@ -15,8 +15,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
     Rubric_Measure_ID;
 
   db.query(sql, (err, result) => {
-    if (err) throw err;
-    else {
+    if (err) {
+    } else {
       result.forEach(row => {
         let Student_ID = row.Student_ID;
         let Rubric_ID = result[0].Rubric_ID;
@@ -30,8 +30,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
 
         // console.log(sql);
         db.query(sql, (err, result) => {
-          if (err) throw err;
-          else {
+          if (err) {
+          } else {
             let Total_Score = 0;
             let Count = 0;
 
@@ -55,9 +55,7 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
               db.escape(Student_ID);
 
             // console.log(sql);
-            db.query(sql, (err, result) => {
-              if (err) throw err;
-            });
+            db.query(sql, (err, result) => {});
           }
         });
       });
@@ -66,8 +64,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
         Rubric_Measure_ID;
 
       db.query(sql, (err, result) => {
-        if (err) throw err;
-        else {
+        if (err) {
+        } else {
           const Rubric_ID = result[0].Rubric_ID;
           const Target = result[0].Target;
           const Threshold = result[0].Threshold;
@@ -79,8 +77,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
             " AND Rubric_ID=" +
             Rubric_ID;
           db.query(sql, (err, result) => {
-            if (err) throw err;
-            else {
+            if (err) {
+            } else {
               const Total_Students = result[0].Total;
 
               //sql to find the count of students with required or better grade
@@ -91,8 +89,8 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
                 Target;
 
               db.query(sql, (err, result) => {
-                if (err) throw err;
-                else {
+                if (err) {
+                } else {
                   const Success_Count = result[0].Success_Count;
 
                   let percent_success = (Success_Count / Total_Students) * 100;
@@ -116,8 +114,6 @@ async function updateStudentsScore(Rubric_Measure_ID, callback) {
                     Rubric_Measure_ID;
 
                   db.query(sql, (err, result) => {
-                    if (err) throw err;
-
                     callback();
                   });
                 }

@@ -335,7 +335,7 @@ table.report th, table.report td{
   text-align: left;
 }
 
-.createCycle {
+.createCycle, .createProgram {
   padding: 10px;
 }
 
@@ -367,7 +367,7 @@ table.report th, table.report td{
 }
 
 .cycle-outcome a{
-  color: inherit;
+  /* color: inherit; */
 }
 
 .cycle-outcome a:hover{
@@ -379,7 +379,7 @@ table.report th, table.report td{
 }
 
 .cycle-view .btn{
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 .login-register a{
@@ -466,14 +466,20 @@ section#evaluators .singleEvaluator:hover{
 
 .edit-cycle{
   padding: 0px 15px!important;
+  display: flex;
 }
 
 .status.success {
   color: green;
 }
 
-.status.fail {
+.status.fail  {
   color: #dc3545;
+}
+
+.program .trash:hover{
+  cursor: pointer;
+  color: #dc3545
 }
 
 .crossIcon:hover{
@@ -490,7 +496,7 @@ section#evaluators .singleEvaluator:hover{
 
 
 .cycle-view .list-group-item{
-  padding: 0.75rem 0.25rem 0.75rem 0.1rem;
+  padding: 0.75rem 0.25rem 0.75rem 0.5rem;
 }
 
 .addEvaluatorIcon{
@@ -499,7 +505,7 @@ section#evaluators .singleEvaluator:hover{
   transition: 0.2s all;
 }
 
-.single-measure{
+.single-measure, .program{
   background: white;
     border: 2px solid #7b344a2e;
     /* background-color: white; */
@@ -507,6 +513,36 @@ section#evaluators .singleEvaluator:hover{
     box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75) ;
     border-radius: 10px;
     padding: 30px;
+}
+.program table{
+  width: 100%;
+}
+
+.program .form-group{
+  margin-bottom: 0px;
+}
+.program .input-group{
+  width: 50%;
+  display: inline-flex;
+  margin-bottom: 0px;
+}
+
+.department .form-control{
+  display: inline;
+  width: 50%;
+}
+
+.program table td{
+  padding:.75rem!important;
+  /* width: 25%; */
+}
+
+.program table td:nth-child(1), .program table td:nth-child(4), .program table th:nth-child(1), .program table th:nth-child(4){
+  width: 10%
+}
+
+.program table .form-group{
+  margin-bottom: 0px;
 }
 
 .btn-primary.disabled, .btn-primary:disabled,.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show>.btn-primary.dropdown-toggle{
@@ -590,4 +626,13 @@ a:hover {
 .card-body .form-control {
   width: 98%;
   border: 1px solid #6c757c;
+}
+
+.arrow-up {
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  
+  border-bottom: 5px solid black;
 }

@@ -14,10 +14,12 @@ import {
   REMOVE_EVALUATOR_MEASURE
 } from "./types";
 import { toastr } from "react-redux-toastr";
-export const getMeasures = id => dispatch => {
+import Swal from "sweetalert2";
+
+export const getMeasures = (cycleID, outcomeID) => dispatch => {
   dispatch(setMeasureLoading());
   axios
-    .get(`/api/cycle/outcome/${id}`)
+    .get(`/api/cycle/${cycleID}/outcome/${outcomeID}`)
     .then(res => {
       dispatch({
         type: GET_MEASURES,
@@ -33,18 +35,19 @@ export const getMeasures = id => dispatch => {
 };
 
 export const createMeasure = (
+  cycleID,
   Outcome_ID,
   Measure_Name,
   Measure_Type
 ) => dispatch => {
   console.log(Measure_Name, Measure_Type);
   axios
-    .post(`/api/cycle/outcome/${Outcome_ID}/measure/create`, {
+    .post(`/api/cycle/${cycleID}/outcome/${Outcome_ID}/measure/create`, {
       Measure_Name: Measure_Name,
       Measure_Type: Measure_Type
     })
     .then(res => {
-      dispatch(getMeasures(Outcome_ID));
+      dispatch(getMeasures(cycleID, Outcome_ID));
     })
     .catch(err => {
       dispatch({
@@ -55,15 +58,19 @@ export const createMeasure = (
 };
 
 export const updateMeasureLabel = (
+  Cycle_ID,
   Outcome_ID,
   Measure_ID,
   Measure_Name
 ) => dispatch => {
   console.log(Measure_Name);
   axios
-    .post(`/api/cycle/outcome/${Outcome_ID}/measure/${Measure_ID}/edit`, {
-      Measure_Name: Measure_Name
-    })
+    .post(
+      `/api/cycle/${Cycle_ID}/outcome/${Outcome_ID}/measure/${Measure_ID}/edit`,
+      {
+        Measure_Name: Measure_Name
+      }
+    )
     .then(res => {
       // dispatch(getMeasures(Outcome_ID));
       console.log("measure name updated");
@@ -80,10 +87,10 @@ export const setMeasureLoading = () => ({
   type: MEASURE_LOADING
 });
 
-export const getSingleMeasure = (outcomeID, measureID) => dispatch => {
+export const getSingleMeasure = (cycleID, outcomeID, measureID) => dispatch => {
   dispatch(setMeasureLoading());
   axios
-    .get(`/api/cycle/outcome/${outcomeID}/measure/${measureID}`)
+    .get(`/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}`)
     .then(res => {
       dispatch({
         type: GET_SINGLE_MEASURE,
@@ -100,6 +107,8 @@ export const getSingleMeasure = (outcomeID, measureID) => dispatch => {
 };
 
 export const assignEvaluatorToMeasure = (
+  cycleID,
+  outcomeID,
   measureID,
   Evaluator_Email
 ) => dispatch => {
@@ -110,9 +119,12 @@ export const assignEvaluatorToMeasure = (
       Evaluator_Email
   );
   axios
-    .post(`/api/cycle/measure/${measureID}/addEvaluator`, {
-      Evaluator_Email: Evaluator_Email
-    })
+    .post(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/addEvaluator`,
+      {
+        Evaluator_Email: Evaluator_Email
+      }
+    )
     .then(res =>
       dispatch({
         type: ADD_EVALUATOR_MEASURE,
@@ -122,6 +134,7 @@ export const assignEvaluatorToMeasure = (
 };
 
 export const defineMeasure = (
+  cycleID,
   outcomeID,
   measureID,
   measureData
@@ -129,7 +142,10 @@ export const defineMeasure = (
   console.log(measureID);
   console.log(measureData);
   axios
-    .post(`/api/cycle/measure/${measureID}/update`, measureData)
+    .post(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/update`,
+      measureData
+    )
     .then(res =>
       dispatch({ type: UPDATE_MEASURE_DEFINITION, payload: res.data })
     )
@@ -137,11 +153,19 @@ export const defineMeasure = (
 };
 // { type: UPDATE_MEASURE_DEFINITION, payload: res.data }
 // dispatch(getSingleMeasure(outcomeID, measureID))
-export const addStudent = (measureID, student) => dispatch => {
+export const addStudent = (
+  cycleID,
+  outcomeID,
+  measureID,
+  student
+) => dispatch => {
   console.log(measureID);
   console.log(student);
   axios
-    .post(`/api/cycle/measure/${measureID}/addStudent`, student)
+    .post(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/addStudent`,
+      student
+    )
     .then(res => {
       toastr.success(
         "Student added!",
@@ -155,14 +179,23 @@ export const addStudent = (measureID, student) => dispatch => {
     });
 };
 
-export const addStudentsFromCSV = (measureID, file) => dispatch => {
+export const addStudentsFromCSV = (
+  cycleID,
+  outcomeID,
+  measureID,
+  file
+) => dispatch => {
   dispatch(addStudentLoading());
   axios
-    .post(`/api/cycle/measure/${measureID}/addStudent/fileUpload`, file, {
-      headers: {
-        "Content-Type": "multipart/form-data"
+    .post(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/addStudent/fileUpload`,
+      file,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
       }
-    })
+    )
     .then(res => dispatch({ type: ADD_STUDENT_FROM_FILE, payload: res.data }))
     .catch(err => {
       dispatch({ type: ERROR_FILE_UPLOAD, payload: [] });
@@ -170,15 +203,23 @@ export const addStudentsFromCSV = (measureID, file) => dispatch => {
     });
 };
 
-export const removeStudent = (measureID, Student_ID) => dispatch => {
+export const removeStudent = (
+  cycleID,
+  outcomeID,
+  measureID,
+  Student_ID
+) => dispatch => {
   console.log(measureID);
   console.log({ Student_ID: Student_ID });
   axios
-    .delete(`/api/cycle/measure/${measureID}/removeStudent`, {
-      data: {
-        Student_ID: Student_ID
+    .delete(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/removeStudent`,
+      {
+        data: {
+          Student_ID: Student_ID
+        }
       }
-    })
+    )
     .then(res => dispatch({ type: REMOVE_STUDENT, payload: res.data }))
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
@@ -188,14 +229,19 @@ export const addStudentLoading = () => ({
 });
 
 export const removeEvaluatorMeasure = (
+  cycleID,
+  outcomeID,
   measureID,
   Evaluator_Email
 ) => dispatch => {
   console.log(measureID, Evaluator_Email);
   axios
-    .delete(`/api/cycle/measure/${measureID}/removeEvaluator`, {
-      data: { Evaluator_Email: Evaluator_Email }
-    })
+    .delete(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/removeEvaluator`,
+      {
+        data: { Evaluator_Email: Evaluator_Email }
+      }
+    )
     .then(res =>
       dispatch({
         type: REMOVE_EVALUATOR_MEASURE,
@@ -208,4 +254,35 @@ export const removeEvaluatorMeasure = (
         payload: err.response.data
       })
     );
+};
+
+export const deleteMeasure = (cycleID, outcomeID, measureID) => dispatch => {
+  axios
+    .delete(`/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}`)
+    .then(res => {
+      console.log(res.data);
+      Swal.fire("Deleted!", "Your measure has been deleted.", "success");
+      dispatch(getMeasures(cycleID, outcomeID));
+    })
+    .catch(err => {
+      if (err.response.data.students) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The measure contains students. Please delete them first!"
+        });
+      } else if (err.response.data.evaluators) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "The measure contains evaluators. Please delete them first!"
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: "Internal server error. Please contact app developers!"
+        });
+      }
+    });
 };
