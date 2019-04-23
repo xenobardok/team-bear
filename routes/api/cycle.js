@@ -334,7 +334,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const Cycle_ID = db.escape(req.params.cycleID);
-    console.log(req.body);
+    const Class_Factors = db.escape(req.user.Class_Factors);
     let Outcome_Name = req.body.Outcome_Name;
     const errors = {};
     if (type == "Admin") {
@@ -384,10 +384,12 @@ router.post(
                     }
 
                     sql =
-                      "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name) VALUES(" +
+                      "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name,Class_Factors) VALUES(" +
                       Cycle_ID +
                       "," +
                       Outcome_Name +
+                      "," +
+                      Class_Factors +
                       ")";
 
                     db.query(sql, (err, result) => {
@@ -492,6 +494,7 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Cycle_ID = db.escape(req.params.cycleID);
     const Outcome_ID = db.escape(req.params.outcomeID);
+    const Class_Factors = db.escape(req.user.Class_Factors);
     let Outcome_Name = req.body.Outcome_Name;
     let errors = {};
 
@@ -521,6 +524,8 @@ router.post(
           sql =
             "UPDATE OUTCOMES SET Outcome_Name = " +
             Outcome_Name +
+            ", Class_Factors=" +
+            Class_Factors +
             " WHERE Outcome_ID = " +
             Outcome_ID;
 
@@ -573,6 +578,7 @@ router.get(
 
           Outcome.Outcome_ID = Outcome_ID;
           Outcome.Cycle_ID = result[0].Cycle_ID;
+          Outcome.Class_Factors = result[0].Class_Factors;
 
           Outcome.data = [];
           sql =

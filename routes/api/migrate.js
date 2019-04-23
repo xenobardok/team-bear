@@ -28,6 +28,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
     const Old_Cycle_ID = req.params.cycleID;
+    let Cycle_Name = db.escape(req.body.Cycle_Name);
     let errors = {};
 
     if (type == "Admin") {
@@ -53,11 +54,10 @@ router.post(
                 .json({ error: "Something went wrong. Please try again." });
             }
           } else {
-            let Cycle_Name = result[0].Cycle_Name;
             let False = "false";
             sql =
               "INSERT INTO ASSESSMENT_CYCLE (Cycle_Name,Dept_ID,isSubmitted) VALUES(" +
-              db.escape(Cycle_Name) +
+              Cycle_Name +
               "," +
               dept +
               "," +
@@ -123,15 +123,17 @@ duplicateOutcomes = (res, New_Cycle_ID, Outcome_List) => {
       } else {
         let Outcome_Name = result[0].Outcome_Name;
         let Outcome_index = result[0].Outcome_Index;
-        // console.log(Outcome_Name);
+        let Class_Factors = result[0].Class_Factors;
         // console.log(New_Cycle_ID);
         sql =
-          "INSERT INTO OUTCOMES (Outcome_Name,Outcome_Index,Cycle_ID) VALUES(" +
+          "INSERT INTO OUTCOMES (Outcome_Name,Outcome_Index,Cycle_ID,Class_Factors) VALUES(" +
           db.escape(Outcome_Name) +
           "," +
           Outcome_index +
           "," +
           New_Cycle_ID +
+          "," +
+          db.escape(Class_Factors) +
           ")";
         // console.log(sql);
         db.query(sql, (err, result) => {

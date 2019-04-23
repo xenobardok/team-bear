@@ -6,6 +6,8 @@ const router = express.Router(),
   passport = require("passport"),
   nodemailer = require("nodemailer");
 
+const isEmpty = require("../../validation/isEmpty");
+
 // Loading Input Validation
 var validator = require("validator");
 const validateRegisterInput = require("../../validation/register");
@@ -43,6 +45,7 @@ router.get(
             else {
               result.forEach(row => {
                 department = {
+                  Department_ID: row.Department_ID,
                   Dept_Name: row.Department_Name,
                   Dept_ID: row.Dept_ID
                 };
@@ -73,7 +76,14 @@ router.post(
     const New_Dept_Name = db.escape(req.body.deptName);
 
     let departmentList = [];
-
+    if (isEmpty(New_Dept_ID)) {
+      return res.status(400).json({ Dept_ID: "Department ID cannot be empty" });
+    }
+    if (isEmpty(New_Dept_Name)) {
+      return res
+        .status(400)
+        .json({ Dept_Name: "Department Name cannot be empty" });
+    }
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -107,6 +117,7 @@ router.post(
                   if (err) return res.status(400).json(err);
                   else {
                     newDept = {
+                      Department_ID: Department_ID,
                       Dept_ID: New_Dept_ID,
                       Dept_Name: New_Dept_Name
                     };
@@ -122,20 +133,24 @@ router.post(
   }
 );
 
-// @route   PUT api/department/:DeptID/update/name
+// @route   PUT api/department/:DepartmentID/update/name
 // @desc    Updates the  department name
 // @access  Private
 router.put(
-  "/:DeptID/update/name",
+  "/:DepartmentID/update/name",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = db.escape(req.params.DepartmentID);
     const New_Dept_Name = db.escape(req.body.deptName);
-
+    if (isEmpty(New_Dept_Name)) {
+      return res
+        .status(400)
+        .json({ Dept_Name: "Department Name cannot be empty" });
+    }
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -148,7 +163,7 @@ router.put(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
           //   console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
@@ -157,15 +172,16 @@ router.put(
                 return res.status(400).json({ Dept_ID: "DepartmentNot found" });
               } else {
                 sql =
-                  "UPDATE Department Set  Department_Name=" +
+                  "UPDATE Department Set Department_Name=" +
                   New_Dept_Name +
-                  " WHERE Dept_ID=" +
-                  Dept_ID;
+                  " WHERE Department_ID=" +
+                  Department_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) return res.status(400).json(err);
                   else {
                     newDept = {
+                      Department_ID: Department_ID,
                       Dept_ID: Dept_ID,
                       Dept_Name: New_Dept_Name
                     };
@@ -181,20 +197,23 @@ router.put(
   }
 );
 
-// @route   PUT api/department/:DeptID/update/id
+// @route   PUT api/department/:DepartmentID/update/id
 // @desc    Updates the  department id
 // @access  Private
 router.put(
-  "/:DeptID/update/id",
+  "/:DepartmentID/update/id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = req.params.DepartmentID;
     const New_Dept_ID = db.escape(req.body.deptID);
 
+    if (isEmpty(New_Dept_ID)) {
+      return res.status(400).json({ Dept_ID: "Department ID cannot be empty" });
+    }
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -207,7 +226,7 @@ router.put(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
           //   console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
@@ -217,7 +236,9 @@ router.put(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
-                sql = "SELECT * FROM Department WHERE Dept_ID=" + New_Dept_ID;
+                sql =
+                  "SELECT * FROM Department WHERE Department_ID=" +
+                  Department_ID;
                 db.query(sql, (err, result) => {
                   if (err) return res.status(400).json(err);
                   else {
@@ -229,19 +250,20 @@ router.put(
                       sql =
                         "UPDATE Department Set  Dept_ID=" +
                         New_Dept_ID +
-                        " WHERE Dept_ID=" +
-                        Dept_ID;
+                        " WHERE Department_ID=" +
+                        Department_ID;
                       db.query(sql, (err, result) => {
                         if (err) return res.status(400).json(err);
                         else {
                           sql =
-                            "SELECT * FROM Department WHERE Dept_ID=" +
-                            New_Dept_ID;
+                            "SELECT * FROM Department WHERE Department_ID=" +
+                            Department_ID;
 
                           db.query(sql, (err, result) => {
                             if (err) return res.status(400).json(err);
                             else {
                               newDept = {
+                                Department_ID: Department_ID,
                                 Dept_ID: New_Dept_ID,
                                 Dept_Name: result[0].Department_Name
                               };
@@ -262,18 +284,18 @@ router.put(
   }
 );
 
-// @route   DELETE api/department/:DeptID/
+// @route   DELETE api/department/:Department_ID/
 // @desc    Updates the  department id
 // @access  Private
 router.delete(
-  "/:DeptID/",
+  "/:Department_ID/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = db.escape(req.params.Department_ID);
 
     let departmentList = [];
 
@@ -289,7 +311,7 @@ router.delete(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
           //   console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
@@ -299,6 +321,7 @@ router.delete(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
+                Dept_ID = db.escape(result[0].Dept_ID);
                 sql = "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID=" + Dept_ID;
                 db.query(sql, (err, result) => {
                   if (err) return res.status(400).json(err);
@@ -338,8 +361,8 @@ router.delete(
                                 if (err) return res.status(400).json(err);
                                 else {
                                   sql =
-                                    "DELETE  FROM Department WHERE Dept_ID=" +
-                                    Dept_ID;
+                                    "DELETE  FROM Department WHERE Department_ID=" +
+                                    Department_ID;
                                   db.query(sql, (err, result) => {
                                     if (err) return res.status(400).json(err);
                                     else {
@@ -366,18 +389,18 @@ router.delete(
   }
 );
 
-// @route   GET api/department/:DeptID/
+// @route   GET api/department/:Department_ID/
 // @desc    Returns the department details
 // @access  Private
 router.get(
-  "/:DeptID",
+  "/:Department_ID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = db.escape(req.params.Department_ID);
 
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
@@ -391,7 +414,7 @@ router.get(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
           //   console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
@@ -399,9 +422,10 @@ router.get(
               if (result.length < 1) {
                 return res
                   .status(400)
-                  .json({ Dept_ID: "Department Not found" });
+                  .json({ Department_ID: "Department Not found" });
               } else {
                 department = {
+                  Department_ID: result[0].Department_ID,
                   Dept_ID: result[0].Dept_ID,
                   Dept_Name: result[0].Department_Name,
                   admin: []
@@ -441,23 +465,23 @@ router.get(
   }
 );
 
-// @route   POST api/department/:DeptID/addAdmin
+// @route   POST api/department/:Department_ID/addAdmin
 // @desc    Adds an Admin to a department
 // @access  Private
 router.post(
-  "/:DeptID/addAdmin",
+  "/:Department_ID/addAdmin",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = db.escape(req.params.Department_ID);
     const New_Admin_Email = db.escape(req.body.adminEmail);
 
     if (!validator.isEmail(req.body.adminEmail)) {
       res.status(400).json({
-        Dept_ID: "Email is not valid"
+        Department_ID: "Email is not valid"
       });
     } else {
       let sql =
@@ -472,7 +496,8 @@ router.post(
               .status(400)
               .json({ User: "You do not have enough privileges" });
           } else {
-            sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+            sql =
+              "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
             //   console.log(sql);
             db.query(sql, (err, result) => {
               if (err) return res.status(400).json(err);
@@ -482,6 +507,7 @@ router.post(
                     .status(400)
                     .json({ Dept_ID: "Department Not found" });
                 } else {
+                  let Dept_ID = result[0].Dept_ID;
                   sql =
                     "SELECT * FROM Evaluators WHERE Dept_ID=" +
                     Dept_ID +
@@ -639,18 +665,18 @@ router.post(
   }
 );
 
-// @route   Delete api/department/:DeptID/deleteAdmin
+// @route   Delete api/department/:Department_ID/deleteAdmin
 // @desc    Delete an Admin to a department
 // @access  Private
 router.delete(
-  "/:DeptID/deleteAdmin",
+  "/:Department_ID/deleteAdmin",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Dept_ID = db.escape(req.params.DeptID);
+    const Department_ID = db.escape(req.params.Department_ID);
     const Admin_Email = db.escape(req.body.adminEmail);
 
     let sql =
@@ -665,7 +691,7 @@ router.delete(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Dept_ID=" + Dept_ID;
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Dept_ID;
           //   console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
@@ -675,6 +701,7 @@ router.delete(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
+                let Dept_ID = result[0].Dept_ID;
                 sql =
                   "SELECT * FROM Evaluators  E, PROGRAM_ADMIN  A  WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
                   Dept_ID +

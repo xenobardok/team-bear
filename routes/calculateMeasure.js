@@ -26,6 +26,7 @@ let calculateMeasure = Rubric_Measure_ID => {
         " AND Rubric_ID=" +
         Rubric_ID;
 
+      // console.log(sql);
       db.query(sql, (err, result) => {
         if (err) {
         } else {
@@ -63,6 +64,7 @@ let calculateMeasure = Rubric_Measure_ID => {
                 " WHERE Rubric_Measure_ID=" +
                 Rubric_Measure_ID;
 
+              // console.log(sql);
               db.query(sql, (err, result) => {
                 sql =
                   "SELECT Measure_ID FROM RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +

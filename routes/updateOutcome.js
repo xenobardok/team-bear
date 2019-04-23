@@ -32,11 +32,13 @@ let updateOutcome = Measure_ID => {
 
         sql =
           "UPDATE OUTCOMES SET Outcome_Success=" +
-          isSuccess +
+          db.escape(isSuccess) +
           " WHERE Outcome_ID=" +
           Outcome_ID;
 
-        db.query(sql, (err, result) => {});
+        db.query(sql, (err, result) => {
+          // console.log(result);
+        });
       });
     });
   });
