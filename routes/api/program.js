@@ -72,8 +72,8 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const New_Dept_ID = req.body.deptID;
-    const New_Dept_Name = req.body.deptName;
+    let New_Dept_ID = req.body.deptID;
+    let New_Dept_Name = req.body.deptName;
 
     let departmentList = [];
     if (isEmpty(New_Dept_ID)) {
@@ -147,7 +147,7 @@ router.put(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Department_ID = db.escape(req.params.DepartmentID);
+    let Department_ID = db.escape(req.params.DepartmentID);
     New_Dept_Name = req.body.deptName;
     if (isEmpty(New_Dept_Name)) {
       return res
@@ -212,7 +212,7 @@ router.put(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Department_ID = req.params.DepartmentID;
+    let Department_ID = req.params.DepartmentID;
     let New_Dept_ID = req.body.deptID;
 
     if (isEmpty(New_Dept_ID)) {
@@ -483,8 +483,8 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Department_ID = db.escape(req.params.Department_ID);
-    const New_Admin_Email = db.escape(req.body.adminEmail);
+    let Department_ID = db.escape(req.params.Department_ID);
+    let New_Admin_Email = db.escape(req.body.adminEmail);
 
     if (!validator.isEmail(req.body.adminEmail)) {
       res.status(400).json({
@@ -683,8 +683,8 @@ router.delete(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Department_ID = db.escape(req.params.Department_ID);
-    const Admin_Email = db.escape(req.body.adminEmail);
+    let Department_ID = db.escape(req.params.Department_ID);
+    let Admin_Email = db.escape(req.body.adminEmail);
 
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +

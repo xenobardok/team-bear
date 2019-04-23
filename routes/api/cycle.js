@@ -385,12 +385,9 @@ router.post(
                   Cycle_ID;
 
                 db.query(sql, (err, result) => {
-                  if (err) res.send(err);
-                  else {
-                    if (err) {
-                      return res.status(404).json(err);
-                    }
-
+                  if (err) {
+                    return res.status(404).json(err);
+                  } else {
                     sql =
                       "INSERT INTO OUTCOMES(Cycle_ID, Outcome_Name,Class_Factors) VALUES(" +
                       Cycle_ID +
@@ -455,33 +452,35 @@ router.delete(
         else {
           if (result.length < 1) {
             return res.status(404).json({ error: "Outcome Not Found" });
-          }
+          } else {
+            sql =
+              "SELECT * FROM MEASURES WHERE Outcome_ID = " +
+              Outcome_ID +
+              " ORDER BY Measure_Index";
 
-          sql =
-            "SELECT * FROM MEASURES WHERE Outcome_ID = " +
-            Outcome_ID +
-            " ORDER BY Measure_Index";
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                if (result.length > 0) {
+                  return res
+                    .status(404)
+                    .json({ Measures: "Please delete measures first" });
+                } else {
+                  sql = "DELETE FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
 
-          db.query(sql, (err, result) => {
-            if (err) res.send(err);
-            else {
-              if (result.length > 0) {
-                return res
-                  .status(404)
-                  .json({ Measures: "Please delete measures first" });
-              } else {
-                sql = "DELETE FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
-
-                db.query(sql, (err, result) => {
-                  if (err) return res.status(400).json(err);
-                  else {
-                    // console.log(sql);
-                    return res.status(200).json({ message: "Outcome deleted" });
-                  }
-                });
+                  db.query(sql, (err, result) => {
+                    if (err) return res.status(400).json(err);
+                    else {
+                      // console.log(sql);
+                      return res
+                        .status(200)
+                        .json({ message: "Outcome deleted" });
+                    }
+                  });
+                }
               }
-            }
-          });
+            });
+          }
         }
       });
     } else {
@@ -511,43 +510,44 @@ router.post(
         return res
           .status(404)
           .json((errors = { Outcome_Name: "Outcome Name cannot be empty" }));
-      }
-      Outcome_Name = db.escape(Outcome_Name);
-      let sql =
-        "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
-        dept +
-        " AND Cycle_ID=" +
-        Cycle_ID +
-        " AND Outcome_Name =" +
-        Outcome_Name;
+      } else {
+        Outcome_Name = db.escape(Outcome_Name);
+        let sql =
+          "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
+          dept +
+          " AND Cycle_ID=" +
+          Cycle_ID +
+          " AND Outcome_Name =" +
+          Outcome_Name;
 
-      db.query(sql, (err, result) => {
-        if (err) res.send(err);
-        else {
-          if (result.length > 0) {
-            errors.Outcome_Name = "Outcome with that name already exists.";
-            return res.status(404).json(errors);
-          }
+        db.query(sql, (err, result) => {
+          if (err) res.send(err);
+          else {
+            if (result.length > 0) {
+              errors.Outcome_Name = "Outcome with that name already exists.";
+              return res.status(404).json(errors);
+            } else {
+              sql =
+                "UPDATE OUTCOMES SET Outcome_Name = " +
+                Outcome_Name +
+                ", Class_Factors=" +
+                Class_Factors +
+                " WHERE Outcome_ID = " +
+                Outcome_ID;
 
-          sql =
-            "UPDATE OUTCOMES SET Outcome_Name = " +
-            Outcome_Name +
-            ", Class_Factors=" +
-            Class_Factors +
-            " WHERE Outcome_ID = " +
-            Outcome_ID;
-
-          db.query(sql, (err, result) => {
-            if (err)
-              return res
-                .status(400)
-                .json({ error: "There was some problem updating it" });
-            else {
-              res.status(200).json("Outcome was successfully updated");
+              db.query(sql, (err, result) => {
+                if (err)
+                  return res
+                    .status(400)
+                    .json({ error: "There was some problem updating it" });
+                else {
+                  res.status(200).json("Outcome was successfully updated");
+                }
+              });
             }
-          });
-        }
-      });
+          }
+        });
+      }
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
@@ -641,114 +641,115 @@ router.post(
       if (isEmpty(Measure_Name)) {
         errors.Measure_Name = "Measure Name cannot be empty";
         return res.status(404).json(errors);
-      }
-      let sql = " SELECT * FROM  ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
-      db.query(sql, (err, result) => {
-        if (err) res.send(err);
-        if (result[0].iSubmitted == "true") {
-          errors.Measure_Name = "Cycle is already closed.";
-          return res.status(400).json(errors);
-        } else {
-          Measure_Name = db.escape(Measure_Name);
-          sql =
-            "SELECT * FROM MEASURES WHERE Outcome_ID =" +
-            outcomeID +
-            " AND Measure_label=" +
-            Measure_Name;
+      } else {
+        let sql = " SELECT * FROM  ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
+        db.query(sql, (err, result) => {
+          if (err) res.send(err);
+          if (result[0].iSubmitted == "true") {
+            errors.Measure_Name = "Cycle is already closed.";
+            return res.status(400).json(errors);
+          } else {
+            Measure_Name = db.escape(Measure_Name);
+            sql =
+              "SELECT * FROM MEASURES WHERE Outcome_ID =" +
+              outcomeID +
+              " AND Measure_label=" +
+              Measure_Name;
 
-          // console.log(sql);
-          db.query(sql, (err, result) => {
-            if (err) res.send(err);
-            else {
-              if (result.length > 0) {
-                errors.Measure_Name =
-                  "Measure Name with that name already exists.";
-                return res.status(404).json(errors);
-              }
-
-              sql = "SELECT * FROM MEASURES WHERE Outcome_ID =" + outcomeID;
-              db.query(sql, (err, result) => {
-                if (err) res.send(err);
-                else {
-                  let isSuccess = db.escape("false");
-                  let isCompleted = db.escape("false");
-
-                  sql =
-                    "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_type) VALUES(" +
-                    Measure_Name +
-                    "," +
-                    isSuccess +
-                    "," +
-                    outcomeID +
-                    "," +
-                    db.escape(Measure_Type) +
-                    ")";
-                  db.query(sql, (err, result) => {
-                    if (err)
-                      return res
-                        .status(400)
-                        .json({ error: "There was some problem adding it" });
-                    else {
-                      let Measure_ID = db.escape(result.insertId);
-
-                      //If Measure_Type is rubric, create a rubric measure
-                      if (Measure_Type === "rubric") {
-                        sql =
-                          "INSERT INTO RUBRIC_MEASURES(Measure_ID,Is_Success ) VALUES(" +
-                          Measure_ID +
-                          "," +
-                          isSuccess +
-                          ")";
-
-                        db.query(sql, (err, result) => {
-                          if (err)
-                            return res.status(400).json({
-                              error: "There was some problem adding it"
-                            });
-                          else {
-                            Rubric_Measure_ID = db.escape(result.insertId);
-
-                            Rubric_Measure = {
-                              Measure_ID: Measure_ID,
-                              Rubric_Measure_ID: Rubric_Measure_ID
-                            };
-                            // updateOutcome(outcomeID);
-                            return res.status(200).json(Rubric_Measure);
-                          }
-                        });
-                      } else {
-                        //Create a Test Measure
-                        sql =
-                          "INSERT INTO TEST_MEASURES(Measure_ID,Is_Success ) VALUES(" +
-                          Measure_ID +
-                          "," +
-                          isSuccess +
-                          ")";
-
-                        db.query(sql, (err, result) => {
-                          if (err)
-                            return res.status(400).json({
-                              error: "There was some problem adding it"
-                            });
-                          else {
-                            Test_Measure_ID = db.escape(result.insertId);
-
-                            Test_Measure = {
-                              Measure_ID: Measure_ID,
-                              Test_Measure_ID: Test_Measure_ID
-                            };
-                            return res.status(200).json(Test_Measure);
-                          }
-                        });
-                      }
-                    }
-                  });
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                if (result.length > 0) {
+                  errors.Measure_Name =
+                    "Measure Name with that name already exists.";
+                  return res.status(404).json(errors);
                 }
-              });
-            }
-          });
-        }
-      });
+
+                sql = "SELECT * FROM MEASURES WHERE Outcome_ID =" + outcomeID;
+                db.query(sql, (err, result) => {
+                  if (err) res.send(err);
+                  else {
+                    let isSuccess = db.escape("false");
+                    let isCompleted = db.escape("false");
+
+                    sql =
+                      "INSERT INTO MEASURES(Measure_label,isSuccess, Outcome_ID,Measure_type) VALUES(" +
+                      Measure_Name +
+                      "," +
+                      isSuccess +
+                      "," +
+                      outcomeID +
+                      "," +
+                      db.escape(Measure_Type) +
+                      ")";
+                    db.query(sql, (err, result) => {
+                      if (err)
+                        return res
+                          .status(400)
+                          .json({ error: "There was some problem adding it" });
+                      else {
+                        let Measure_ID = db.escape(result.insertId);
+
+                        //If Measure_Type is rubric, create a rubric measure
+                        if (Measure_Type === "rubric") {
+                          sql =
+                            "INSERT INTO RUBRIC_MEASURES(Measure_ID,Is_Success ) VALUES(" +
+                            Measure_ID +
+                            "," +
+                            isSuccess +
+                            ")";
+
+                          db.query(sql, (err, result) => {
+                            if (err)
+                              return res.status(400).json({
+                                error: "There was some problem adding it"
+                              });
+                            else {
+                              Rubric_Measure_ID = db.escape(result.insertId);
+
+                              Rubric_Measure = {
+                                Measure_ID: Measure_ID,
+                                Rubric_Measure_ID: Rubric_Measure_ID
+                              };
+                              // updateOutcome(outcomeID);
+                              return res.status(200).json(Rubric_Measure);
+                            }
+                          });
+                        } else {
+                          //Create a Test Measure
+                          sql =
+                            "INSERT INTO TEST_MEASURES(Measure_ID,Is_Success ) VALUES(" +
+                            Measure_ID +
+                            "," +
+                            isSuccess +
+                            ")";
+
+                          db.query(sql, (err, result) => {
+                            if (err)
+                              return res.status(400).json({
+                                error: "There was some problem adding it"
+                              });
+                            else {
+                              Test_Measure_ID = db.escape(result.insertId);
+
+                              Test_Measure = {
+                                Measure_ID: Measure_ID,
+                                Test_Measure_ID: Test_Measure_ID
+                              };
+                              return res.status(200).json(Test_Measure);
+                            }
+                          });
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     } else {
       res.status(404).json({ error: "Not an Admin" });
     }
@@ -959,212 +960,60 @@ router.get(
           if (result.length < 1) {
             errors.Outcome_Name = "Measure not found";
             return res.status(200).json(errors);
-          }
-
-          Measure.Measure_ID = Measure_ID;
-          Measure.Measure_Label = result[0].Measure_label;
-          Measure.Measure_Type = result[0].Measure_type;
-
-          if (Measure.Measure_Type == "rubric") {
-            sql =
-              " SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure_ID;
-            db.query(sql, (err, result) => {
-              if (err) return res.status(200).json(err);
-              else {
-                Rubric_Measure_ID = result[0].Rubric_Measure_ID;
-                Measure.Rubric_ID = result[0].Rubric_ID;
-                Measure.End_Date = result[0].End_Date;
-                Measure.Target = result[0].Target;
-                Measure.Threshold = result[0].Threshold;
-                Measure.Achieved_Threshold = result[0].Score;
-                Measure.Is_Success = result[0].Is_Success;
-                Measure.Class_Name = result[0].Class_Name;
-
-                calculateMeasure(Rubric_Measure_ID);
-
-                sql =
-                  "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
-                  Rubric_Measure_ID +
-                  " AND Rubric_ID=" +
-                  Measure.Rubric_ID;
-
-                db.query(sql, (err, result) => {
-                  if (err) throw err;
-                  else {
-                    const Total_Students = result[0].Total;
-                    Measure.Total_Students = Total_Students;
-
-                    //sql to find the count of students with required or better grade
-                    sql =
-                      "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
-                      Rubric_Measure_ID +
-                      " AND Student_Avg_Grade>=" +
-                      Measure.Target;
-
-                    db.query(sql, (err, result) => {
-                      if (err) throw err;
-                      else {
-                        Measure.Student_Achieved_Target_Count =
-                          result[0].Success_Count;
-
-                        sql =
-                          " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
-                          Rubric_Measure_ID;
-                        //console.log(sql);
-                        Measure.Evaluators = [];
-                        db.query(sql, (err, result) => {
-                          if (err) res.status(400).json(err);
-                          result.forEach(row => {
-                            evaluator = {
-                              Evaluator_Email: row.Evaluator_Email,
-                              Evaluator_Name: row.FullName,
-                              hasSubmitted: row.Did_Submit
-                            };
-                            Measure.Evaluators.push(evaluator);
-                          });
-
-                          Measure.Students = [];
-
-                          sql =
-                            "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
-                            Rubric_Measure_ID +
-                            " ORDER BY Student_Name ASC";
-
-                          db.query(sql, (err, result) => {
-                            if (err) res.status(400).json(err);
-                            result.forEach(row => {
-                              student = {
-                                Student_ID: row.Student_ID,
-                                Student_Name: row.Student_Name
-                              };
-                              Measure.Students.push(student);
-                            });
-                            Measure.Rubric_Name = "";
-
-                            sql =
-                              " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
-                              Measure_ID;
-
-                            db.query(sql, (err, result) => {
-                              if (err) res.status(400).json(err);
-                              if (result.length > 0) {
-                                Measure.Rubric_Name = result[0].Rubric_Name;
-                              }
-
-                              sql =
-                                "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_ID=E.Rubric_ID AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID AND A.Rubric_Measure_ID=S.Rubric_Measure_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_ID=" +
-                                Measure.Rubric_ID +
-                                " AND A.Rubric_Measure_ID=" +
-                                Rubric_Measure_ID +
-                                " ORDER BY A.Evaluator_Email, Student_Name ASC ";
-
-                              // console.log(sql);
-                              db.query(sql, (err, result) => {
-                                if (err) res.status(400).json(err);
-                                Measure.Unevaluated = [];
-                                result.forEach(row => {
-                                  let Student_Name = row.Student_Name;
-                                  let Evaluator_Name = row.Evaluator_Name;
-
-                                  let isFound = false;
-
-                                  Measure.Unevaluated.forEach(Evaluator => {
-                                    if (
-                                      Evaluator.Evaluator_Name == Evaluator_Name
-                                    ) {
-                                      Evaluator.Student_List.push(Student_Name);
-                                      isFound = true;
-                                    }
-                                  });
-                                  if (!isFound) {
-                                    Evaluator = {
-                                      Evaluator_Name: Evaluator_Name,
-                                      Student_List: [Student_Name]
-                                    };
-                                    Measure.Unevaluated.push(Evaluator);
-                                  }
-                                });
-                                res.status(200).json(Measure);
-                              });
-                            });
-                          });
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
           } else {
-            // for test measure
+            Measure.Measure_ID = Measure_ID;
+            Measure.Measure_Label = result[0].Measure_label;
+            Measure.Measure_Type = result[0].Measure_type;
 
-            sql = " SELECT * FROM TEST_MEASURES WHERE Measure_ID=" + Measure_ID;
-            db.query(sql, (err, result) => {
-              if (err) return res.status(200).json(err);
-              else {
-                Test_Measure_ID = result[0].Test_Measure_ID;
-                Measure.End_Date = result[0].End_Date;
-                Measure.Target = result[0].Target;
-                Measure.Threshold = result[0].Threshold;
-                Measure.Achieved_Threshold = result[0].Score;
-                Measure.Is_Success = result[0].Is_Success;
-                Measure.Test_Name = result[0].Exam_Name;
-                Measure.Test_Type = result[0].Test_Type;
+            if (Measure.Measure_Type == "rubric") {
+              sql =
+                " SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure_ID;
+              db.query(sql, (err, result) => {
+                if (err) return res.status(200).json(err);
+                else {
+                  Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+                  Measure.Rubric_ID = result[0].Rubric_ID;
+                  Measure.End_Date = result[0].End_Date;
+                  Measure.Target = result[0].Target;
+                  Measure.Threshold = result[0].Threshold;
+                  Measure.Achieved_Threshold = result[0].Score;
+                  Measure.Is_Success = result[0].Is_Success;
+                  Measure.Class_Name = result[0].Class_Name;
 
-                calculateTestMeasure(Test_Measure_ID);
-                sql =
-                  "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
-                  Test_Measure_ID;
+                  calculateMeasure(Rubric_Measure_ID);
 
-                db.query(sql, (err, result) => {
-                  // console.log(sql);
+                  sql =
+                    "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
+                    Rubric_Measure_ID +
+                    " AND Rubric_ID=" +
+                    Measure.Rubric_ID;
 
-                  if (err) throw err;
-                  else {
-                    const Total_Students = result[0].Total;
-                    Measure.Total_Students = Total_Students;
+                  db.query(sql, (err, result) => {
+                    if (err) throw err;
+                    else {
+                      const Total_Students = result[0].Total;
+                      Measure.Total_Students = Total_Students;
 
-                    //sql to find the count of students with required or better grade
-                    sql =
-                      "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                      Test_Measure_ID +
-                      " AND Student_Avg_Grade>=" +
-                      Measure.Target;
+                      //sql to find the count of students with required or better grade
+                      sql =
+                        "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                        Rubric_Measure_ID +
+                        " AND Student_Avg_Grade>=" +
+                        Measure.Target;
 
-                    db.query(sql, (err, result) => {
-                      // console.log(sql);
-
-                      if (err) throw err;
-                      else {
-                        Measure.Student_Achieved_Target_Count =
-                          result[0].Success_Count;
-
-                        sql =
-                          "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
-                          Test_Measure_ID +
-                          " ORDER BY Student_Name ASC";
-
-                        Measure.Students = [];
-                        db.query(sql, (err, result) => {
-                          if (err) res.status(400).json(err);
-                          // console.log(result);
-
-                          result.forEach(row => {
-                            student = {
-                              Student_ID: row.Student_ID,
-                              Student_Name: row.Student_Name
-                            };
-                            Measure.Students.push(student);
-                          });
+                      db.query(sql, (err, result) => {
+                        if (err) throw err;
+                        else {
+                          Measure.Student_Achieved_Target_Count =
+                            result[0].Success_Count;
 
                           sql =
-                            " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
-                            Test_Measure_ID;
-
+                            " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
+                            Rubric_Measure_ID;
+                          //console.log(sql);
                           Measure.Evaluators = [];
                           db.query(sql, (err, result) => {
                             if (err) res.status(400).json(err);
-
                             result.forEach(row => {
                               evaluator = {
                                 Evaluator_Email: row.Evaluator_Email,
@@ -1173,45 +1022,203 @@ router.get(
                               };
                               Measure.Evaluators.push(evaluator);
                             });
-                            // console.log(sql);
+
+                            Measure.Students = [];
+
                             sql =
-                              "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
-                              Test_Measure_ID +
-                              " ORDER BY S.Student_Name";
+                              "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
+                              Rubric_Measure_ID +
+                              " ORDER BY Student_Name ASC";
+
                             db.query(sql, (err, result) => {
                               if (err) res.status(400).json(err);
-                              Measure.Unevaluated = [];
-
-                              // console.log(sql);
-                              if (
-                                result.length > 0 &&
-                                Measure.Evaluators.length > 0
-                              ) {
-                                Evaluator = {
-                                  Evaluator_Name:
-                                    Measure.Evaluators[0].Evaluator_Name,
-                                  Student_List: []
+                              result.forEach(row => {
+                                student = {
+                                  Student_ID: row.Student_ID,
+                                  Student_Name: row.Student_Name
                                 };
-                                result.forEach(row => {
-                                  Evaluator.Student_List.push(row.Student_Name);
-                                });
+                                Measure.Students.push(student);
+                              });
+                              Measure.Rubric_Name = "";
 
-                                Measure.Unevaluated.push(Evaluator);
-                                return res.status(200).json(Measure);
-                              } else {
-                                return res.status(200).json(Measure);
-                              }
+                              sql =
+                                " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
+                                Measure_ID;
+
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                if (result.length > 0) {
+                                  Measure.Rubric_Name = result[0].Rubric_Name;
+                                }
+
+                                sql =
+                                  "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_ID=E.Rubric_ID AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID AND A.Rubric_Measure_ID=S.Rubric_Measure_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_ID=" +
+                                  Measure.Rubric_ID +
+                                  " AND A.Rubric_Measure_ID=" +
+                                  Rubric_Measure_ID +
+                                  " ORDER BY A.Evaluator_Email, Student_Name ASC ";
+
+                                // console.log(sql);
+                                db.query(sql, (err, result) => {
+                                  if (err) res.status(400).json(err);
+                                  Measure.Unevaluated = [];
+                                  result.forEach(row => {
+                                    let Student_Name = row.Student_Name;
+                                    let Evaluator_Name = row.Evaluator_Name;
+
+                                    let isFound = false;
+
+                                    Measure.Unevaluated.forEach(Evaluator => {
+                                      if (
+                                        Evaluator.Evaluator_Name ==
+                                        Evaluator_Name
+                                      ) {
+                                        Evaluator.Student_List.push(
+                                          Student_Name
+                                        );
+                                        isFound = true;
+                                      }
+                                    });
+                                    if (!isFound) {
+                                      Evaluator = {
+                                        Evaluator_Name: Evaluator_Name,
+                                        Student_List: [Student_Name]
+                                      };
+                                      Measure.Unevaluated.push(Evaluator);
+                                    }
+                                  });
+                                  res.status(200).json(Measure);
+                                });
+                              });
+                            });
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            } else {
+              // for test measure
+
+              sql =
+                " SELECT * FROM TEST_MEASURES WHERE Measure_ID=" + Measure_ID;
+              db.query(sql, (err, result) => {
+                if (err) return res.status(200).json(err);
+                else {
+                  Test_Measure_ID = result[0].Test_Measure_ID;
+                  Measure.End_Date = result[0].End_Date;
+                  Measure.Target = result[0].Target;
+                  Measure.Threshold = result[0].Threshold;
+                  Measure.Achieved_Threshold = result[0].Score;
+                  Measure.Is_Success = result[0].Is_Success;
+                  Measure.Test_Name = result[0].Exam_Name;
+                  Measure.Test_Type = result[0].Test_Type;
+
+                  calculateTestMeasure(Test_Measure_ID);
+                  sql =
+                    "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+                    Test_Measure_ID;
+
+                  db.query(sql, (err, result) => {
+                    // console.log(sql);
+
+                    if (err) throw err;
+                    else {
+                      const Total_Students = result[0].Total;
+                      Measure.Total_Students = Total_Students;
+
+                      //sql to find the count of students with required or better grade
+                      sql =
+                        "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                        Test_Measure_ID +
+                        " AND Student_Avg_Grade>=" +
+                        Measure.Target;
+
+                      db.query(sql, (err, result) => {
+                        // console.log(sql);
+
+                        if (err) throw err;
+                        else {
+                          Measure.Student_Achieved_Target_Count =
+                            result[0].Success_Count;
+
+                          sql =
+                            "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
+                            Test_Measure_ID +
+                            " ORDER BY Student_Name ASC";
+
+                          Measure.Students = [];
+                          db.query(sql, (err, result) => {
+                            if (err) res.status(400).json(err);
+                            // console.log(result);
+
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Measure.Students.push(student);
                             });
 
-                            // console.log(Measure);
+                            sql =
+                              " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
+                              Test_Measure_ID;
+
+                            Measure.Evaluators = [];
+                            db.query(sql, (err, result) => {
+                              if (err) res.status(400).json(err);
+
+                              result.forEach(row => {
+                                evaluator = {
+                                  Evaluator_Email: row.Evaluator_Email,
+                                  Evaluator_Name: row.FullName,
+                                  hasSubmitted: row.Did_Submit
+                                };
+                                Measure.Evaluators.push(evaluator);
+                              });
+                              // console.log(sql);
+                              sql =
+                                "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " ORDER BY S.Student_Name";
+                              db.query(sql, (err, result) => {
+                                if (err) res.status(400).json(err);
+                                Measure.Unevaluated = [];
+
+                                // console.log(sql);
+                                if (
+                                  result.length > 0 &&
+                                  Measure.Evaluators.length > 0
+                                ) {
+                                  Evaluator = {
+                                    Evaluator_Name:
+                                      Measure.Evaluators[0].Evaluator_Name,
+                                    Student_List: []
+                                  };
+                                  result.forEach(row => {
+                                    Evaluator.Student_List.push(
+                                      row.Student_Name
+                                    );
+                                  });
+
+                                  Measure.Unevaluated.push(Evaluator);
+                                  return res.status(200).json(Measure);
+                                } else {
+                                  return res.status(200).json(Measure);
+                                }
+                              });
+
+                              // console.log(Measure);
+                            });
                           });
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
           }
         }
       });

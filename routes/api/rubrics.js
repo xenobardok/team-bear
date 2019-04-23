@@ -108,6 +108,7 @@ router.post(
         rubricFields.Scale = req.body.Scale;
         rubricFields.ScaleSize = db.escape(req.body.Scale.length);
       }
+      console.log(req.body.Scale);
 
       let isVisible = "true";
       let sql =
@@ -161,13 +162,7 @@ router.post(
                   value +
                   ")";
 
-                db.query(newSql, (err, result) => {
-                  if (err)
-                    return res.status(400).json({
-                      message:
-                        "Scales could not be added, Please try again later."
-                    });
-                });
+                db.query(newSql, (err, result) => {});
               });
 
               let empty_var = "";

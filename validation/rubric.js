@@ -29,12 +29,6 @@ module.exports = function validateRubricInput(data) {
     errors.Column_Num = "Number of columns cannot be empty.";
   }
 
-  data.Scale.forEach(scale => {
-    if (isEmpty(scale.label)) {
-      errors.Scale = "Scale label cannot be empty";
-    }
-  });
-
   if (data.Scale.length == 0) {
     errors.Scale = "Scale  cannot be empty.";
   }
