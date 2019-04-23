@@ -72,8 +72,8 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const New_Dept_ID = db.escape(req.body.deptID);
-    const New_Dept_Name = db.escape(req.body.deptName);
+    const New_Dept_ID = req.body.deptID;
+    const New_Dept_Name = req.body.deptName;
 
     let departmentList = [];
     if (isEmpty(New_Dept_ID)) {
@@ -84,6 +84,9 @@ router.post(
         .status(400)
         .json({ Dept_Name: "Department Name cannot be empty" });
     }
+
+    New_Dept_ID = db.escape(New_Dept_ID);
+    New_Dept_Name = db.escape(New_Dept_Name);
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -145,12 +148,13 @@ router.put(
     const dept = db.escape(req.user.dept);
 
     const Department_ID = db.escape(req.params.DepartmentID);
-    const New_Dept_Name = db.escape(req.body.deptName);
+    New_Dept_Name = req.body.deptName;
     if (isEmpty(New_Dept_Name)) {
       return res
         .status(400)
         .json({ Dept_Name: "Department Name cannot be empty" });
     }
+    New_Dept_Name = db.escape(New_Dept_Name);
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -209,11 +213,12 @@ router.put(
     const dept = db.escape(req.user.dept);
 
     const Department_ID = req.params.DepartmentID;
-    const New_Dept_ID = db.escape(req.body.deptID);
+    let New_Dept_ID = req.body.deptID;
 
     if (isEmpty(New_Dept_ID)) {
       return res.status(400).json({ Dept_ID: "Department ID cannot be empty" });
     }
+    New_Dept_ID = db.escape(req.body.deptID);
     let sql =
       "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
       db.escape(email);
@@ -289,7 +294,7 @@ router.put(
 // @desc    Updates the  department id
 // @access  Private
 router.delete(
-  "/:Department_ID/",
+  "/:Department_ID",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
@@ -425,6 +430,7 @@ router.get(
                   .status(400)
                   .json({ Department_ID: "Department Not found" });
               } else {
+                let Dept_ID = db.escape(result[0].Dept_ID);
                 department = {
                   Department_ID: result[0].Department_ID,
                   Dept_ID: result[0].Dept_ID,
@@ -508,7 +514,7 @@ router.post(
                     .status(400)
                     .json({ email: "Department Not found" });
                 } else {
-                  let Dept_ID = result[0].Dept_ID;
+                  let Dept_ID = db.escape(result[0].Dept_ID);
                   sql =
                     "SELECT * FROM Evaluators WHERE Dept_ID=" +
                     Dept_ID +
@@ -702,7 +708,7 @@ router.delete(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
-                let Dept_ID = result[0].Dept_ID;
+                let Dept_ID = db.escape(result[0].Dept_ID);
                 sql =
                   "SELECT * FROM Evaluators  E, PROGRAM_ADMIN  A  WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
                   Dept_ID +
