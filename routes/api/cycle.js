@@ -22,11 +22,11 @@ const updateOutcome = require("../updateOutcome");
 
 const validateUpdateRubric = require("../../validation/rubricMeasure");
 const validateUpdateTest = require("../../validation/testMeasure");
+const isEmpty = require("../../validation/isEmpty");
 
 // @route   GET api/cycle
 // @desc    Gets the lists of all rubrics
 // @access  Private
-const isEmpty = require("../../validation/isEmpty");
 
 router.get(
   "/",
@@ -253,7 +253,15 @@ router.get(
                 Cycle.data.push(outcome);
               });
 
-              return res.status(200).json(Cycle);
+              sql =
+                "UPDATE Evaluators SET Last_Cycle_ID=" +
+                Cycle_ID +
+                " WHERE Email=" +
+                email;
+              db.query(sql, (err, result) => {
+                if (err) res.send(err);
+                return res.status(200).json(Cycle);
+              });
             }
           });
         }
