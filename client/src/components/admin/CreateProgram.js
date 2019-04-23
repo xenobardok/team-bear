@@ -12,10 +12,32 @@ import isEmpty from "../../validation/isEmpty";
 function CreateProgram(props) {
   const [DeptID, changeDeptID] = useState("");
   const [DeptName, changeDeptName] = useState("");
+  const [errors, setErrors] = useState("");
+
   const submitHander = e => {
     e.preventDefault();
     console.log(DeptID, DeptName);
     props.createProgram(DeptID, DeptName);
+
+    let errors;
+    if (isEmpty(DeptID)) {
+      errors = { DeptID: "Department ID cannot be empty" };
+    } else {
+      errors = { DeptID: "" };
+    }
+
+    if (isEmpty(DeptName)) {
+      errors = { ...errors, DeptName: "Department Name cannot be empty" };
+    } else {
+      errors = { ...errors, DeptName: "" };
+    }
+
+    setErrors(errors);
+
+    if (errors.DeptID === "" && errors.DeptName === "") {
+      props.createProgram(DeptID, DeptName);
+      props.onHide();
+    }
   };
   return (
     <Modal

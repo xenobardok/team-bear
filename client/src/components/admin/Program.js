@@ -46,6 +46,14 @@ class Program extends Component {
     this.props.getProgram(programID);
   }
 
+  componentDidUpdate = prevProps => {
+    if (this.props.programs.program !== prevProps.programs.program) {
+      if (this.props.programs.program.deleted) {
+        this.props.history.push("/dashboard/programs");
+      }
+    }
+  };
+
   toggleNewCoordinator = e => {
     this.setState({
       newCoordinator: !this.state.newCoordinator

@@ -6,11 +6,11 @@ export default function Department(props) {
   const [Dept_Name, changeDeptName] = useState(props.Dept_Name);
 
   let saveButtonDeptID = () => {
-    props.updateProgramID(props.Dept_ID, Dept_ID);
+    props.updateProgramID(props.Department_ID, Dept_ID);
     props.toggleDepartmentIDEdit();
   };
   let saveButtonDeptName = () => {
-    props.updateProgramName(props.Dept_ID, Dept_Name);
+    props.updateProgramName(props.Department_ID, Dept_Name);
     props.toggleDepartmentNameEdit();
   };
   let cancelButtonDeptID = () => {

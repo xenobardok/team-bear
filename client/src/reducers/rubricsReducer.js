@@ -1,4 +1,9 @@
-import { GET_RUBRICS, LOADING, GET_SINGLE_RUBRIC } from "../actions/types";
+import {
+  GET_RUBRICS,
+  LOADING,
+  GET_SINGLE_RUBRIC,
+  DELETE_RUBRIC
+} from "../actions/types";
 
 const initialState = {
   allRubrics: null,
@@ -24,6 +29,14 @@ export default function(state = initialState, action) {
         ...state,
         rubric: action.payload,
         loading: false
+      };
+    case DELETE_RUBRIC:
+      return {
+        ...state,
+        rubric: {
+          ...state.rubric,
+          deleted: true
+        }
       };
     default:
       return state;

@@ -4,7 +4,8 @@ import {
   GET_SINGLE_PROGRAM,
   ADD_PROGRAM_ADMIN,
   UPDATE_PROGRAM_ID,
-  UPDATE_PROGRAM_NAME
+  UPDATE_PROGRAM_NAME,
+  DELETE_PROGRAM
 } from "../actions/types";
 
 const initialState = {
@@ -60,6 +61,14 @@ export default function(state = initialState, action) {
           Dept_Name: action.payload.Dept_Name
         },
         loading: false
+      };
+    case DELETE_PROGRAM:
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          deleted: true
+        }
       };
     default:
       return state;

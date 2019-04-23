@@ -178,13 +178,12 @@ export const deleteProgram = deptID => dispatch => {
     .delete(`/api/program/${deptID}`)
     .then(res => {
       console.log(res.data);
+
+      Swal.fire("Deleted!", `${deptID} has been deleted.`, "success");
       dispatch({
         type: DELETE_PROGRAM,
         payload: res.data.admin
       });
-      Swal.fire("Deleted!", `${deptID} has been deleted.`, "success").then(
-        result => console.log(result.value)
-      );
     })
     .catch(err => {
       dispatch({

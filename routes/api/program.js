@@ -120,7 +120,7 @@ router.post(
                   if (err) return res.status(400).json(err);
                   else {
                     newDept = {
-                      Department_ID: Department_ID,
+                      Department_ID: result.insertID,
                       Dept_ID: New_Dept_ID,
                       Dept_Name: New_Dept_Name
                     };
