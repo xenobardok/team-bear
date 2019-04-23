@@ -72,7 +72,7 @@ class Dashboard extends Component {
               <Route exact path="/dashboard/programs" component={AdminTools} />
               <Route
                 exact
-                path="/dashboard/programs/:programID"
+                path="/dashboard/programs/:programID(\d+)"
                 component={Program}
               />
             </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Dropdown, DropdownButton, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
@@ -29,6 +30,23 @@ class CustomToggle extends React.Component {
 }
 
 export default function ThreeDotDropdown(props) {
+  let deleteButtonHandler = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        console.log(props.Department_ID);
+        props.deleteProgram(props.Department_ID);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   return (
     <Dropdown className="dropdown three-dots" alignRight>
       <Dropdown.Toggle id="dropdown-custom-components" as={CustomToggle}>
@@ -42,7 +60,9 @@ export default function ThreeDotDropdown(props) {
         <Dropdown.Item onClick={props.toggleDepartmentNameEdit}>
           Edit Department Name
         </Dropdown.Item>
-        <Dropdown.Item>Delete Program</Dropdown.Item>
+        <Dropdown.Item onClick={deleteButtonHandler}>
+          Delete Program
+        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

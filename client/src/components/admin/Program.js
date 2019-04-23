@@ -23,7 +23,8 @@ import {
   addProgramAdmin,
   removeProgramAdmin,
   updateProgramID,
-  updateProgramName
+  updateProgramName,
+  deleteProgram
 } from "../../actions/programActions";
 import Coordinator from "./Coordinator";
 import classnames from "classnames";
@@ -86,6 +87,8 @@ class Program extends Component {
           <ThreeDotDropdown
             toggleDepartmentIDEdit={this.toggleDepartmentIDEdit}
             toggleDepartmentNameEdit={this.toggleDepartmentNameEdit}
+            deleteProgram={this.props.deleteProgram}
+            Department_ID={program.Department_ID}
           />
           <Department
             {...program}
@@ -202,6 +205,7 @@ export default connect(
     addProgramAdmin,
     removeProgramAdmin,
     updateProgramID,
-    updateProgramName
+    updateProgramName,
+    deleteProgram
   }
 )(Program);

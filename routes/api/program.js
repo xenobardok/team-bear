@@ -72,8 +72,8 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const New_Dept_ID = req.body.deptID;
-    const New_Dept_Name = req.body.deptName;
+    let New_Dept_ID = req.body.deptID;
+    let New_Dept_Name = req.body.deptName;
 
     let departmentList = [];
     if (isEmpty(New_Dept_ID)) {

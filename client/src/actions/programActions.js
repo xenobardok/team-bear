@@ -7,11 +7,12 @@ import {
   GET_SINGLE_PROGRAM,
   ADD_PROGRAM_ADMIN,
   UPDATE_PROGRAM_NAME,
-  UPDATE_PROGRAM_ID
+  UPDATE_PROGRAM_ID,
+  DELETE_PROGRAM
 } from "./types";
 import Swal from "sweetalert2";
 import { toastr } from "react-redux-toastr";
-
+import { Route, Redirect } from "react-router";
 // Get Current Profile
 
 export const getPrograms = () => dispatch => {
@@ -168,5 +169,35 @@ export const updateProgramID = (deptID, newDeptID) => dispatch => {
       });
       if (err.response.data.Dept_ID)
         toastr.error("ERROR!", err.response.data.Dept_ID);
+    });
+};
+
+export const deleteProgram = deptID => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .delete(`/api/program/${deptID}`)
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: DELETE_PROGRAM,
+        payload: res.data.admin
+      });
+      Swal.fire("Deleted!", `${deptID} has been deleted.`, "success").then(
+        result => console.log(result.value)
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+
+      if (err.response.data.Dept_ID) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: err.response.data.Dept_ID
+        });
+      }
     });
 };
