@@ -21,20 +21,27 @@ import { toastr } from "react-redux-toastr";
 import {
   getProgram,
   addProgramAdmin,
-  removeProgramAdmin
+  removeProgramAdmin,
+  updateProgramID,
+  updateProgramName
 } from "../../actions/programActions";
 import Coordinator from "./Coordinator";
 import classnames from "classnames";
+import Department from "./Department";
 library.add(faTrash);
 
 class Program extends Component {
   constructor(props) {
     super(props);
-    this.state = { newCoordinator: false, newCoordinatorEmail: "" };
+    this.state = {
+      newCoordinator: false,
+      newCoordinatorEmail: "",
+      editDepartmentID: false,
+      editDepartmentName: false
+    };
   }
   componentDidMount() {
     let { programID } = this.props.match.params;
-    console.log(programID);
     this.props.getProgram(programID);
   }
 
@@ -48,8 +55,25 @@ class Program extends Component {
     let { programID } = this.props.match.params;
     if (this.state.newCoordinatorEmail) {
       this.props.addProgramAdmin(programID, this.state.newCoordinatorEmail);
+      this.setState({
+        newCoordinatorEmail: "",
+        newCoordinator: false
+      });
     }
   };
+
+  toggleDepartmentIDEdit = () => {
+    this.setState({
+      editDepartmentID: !this.state.editDepartmentID
+    });
+  };
+
+  toggleDepartmentNameEdit = () => {
+    this.setState({
+      editDepartmentName: !this.state.editDepartmentName
+    });
+  };
+
   render() {
     let { loading, program } = this.props.programs;
     let programOutput;
@@ -59,11 +83,19 @@ class Program extends Component {
     } else {
       programOutput = (
         <div>
-          <ThreeDotDropdown />
-          <section>
-            <h4>Department ID: {program.Dept_ID}</h4>
-            <h4>Department Name: {program.Dept_Name}</h4>
-          </section>
+          <ThreeDotDropdown
+            toggleDepartmentIDEdit={this.toggleDepartmentIDEdit}
+            toggleDepartmentNameEdit={this.toggleDepartmentNameEdit}
+          />
+          <Department
+            {...program}
+            editID={this.state.editDepartmentID}
+            editName={this.state.editDepartmentName}
+            toggleDepartmentIDEdit={this.toggleDepartmentIDEdit}
+            toggleDepartmentNameEdit={this.toggleDepartmentNameEdit}
+            updateProgramID={this.props.updateProgramID}
+            updateProgramName={this.props.updateProgramName}
+          />
           <br />
           <section>
             <Table striped bordered hover>
@@ -96,7 +128,7 @@ class Program extends Component {
                     <td>{program.admin.length + 1}</td>
                     <td colSpan="2">
                       <Form.Group controlId="formBasicEmail" as={Row}>
-                        <Col column sm="3">
+                        <Col sm="3">
                           <Form.Label>Email address:</Form.Label>
                         </Col>
                         <Col sm="9">
@@ -110,11 +142,11 @@ class Program extends Component {
                               })
                             }
                             className={classnames("", {
-                              "is-invalid": this.props.errors.Dept_ID
+                              "is-invalid": this.props.errors.email
                             })}
                           />
                           <Form.Control.Feedback type="invalid">
-                            {this.props.errors.Dept_ID}
+                            {this.props.errors.email}
                           </Form.Control.Feedback>
                         </Col>
                       </Form.Group>
@@ -165,5 +197,11 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getProgram, addProgramAdmin, removeProgramAdmin }
+  {
+    getProgram,
+    addProgramAdmin,
+    removeProgramAdmin,
+    updateProgramID,
+    updateProgramName
+  }
 )(Program);

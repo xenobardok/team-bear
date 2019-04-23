@@ -5,7 +5,9 @@ import {
   PROGRAM_LOADING,
   CREATE_PROGRAM,
   GET_SINGLE_PROGRAM,
-  ADD_PROGRAM_ADMIN
+  ADD_PROGRAM_ADMIN,
+  UPDATE_PROGRAM_NAME,
+  UPDATE_PROGRAM_ID
 } from "./types";
 import Swal from "sweetalert2";
 import { toastr } from "react-redux-toastr";
@@ -118,5 +120,53 @@ export const removeProgramAdmin = (deptID, adminEmail) => dispatch => {
           text: err.response.data
         });
       }
+    });
+};
+
+export const updateProgramName = (deptID, newDeptName) => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .put(`/api/program/${deptID}/update/name`, { deptName: newDeptName })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: UPDATE_PROGRAM_NAME,
+        payload: res.data
+      });
+      toastr.success(
+        "Department Name Updated!",
+        "The new department name is " + newDeptName
+      );
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const updateProgramID = (deptID, newDeptID) => dispatch => {
+  // dispatch(setProgramLoading());
+  axios
+    .put(`/api/program/${deptID}/update/id`, { deptID: newDeptID })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: UPDATE_PROGRAM_ID,
+        payload: res.data
+      });
+      toastr.success(
+        "Department ID Updated!",
+        "The new department name is " + newDeptID
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      if (err.response.data.Dept_ID)
+        toastr.error("ERROR!", err.response.data.Dept_ID);
     });
 };

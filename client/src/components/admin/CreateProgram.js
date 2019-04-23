@@ -34,7 +34,7 @@ function CreateProgram(props) {
         <Modal.Body>
           <Form.Group as={Row} controlId="formHorizontalRubric">
             <Form.Label column sm={4}>
-              Program Abbreviation:
+              Department ID:
             </Form.Label>
             <Col sm={8}>
               <Form.Control
@@ -55,7 +55,7 @@ function CreateProgram(props) {
 
           <Form.Group as={Row} controlId="formHorizontalRubric">
             <Form.Label column sm={4}>
-              Program Full Form:
+              Department Name:
             </Form.Label>
             <Col sm={8}>
               <Form.Control
