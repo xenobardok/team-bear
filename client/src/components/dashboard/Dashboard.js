@@ -22,6 +22,7 @@ import Evaluators from "../evaluators/Evaluators";
 import ReportContents from "../reports/ReportContents";
 import AdminTools from "../admin/AdminTools";
 import Program from "../admin/Program";
+import ViewLogs from "./ViewLogs";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -54,6 +55,7 @@ class Dashboard extends Component {
               <Route path="/dashboard" component={DashboardContents} />
               <Route exact path="/dashboard/rubrics" component={Rubrics} />
               <Route exact path="/dashboard/tasks" component={Tasks} />
+              <Route exact path="/dashboard/logs" component={ViewLogs} />
               <Route
                 exact
                 path="/dashboard/evaluators"
