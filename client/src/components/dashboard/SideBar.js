@@ -118,9 +118,9 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="tasks" />
             &nbsp;&nbsp;My Tasks
           </Link>
-          <Link className="menu-item" to="/inbox">
+          <Link className="menu-item" to="/dashboard/logs">
             <FontAwesomeIcon icon="envelope" />
-            &nbsp;&nbsp;Inbox [NW]
+            &nbsp;&nbsp;Activity Logs
           </Link>
         </Menu>
       );

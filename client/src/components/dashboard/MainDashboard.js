@@ -22,6 +22,14 @@ class MainDashboard extends Component {
         </Link>
       );
     }
+
+    let tasks = (
+      <Link to={`/dashboard/tasks`}>
+        <div className="latestCycle">
+          <p>My Tasks</p>
+        </div>
+      </Link>
+    );
     return (
       <div>
         <Jumbotron fluid>
@@ -35,10 +43,17 @@ class MainDashboard extends Component {
           </Container>
         </Jumbotron>
         <Jumbotron fluid>
-          <Container>
-            <h5>Link to your recently working cycle:</h5>
-            {latestCycle}
-          </Container>
+          {auth.user.type === "Admin" ? (
+            <Container>
+              <h5>Link to your recently working cycle:</h5>
+              {latestCycle}
+            </Container>
+          ) : (
+            <Container>
+              <h5>Link to your tasks:</h5>
+              {tasks}
+            </Container>
+          )}
         </Jumbotron>
 
         <ViewLogs from="dashboard" />
