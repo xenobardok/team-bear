@@ -293,65 +293,92 @@ router.get(
                       }
                     });
                     Measure_Index = -1;
+
                     sql =
-                      "SELECT Outcome_ID FROM MEASURES WHERE Measure_ID=" +
+                      "SELECT Outcome_ID,Cycle_ID FROM MEASURES NATURAL JOIN OUTCOMES WHERE Measure_ID=" +
                       Measure_ID;
+                    // console.log(sql);
                     db.query(sql, (err, result) => {
                       let Outcome_ID = result[0].Outcome_ID;
+                      let Cycle_ID = result[0].Cycle_ID;
 
                       sql =
-                        "SELECT * FROM MEASURES WHERE Outcome_ID=" +
-                        Outcome_ID +
-                        " ORDER BY Measure_Index";
+                        "SELECT * FROM OUTCOMES WHERE Cycle_ID=" +
+                        Cycle_ID +
+                        " ORDER BY Outcome_Index";
 
                       db.query(sql, (err, result) => {
+                        if (err) {
+                          errors.outcome =
+                            "There was error loading the evaluation";
+                          return res.status(400).json(errors);
+                        }
                         let found = false;
                         let i = 0;
 
                         while (i < result.length && !found) {
-                          if (result[i].Measure_ID == Measure_ID) {
+                          if (result[i].Outcome_ID == Outcome_ID) {
                             found = true;
                           }
-
                           i++;
                         }
-
-                        Measure_Index = i;
-
-                        Measure.Measure_Index = Measure_Index;
+                        Measure.Outcome_Index = i;
 
                         sql =
-                          "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
-                          Test_Measure_ID;
+                          "SELECT * FROM MEASURES WHERE Outcome_ID=" +
+                          Outcome_ID +
+                          " ORDER BY Measure_Index";
 
-                        // console.log(sql);
                         db.query(sql, (err, result) => {
-                          if (err) {
-                            errors.outcome =
-                              "There was error loading the evaluation";
-                            return res.status(400).json(errors);
-                          } else {
-                            Measure.Total_Students = result[0].Total;
+                          let found = false;
+                          let i = 0;
 
-                            //sql to find the count of students with required or better grade
-                            sql =
-                              "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                              Test_Measure_ID +
-                              " AND Student_Avg_Grade>=" +
-                              Target;
+                          while (i < result.length && !found) {
+                            if (result[i].Measure_ID == Measure_ID) {
+                              found = true;
+                            }
 
-                            db.query(sql, (err, result) => {
-                              if (err) {
-                                errors.outcome =
-                                  "There was error loading the report";
-                                return res.status(400).json(errors);
-                              } else {
-                                Measure.Success_Count = result[0].Success_Count;
-
-                                return res.status(200).json(Measure);
-                              }
-                            });
+                            i++;
                           }
+
+                          Measure_Index = i;
+
+                          Measure.Measure_Index = Measure_Index;
+
+                          sql =
+                            "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+                            Test_Measure_ID;
+
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            if (err) {
+                              errors.outcome =
+                                "There was error loading the evaluation";
+                              return res.status(400).json(errors);
+                            } else {
+                              Measure.Total_Students = result[0].Total;
+
+                              //sql to find the count of students with required or better grade
+                              sql =
+                                "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Student_Avg_Grade>=" +
+                                Target;
+
+                              db.query(sql, (err, result) => {
+                                if (err) {
+                                  errors.outcome =
+                                    "There was error loading the report";
+                                  return res.status(400).json(errors);
+                                } else {
+                                  Measure.Success_Count =
+                                    result[0].Success_Count;
+
+                                  return res.status(200).json(Measure);
+                                }
+                              });
+                            }
+                          });
                         });
                       });
                     });
@@ -400,8 +427,7 @@ router.get(
         Outcome.Outcome_Success = result[0].Outcome_Success;
 
         let Outcome_Index = -1;
-        let sql =
-          "SELECT Cycle_ID FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
+        sql = "SELECT Cycle_ID FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
 
         db.query(sql, (err, result) => {
           if (result.length > 0) {
