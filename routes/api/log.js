@@ -148,7 +148,7 @@ router.get(
               Day = dateformat(result[i].Time, "mmmm dd, yyyy");
               Time = dateformat(result[i].Time, "h:MM TT");
 
-              log = "You " + result[i].Message;
+              log = "You" + result[i].Message;
 
               alog = {
                 Day: Day,

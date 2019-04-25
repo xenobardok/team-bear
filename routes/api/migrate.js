@@ -29,6 +29,10 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Old_Cycle_ID = req.params.cycleID;
     let Cycle_Name = db.escape(req.body.Cycle_Name);
+
+    if (isEmpty(req.body.Cycle_Name)) {
+      return res.status(400).json({ Cycle_Name: "Cycle name cannot be empty" });
+    }
     let errors = {};
 
     if (type == "Admin") {
