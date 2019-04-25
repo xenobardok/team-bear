@@ -679,6 +679,7 @@ router.get(
               "Measure",
               "Number of Evaluation",
               "Number Meeting Criteria",
+              "Percentage  Meeting Crtieria",
               "Result"
             ];
             Cycle.Outcomes = [];
