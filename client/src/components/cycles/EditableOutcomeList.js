@@ -199,7 +199,11 @@ class EditableOutcomeList extends Component {
                   className="edit"
                   onClick={this.editHandler}
                 /> */}
-                <ThreeDotCycle editHandler={this.editHandler} type="Outcome" />
+                <ThreeDotCycle
+                  editHandler={this.editHandler}
+                  type="Outcome"
+                  Outcome_ID={this.props.value.Outcome_ID}
+                />
               </div>
             </OverlayTrigger>
           </ListGroup>
