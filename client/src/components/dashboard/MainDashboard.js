@@ -1,15 +1,80 @@
 import React, { Component } from "react";
 import { Jumbotron, Container } from "react-bootstrap";
-
-export default class MainDashboard extends Component {
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { recentCycle } from "../../actions/authActions";
+import isEmpty from "../../validation/isEmpty";
+import ViewLogs from "./ViewLogs";
+class MainDashboard extends Component {
+  componentDidMount() {
+    this.props.recentCycle();
+  }
   render() {
+    let { auth } = this.props;
+    let latestCycle = "";
+    if (!isEmpty(auth.dashboard)) {
+      latestCycle = (
+        <Link to={`/dashboard/cycles/${auth.dashboard.Cycle_ID}`}>
+          <div className="latestCycle">
+            <p>{auth.dashboard.Cycle_Name}</p>
+          </div>
+        </Link>
+      );
+    }
+
+    let tasks = (
+      <Link to={`/dashboard/tasks`}>
+        <div className="latestCycle">
+          <p>My Tasks</p>
+        </div>
+      </Link>
+    );
     return (
-      <Jumbotron fluid>
-        <Container>
-          <h1>Hello!</h1>
-          <p>This is your dashboard</p>
-        </Container>
-      </Jumbotron>
+      <div>
+        <Jumbotron fluid>
+          <Container>
+            <h1>Hello {auth.user.firstname},</h1>
+            {auth.user.type === "Admin" ? (
+              <p>You are a coordinator of {auth.user.dept} department!</p>
+            ) : (
+              <p>You are a evaluator of {auth.user.dept} department!</p>
+            )}
+          </Container>
+        </Jumbotron>
+        <Jumbotron fluid>
+          {auth.user.type === "Admin" ? (
+            <Container>
+              <h5>Link to your recently working cycle:</h5>
+              {latestCycle}
+            </Container>
+          ) : (
+            <Container>
+              <h5>Link to your tasks:</h5>
+              {tasks}
+            </Container>
+          )}
+        </Jumbotron>
+
+        <ViewLogs from="dashboard" />
+      </div>
     );
   }
 }
+
+MainDashboard.propTypes = {
+  recentCycle: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors,
+  logs: state.logs
+});
+
+export default connect(
+  mapStateToProps,
+  { recentCycle }
+)(MainDashboard);
