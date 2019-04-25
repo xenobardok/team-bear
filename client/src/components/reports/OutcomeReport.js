@@ -5,7 +5,6 @@ import { Table, Container } from "react-bootstrap";
 import PropTypes from "prop-types";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-import Students from "./Students";
 
 class OutcomeReport extends Component {
   componentDidMount() {

@@ -275,7 +275,10 @@ class Measure extends Component {
     } else {
       measure = (
         <div>
-          <ThreeDotDropdown Measure_ID={this.state.Measure_ID} />
+          <ThreeDotDropdown
+            Measure_ID={this.state.Measure_ID}
+            type={Measure_Type}
+          />
           <div className="measure-label">
             <Badge variant="primary">
               <span style={{ fontWeight: "400" }}>Measure Label</span>

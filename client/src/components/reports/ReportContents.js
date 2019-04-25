@@ -7,6 +7,7 @@ import MainDashboard from "../dashboard/MainDashboard";
 import MainReport from "./MainReport";
 import MeasureReport from "./MeasureReport";
 import OutcomeReport from "./OutcomeReport";
+import TestMeasureReport from "./TestMeasureReport";
 // import NewCycles from "../cycles/NewCycles";
 
 class ReportContents extends Component {
@@ -21,8 +22,13 @@ class ReportContents extends Component {
         />
         <Route
           exact
-          path="/dashboard/reports/measure/:id(\d+)"
+          path="/dashboard/reports/rubricMeasure/:id(\d+)"
           component={MeasureReport}
+        />
+        <Route
+          exact
+          path="/dashboard/reports/testMeasure/:id(\d+)"
+          component={TestMeasureReport}
         />
         {/* <Route path="/dashboard/cycles/:id(\d+)" component={ShowCycle} /> */}
       </Switch>

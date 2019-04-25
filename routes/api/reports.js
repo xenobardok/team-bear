@@ -20,8 +20,6 @@ const validateUpdateTest = require("../../validation/testMeasure");
 
 const isEmpty = require("../../validation/isEmpty");
 
-var request = require("request");
-
 // @route   GET api/reports/measure/:MeasureID
 // @desc    get the reports of a given measure
 // @access  Private route

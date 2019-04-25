@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Students(props) {
+export default function RubricStudent(props) {
   let avgScoreColSpan = 0;
   return (
     <>

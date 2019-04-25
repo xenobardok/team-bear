@@ -532,6 +532,10 @@ section#evaluators .singleEvaluator:hover{
   width: 50%;
 }
 
+table.score{
+  width: 600px;
+}
+
 .program table td{
   padding:.75rem!important;
   /* width: 25%; */
