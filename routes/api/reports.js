@@ -20,8 +20,6 @@ const validateUpdateTest = require("../../validation/testMeasure");
 
 const isEmpty = require("../../validation/isEmpty");
 
-var request = require("request");
-
 // @route   GET api/reports/measure/:MeasureID
 // @desc    get the reports of a given measure
 // @access  Private route
@@ -249,6 +247,7 @@ router.get(
                 Measure.Is_Success = result[0].Is_Success;
                 Measure.Test_Name = result[0].Exam_Name;
                 Measure.Test_Type = result[0].Test_Type;
+                Target = result[0].Target;
 
                 if (Measure.Test_Type == "pass/fail") {
                   if (Measure.Target == 0) {
@@ -320,7 +319,40 @@ router.get(
                         Measure_Index = i;
 
                         Measure.Measure_Index = Measure_Index;
-                        return res.status(200).json(Measure);
+
+                        sql =
+                          "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+                          Test_Measure_ID;
+
+                        // console.log(sql);
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            errors.outcome =
+                              "There was error loading the evaluation";
+                            return res.status(400).json(errors);
+                          } else {
+                            Measure.Total_Students = result[0].Total;
+
+                            //sql to find the count of students with required or better grade
+                            sql =
+                              "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                              Test_Measure_ID +
+                              " AND Student_Avg_Grade>=" +
+                              Target;
+
+                            db.query(sql, (err, result) => {
+                              if (err) {
+                                errors.outcome =
+                                  "There was error loading the report";
+                                return res.status(400).json(errors);
+                              } else {
+                                Measure.Success_Count = result[0].Success_Count;
+
+                                return res.status(200).json(Measure);
+                              }
+                            });
+                          }
+                        });
                       });
                     });
                   }
