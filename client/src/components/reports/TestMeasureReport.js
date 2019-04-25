@@ -19,62 +19,46 @@ class TestReport extends Component {
     if (loading || isEmpty(report)) {
       tableContent = <Spinner />;
     } else {
-      title = <h4 className="text-center">{report.Measure_Label}</h4>;
-      if (report.Test_Type === "score") {
-        tableContent = (
-          <Table striped bordered hover className="text-center report score">
-            <thead className="">
-              <tr>
-                <td>Student Name</td>
-                <td>Student ID</td>
-                <td>Score</td>
-              </tr>
-            </thead>
-            <tbody>
-              <ScoreStudent data={report.data} />
-              <tr>
-                <td colSpan="2">Total</td>
-                <td>{report.data.length}</td>
-              </tr>
-              <tr>
+      title = (
+        <h4 className="text-center">
+          Outcome , Measure: {report.Measure_Label}
+        </h4>
+      );
+      tableContent = (
+        <Table striped bordered hover className="text-center report score">
+          <thead className="">
+            <tr>
+              <td>Student Name</td>
+              <td>Student ID</td>
+              <td>Score</td>
+            </tr>
+          </thead>
+          <tbody>
+            <ScoreStudent data={report.data} />
+            <tr>
+              <td colSpan="2">Total</td>
+              <td>{report.data.length}</td>
+            </tr>
+            <tr>
+              {report.Test_Type === "score" ? (
                 <td colSpan="2">Number greater than {report.Target}</td>
-                <td>coming soon</td>
-              </tr>
-              <tr>
+              ) : (
+                <td colSpan="2">Number of Students {report.Target}ed</td>
+              )}
+              <td>{report.Success_Count}</td>
+            </tr>
+            <tr>
+              {report.Test_Type === "score" ? (
                 <td colSpan="2">Percentage greater than {report.Target}</td>
-                <td>{report.Achieved_Threshold}</td>
-              </tr>
-            </tbody>
-          </Table>
-        );
-      } else if (report.Test_Type === "pass/fail") {
-        tableContent = (
-          <Table striped bordered hover className="text-center report score">
-            <thead className="">
-              <tr>
-                <td>Student Name</td>
-                <td>Student ID</td>
-                <td>Score</td>
-              </tr>
-            </thead>
-            <tbody>
-              <ScoreStudent data={report.data} />
-              <tr>
-                <td colSpan="2">Total</td>
-                <td>{report.data.length}</td>
-              </tr>
-              <tr>
-                <td colSpan="2">Number greater than {report.Target}</td>
-                <td>coming soon</td>
-              </tr>
-              <tr>
-                <td colSpan="2">Percentage greater than {report.Target}</td>
-                <td>{Math.round(report.Achieved_Threshold * 100) / 100}</td>
-              </tr>
-            </tbody>
-          </Table>
-        );
-      }
+              ) : (
+                <td colSpan="2">Percentage of Students {report.Target}ed</td>
+              )}
+
+              <td>{Math.round(report.Achieved_Threshold * 100) / 100}</td>
+            </tr>
+          </tbody>
+        </Table>
+      );
     }
     return (
       <Container className="single-measure">
