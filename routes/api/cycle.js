@@ -92,6 +92,39 @@ router.get(
   }
 );
 
+// @route   GET api/cycle/submitted
+// @desc    Gets the lists of all submitted rubrics
+// @access  Private
+router.get(
+  "/submitted",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    let sql =
+      "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = " +
+      dept +
+      " AND isSubmitted='true' order by Dept_ID DESC";
+    db.query(sql, (err, result) => {
+      var cycles = [];
+      if (err) return res.send(err);
+      else if (result.length > 0) {
+        result.forEach(row => {
+          aCycle = {
+            Cycle_ID: row.Cycle_ID,
+            Cycle_Name: row.Cycle_Name,
+            Is_Submitted: row.Is_Submitted
+          };
+          cycles.push(aCycle);
+        });
+      }
+      res.json(cycles);
+    });
+  }
+);
+
 // @route   PUT api/cycle/:cycleID/submit
 // @desc    Gets the lists of all active rubrics
 // @access  Private
@@ -242,14 +275,16 @@ router.get(
           db.query(sql, (err, result) => {
             if (err) res.send(err);
             else {
+              i = 1;
               result.forEach(row => {
                 outcome = {
                   Outcome_ID: row.Outcome_ID,
                   Outcome_Name: row.Outcome_Name,
-                  Outcome_Index: row.Outcome_Index,
-                  Outcome_Success: row.Outcome_Success
+                  Class_Factors: row.Class_Factors,
+                  Outcome_Success: row.Outcome_Success,
+                  Outcome_Index: i
                 };
-
+                i++;
                 Cycle.data.push(outcome);
               });
 
@@ -397,6 +432,7 @@ router.post(
     const Cycle_ID = db.escape(req.params.cycleID);
     const Class_Factors = db.escape(req.body.Class_Factors);
     let Outcome_Name = req.body.Outcome_Name;
+
     const errors = {};
     if (type == "Admin") {
       let sql =
@@ -449,7 +485,6 @@ router.post(
                       "," +
                       Class_Factors +
                       ")";
-
                     db.query(sql, (err, result) => {
                       if (err)
                         return res
@@ -650,15 +685,17 @@ router.get(
           db.query(sql, (err, result) => {
             if (err) res.send(err);
             else {
+              i = 1;
               result.forEach(row => {
                 measure = {
                   Measure_ID: row.Measure_ID,
                   Measure_Name: row.Measure_label,
-                  Measure_Index: row.Measure_Index,
+                  Measure_Index: i,
                   Measure_type: row.Measure_type,
                   Measure_Success: row.isSuccess
                 };
                 updateOutcome(row.Measure_ID);
+                i++;
                 Outcome.data.push(measure);
               });
 
