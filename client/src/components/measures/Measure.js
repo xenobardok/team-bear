@@ -138,7 +138,6 @@ class Measure extends Component {
     console.log(id);
     this.props.rubrics.allRubrics.map(rubric => {
       if (Number(rubric.Rubric_ID) === Number(id)) {
-        console.log(rubric.Scales);
         scales = rubric.Scales;
       }
     });
@@ -198,7 +197,7 @@ class Measure extends Component {
 
   fileUploadHandler = file => {
     if (file !== "") {
-      let { id, outcomeID, measureID } = this.props.match.params;
+      let { id, outcomeID } = this.props.match.params;
       const data = new FormData();
       data.append("students", file);
       this.props.addStudentsFromCSV(id, outcomeID, this.state.Measure_ID, data);
@@ -211,7 +210,7 @@ class Measure extends Component {
     }
   };
   removeStudentButton = Student_ID => {
-    let { id, outcomeID, measureID } = this.props.match.params;
+    let { id, outcomeID } = this.props.match.params;
     this.props.removeStudent(id, outcomeID, this.state.Measure_ID, Student_ID);
   };
 
@@ -275,7 +274,10 @@ class Measure extends Component {
     } else {
       measure = (
         <div>
-          <ThreeDotDropdown Measure_ID={this.state.Measure_ID} />
+          <ThreeDotDropdown
+            Measure_ID={this.state.Measure_ID}
+            type={Measure_Type}
+          />
           <div className="measure-label">
             <Badge variant="primary">
               <span style={{ fontWeight: "400" }}>Measure Label</span>

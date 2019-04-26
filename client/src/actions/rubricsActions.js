@@ -7,7 +7,6 @@ import {
   SET_DATA_VALUE,
   SET_MEASURE_VALUE,
   RUBRICS_BUTTON_LOADING,
-  CHANGE_RUBRIC_WEIGHT,
   DELETE_RUBRIC
 } from "./types";
 import { toastr } from "react-redux-toastr";

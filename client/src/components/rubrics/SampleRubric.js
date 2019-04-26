@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, FormControl, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 export default function SampleRubric(props) {
   let createTable = () => {
     let table = [];
@@ -9,7 +9,7 @@ export default function SampleRubric(props) {
       let children = [];
       //Inner loop to create children
       for (let j = 0; j < props.Column_Num; j++) {
-        if (j == 0) {
+        if (j === 0) {
           children.push(
             <td className="borderedCell text-center measureTitle" key={i + j}>
               Criteria #{i + 1}

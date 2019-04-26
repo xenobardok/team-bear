@@ -1,6 +1,5 @@
 import React from "react";
-import { Dropdown, DropdownButton, FormControl } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Dropdown } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +12,6 @@ class CustomToggle extends React.Component {
 
     this.handleClick = this.handleClick.bind(this);
   }
-
   handleClick(e) {
     e.preventDefault();
 

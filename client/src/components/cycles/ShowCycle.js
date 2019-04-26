@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Link } from "react-router-dom";
+import { Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
@@ -16,7 +16,6 @@ import {
   FormControl,
   ButtonGroup
 } from "react-bootstrap";
-import isEmpty from "../../validation/isEmpty";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
 import classnames from "classnames";
@@ -26,7 +25,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 library.add(faPlus, faEdit);
 
-let createOutcome;
 class ShowCycle extends Component {
   constructor(props) {
     super(props);

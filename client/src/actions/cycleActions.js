@@ -4,7 +4,6 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  GET_MEASURES,
   CREATE_CYCLE
 } from "./types";
 import { toastr } from "react-redux-toastr";
@@ -18,6 +17,25 @@ export const getCycles = () => dispatch => {
       payload: res.data
     })
   );
+};
+export const updateCycleName = (cycleID, Cycle_Name) => dispatch => {
+  dispatch(setCycleLoading());
+  axios
+    .put(`/api/cycle/${cycleID}`, { Cycle_Name: Cycle_Name })
+    .then(res => {
+      dispatch(getCyclesWithoutLoading());
+      toastr.success(
+        "Cycle Name Updated!",
+        "The new cycle name is " + Cycle_Name
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      toastr.error("Cycle Name Update Error!", err.response.data.error);
+    });
 };
 
 export const getCyclesWithoutLoading = () => dispatch => {
@@ -79,9 +97,10 @@ export const createCycle = cycleName => dispatch => {
     });
 };
 
-export const migrateCycle = migrateCycleID => dispatch => {
+export const migrateCycle = (Cycle_Name, migrateCycleID) => dispatch => {
+  console.log(Cycle_Name, migrateCycleID);
   axios
-    .post(`/api/migrate/cycle/${migrateCycleID}`)
+    .post(`/api/migrate/cycle/${migrateCycleID}`, { Cycle_Name: Cycle_Name })
     .then(res => {
       dispatch(getCyclesWithoutLoading());
       toastr.success(
@@ -89,12 +108,38 @@ export const migrateCycle = migrateCycleID => dispatch => {
         "Cycle migration completed successfully!"
       );
     })
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+      toastr.error("Cycle Migration Error!", err.response.data.error);
+    });
+};
+
+export const submitCycle = CycleID => dispatch => {
+  console.log(CycleID);
+  axios
+    .put(`/api/cycle/${CycleID}/submit`)
+    .then(res => {
+      dispatch(getCyclesWithoutLoading());
+      Swal.fire(
+        "Cycle Submitted!",
+        "Please view the reports from the Reports link on the sidebar!",
+        "success"
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      Swal.fire({
+        type: "error",
+        title: "Oops...",
+        text: err.response.data.error
+      });
+    });
 };
 
 export const deleteCycle = cycleID => dispatch => {
@@ -112,6 +157,7 @@ export const deleteCycle = cycleID => dispatch => {
           text: "The cycle contains outcomes. Please delete them first!"
         });
       }
+      console.log(err.response.data);
     });
 };
 

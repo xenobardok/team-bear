@@ -297,32 +297,85 @@ router.delete(
         else {
           if (result.length < 1) {
             return res.status(404).json({ error: "Cycle Not Found" });
-          }
+          } else {
+            sql =
+              "SELECT * FROM OUTCOMES WHERE Cycle_ID = " +
+              Cycle_ID +
+              " ORDER BY Outcome_Index";
 
-          sql =
-            "SELECT * FROM OUTCOMES WHERE Cycle_ID = " +
-            Cycle_ID +
-            " ORDER BY Outcome_Index";
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                if (result.length > 0) {
+                  return res
+                    .status(404)
+                    .json({ Outcomes: "Please delete outcomes first" });
+                } else {
+                  sql =
+                    "DELETE FROM ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
 
-          db.query(sql, (err, result) => {
-            if (err) res.send(err);
-            else {
-              if (result.length > 0) {
-                return res
-                  .status(404)
-                  .json({ Outcomes: "Please delete outcomes first" });
-              } else {
-                sql = "DELETE FROM ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
-
-                db.query(sql, (err, result) => {
-                  if (err) return res.status(400).json(err);
-                  else {
-                    return res.status(200).json({ message: "Cycle deleted" });
-                  }
-                });
+                  db.query(sql, (err, result) => {
+                    // console.log(sql);
+                    if (err) return res.status(400).json(err);
+                    else {
+                      return res.status(200).json({ message: "Cycle deleted" });
+                    }
+                  });
+                }
               }
-            }
-          });
+            });
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+// @route   PUT api/cycle/cycle:handle
+// @desc    Update a cycle name
+// @access  Private route
+router.put(
+  "/:handle",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    const Cycle_Name = db.escape(req.body.Cycle_Name);
+
+    if (type == "Admin") {
+      const Cycle_ID = req.params.handle;
+      const Cycle = {};
+
+      let sql =
+        "SELECT * FROM ASSESSMENT_CYCLE WHERE DEPT_ID =" +
+        dept +
+        " AND Cycle_ID = " +
+        Cycle_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) res.send(err);
+        else {
+          if (result.length < 1) {
+            return res.status(404).json({ error: "Cycle Not Found" });
+          } else {
+            sql =
+              "UPDATE  ASSESSMENT_CYCLE SET Cycle_Name=" +
+              Cycle_Name +
+              " WHERE Cycle_ID=" +
+              Cycle_ID;
+
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+              else {
+                return res
+                  .status(200)
+                  .json({ Cycle_ID: Cycle_ID, Cycle_Name: Cycle_Name });
+              }
+            });
+          }
         }
       });
     } else {

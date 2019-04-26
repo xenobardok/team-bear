@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown, DropdownButton, FormControl } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,12 +36,22 @@ export default function ThreeDotDropdown(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Link
-          to={"/dashboard/reports/measure/" + props.Measure_ID}
-          className="dropdown-item"
-        >
-          Generate Report
-        </Link>
+        {props.type === "rubric" ? (
+          <Link
+            to={"/dashboard/reports/rubricMeasure/" + props.Measure_ID}
+            className="dropdown-item"
+          >
+            Generate Report
+          </Link>
+        ) : null}
+        {props.type === "test" ? (
+          <Link
+            to={"/dashboard/reports/testMeasure/" + props.Measure_ID}
+            className="dropdown-item"
+          >
+            Generate Report
+          </Link>
+        ) : null}
       </Dropdown.Menu>
     </Dropdown>
   );

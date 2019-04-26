@@ -1,4 +1,9 @@
-import { GENERATE_MEASURE_REPORT, REPORT_LOADING } from "../actions/types";
+import {
+  GENERATE_MEASURE_REPORT,
+  REPORT_LOADING,
+  GENERATE_OUTCOME_REPORT,
+  GENERATE_CYCLE_REPORT
+} from "../actions/types";
 
 const initialState = {
   report: null,
@@ -18,7 +23,18 @@ export default function(state = initialState, action) {
         loading: false,
         report: action.payload
       };
-
+    case GENERATE_OUTCOME_REPORT:
+      return {
+        ...state,
+        loading: false,
+        report: action.payload
+      };
+    case GENERATE_CYCLE_REPORT:
+      return {
+        ...state,
+        loading: false,
+        report: action.payload
+      };
     default:
       return state;
   }

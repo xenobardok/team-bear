@@ -901,7 +901,7 @@ router.post(
             return res.status(400).json(errors);
           }
           message =
-            " have been evlauted the rubric  " +
+            " have evlauted the rubric  " +
             Rubric_Name +
             " of the class " +
             Class_Name +

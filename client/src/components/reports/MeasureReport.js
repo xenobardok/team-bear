@@ -5,7 +5,7 @@ import { Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-import Students from "./Students";
+import RubricStudent from "./RubricStudent";
 
 class MeasureReport extends Component {
   componentDidMount() {
@@ -41,7 +41,7 @@ class MeasureReport extends Component {
             </tr>
           </thead>
           <tbody>
-            <Students data={report.data} Class_Name={report.Class_Name} />
+            <RubricStudent data={report.data} Class_Name={report.Class_Name} />
             <tr>
               <td colSpan={report.header.length + 2}>&nbsp;</td>
             </tr>

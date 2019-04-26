@@ -247,6 +247,7 @@ router.get(
                 Measure.Is_Success = result[0].Is_Success;
                 Measure.Test_Name = result[0].Exam_Name;
                 Measure.Test_Type = result[0].Test_Type;
+                Target = result[0].Target;
 
                 if (Measure.Test_Type == "pass/fail") {
                   if (Measure.Target == 0) {
@@ -292,33 +293,93 @@ router.get(
                       }
                     });
                     Measure_Index = -1;
+
                     sql =
-                      "SELECT Outcome_ID FROM MEASURES WHERE Measure_ID=" +
+                      "SELECT Outcome_ID,Cycle_ID FROM MEASURES NATURAL JOIN OUTCOMES WHERE Measure_ID=" +
                       Measure_ID;
+                    // console.log(sql);
                     db.query(sql, (err, result) => {
                       let Outcome_ID = result[0].Outcome_ID;
+                      let Cycle_ID = result[0].Cycle_ID;
 
                       sql =
-                        "SELECT * FROM MEASURES WHERE Outcome_ID=" +
-                        Outcome_ID +
-                        " ORDER BY Measure_Index";
+                        "SELECT * FROM OUTCOMES WHERE Cycle_ID=" +
+                        Cycle_ID +
+                        " ORDER BY Outcome_Index";
 
                       db.query(sql, (err, result) => {
+                        if (err) {
+                          errors.outcome =
+                            "There was error loading the evaluation";
+                          return res.status(400).json(errors);
+                        }
                         let found = false;
                         let i = 0;
 
                         while (i < result.length && !found) {
-                          if (result[i].Measure_ID == Measure_ID) {
+                          if (result[i].Outcome_ID == Outcome_ID) {
                             found = true;
                           }
-
                           i++;
                         }
+                        Measure.Outcome_Index = i;
 
-                        Measure_Index = i;
+                        sql =
+                          "SELECT * FROM MEASURES WHERE Outcome_ID=" +
+                          Outcome_ID +
+                          " ORDER BY Measure_Index";
 
-                        Measure.Measure_Index = Measure_Index;
-                        return res.status(200).json(Measure);
+                        db.query(sql, (err, result) => {
+                          let found = false;
+                          let i = 0;
+
+                          while (i < result.length && !found) {
+                            if (result[i].Measure_ID == Measure_ID) {
+                              found = true;
+                            }
+
+                            i++;
+                          }
+
+                          Measure_Index = i;
+
+                          Measure.Measure_Index = Measure_Index;
+
+                          sql =
+                            "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+                            Test_Measure_ID;
+
+                          // console.log(sql);
+                          db.query(sql, (err, result) => {
+                            if (err) {
+                              errors.outcome =
+                                "There was error loading the evaluation";
+                              return res.status(400).json(errors);
+                            } else {
+                              Measure.Total_Students = result[0].Total;
+
+                              //sql to find the count of students with required or better grade
+                              sql =
+                                "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                                Test_Measure_ID +
+                                " AND Student_Avg_Grade>=" +
+                                Target;
+
+                              db.query(sql, (err, result) => {
+                                if (err) {
+                                  errors.outcome =
+                                    "There was error loading the report";
+                                  return res.status(400).json(errors);
+                                } else {
+                                  Measure.Success_Count =
+                                    result[0].Success_Count;
+
+                                  return res.status(200).json(Measure);
+                                }
+                              });
+                            }
+                          });
+                        });
                       });
                     });
                   }
@@ -366,8 +427,7 @@ router.get(
         Outcome.Outcome_Success = result[0].Outcome_Success;
 
         let Outcome_Index = -1;
-        let sql =
-          "SELECT Cycle_ID FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
+        sql = "SELECT Cycle_ID FROM OUTCOMES WHERE Outcome_ID=" + Outcome_ID;
 
         db.query(sql, (err, result) => {
           if (result.length > 0) {
@@ -556,7 +616,7 @@ createMeasureListReport = (res, Outcome, Measure_List) => {
 
                 db.query(sql, (err, result) => {
                   if (err) {
-                    errors.outcome = "There was error loading the evaluation";
+                    errors.outcome = "There was error loading the report";
                     return res.status(400).json(errors);
                   } else {
                     const Success_Count = result[0].Success_Count;
@@ -564,7 +624,7 @@ createMeasureListReport = (res, Outcome, Measure_List) => {
                       "Result: " +
                       Achieved_Threshold +
                       "% (" +
-                      Achieved_Threshold +
+                      Success_Count +
                       " out of " +
                       Total_Students +
                       ") of Students met the target criteria.";
@@ -587,4 +647,301 @@ createMeasureListReport = (res, Outcome, Measure_List) => {
   }
 };
 
+// @route   GET api/reports/cycle/:cycleID
+// @desc    get the reports of a given measure
+// @access  Private route
+router.get(
+  "/cycle/:cycleID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+    let errors = {};
+    if (type == "Admin") {
+      const Cycle_ID = req.params.cycleID;
+      const Cycle = {};
+      let sql = "SELECT * FROM  ASSESSMENT_CYCLE WHERE Cycle_ID =" + Cycle_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+          errors.cycle = "There was error loading the report";
+          return res.status(400).json(errors);
+        } else {
+          if (result.length < 1) {
+            errors.cycle = "Cycle does not exist";
+            return res.status(404).json(errors);
+          } else {
+            Cycle.Cycle_Name = result[0].Cycle_Name;
+
+            Cycle.Header = [
+              "Outcome",
+              "Measure",
+              "Number of Evaluation",
+              "Number Meeting Criteria",
+              "Percentage  Meeting Crtieria",
+              "Result"
+            ];
+            Cycle.Outcomes = [];
+            Outcomes_List = [];
+            sql =
+              "SELECT * FROM OUTCOMES Where Cycle_ID=" +
+              Cycle_ID +
+              " ORDER  BY Outcome_Index";
+
+            db.query(sql, (err, result) => {
+              if (err) {
+                errors.cycle = "There was error loading the report";
+                return res.status(400).json(errors);
+              } else {
+                let i = 1;
+
+                result.forEach(row => {
+                  Outcome = {
+                    Outcome_ID: row.Outcome_ID,
+                    Outcome_Name: i + ". " + row.Outcome_Name,
+                    Outcome_Index: i
+                  };
+                  Outcomes_List.push(Outcome);
+                  i++;
+                });
+
+                OutcomeReport(res, Cycle, Outcomes_List);
+              }
+            });
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
+OutcomeReport = (res, Cycle, Outcomes_List) => {
+  errors = {};
+  if (Outcomes_List.length == 0) {
+    res.status(200).json(Cycle);
+  } else {
+    Outcome = Outcomes_List[0];
+    Outcome_ID = Outcome.Outcome_ID;
+    Outcome_Index = Outcome.Outcome_Index;
+    Outcome.Data = [];
+
+    sql =
+      "SELECT * FROM MEASURES WHERE Outcome_ID=" +
+      Outcome_ID +
+      " ORDER BY Measure_Index";
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        errors.cycle = "There was error loading the report";
+        return res.status(400).json(errors);
+      }
+      i = 1;
+      Measure_List = [];
+
+      result.forEach(row => {
+        Is_Success = row.isSuccess;
+        if (Is_Success == "true") {
+          Is_Success = "Satisfied";
+        } else {
+          Is_Success = "Not Satisfied";
+        }
+        Measure = {
+          Measure_ID: row.Measure_ID,
+          Measure_Result: Is_Success,
+          Measure_Index: Outcome_Index + "." + i,
+          Measure_Type: row.Measure_type
+        };
+        Measure_List.push(Measure);
+        i++;
+      });
+      MeasureReport(res, Cycle, Outcomes_List, Outcome, Measure_List);
+    });
+  }
+};
+
+MeasureReport = (res, Cycle, Outcomes_List, Outcome, Measure_List) => {
+  errors = {};
+  if (Measure_List.length == 0) {
+    Outcomes_List.shift();
+    if (Outcome.Data.length == 0) {
+      row = ["-", "-", "-", "-", "-"];
+      Outcome.Data.push(row);
+    }
+
+    Cycle.Outcomes.push(Outcome);
+    OutcomeReport(res, Cycle, Outcomes_List);
+  } else {
+    Measure = Measure_List[0];
+    Measure_Type = Measure.Measure_Type;
+
+    if (Measure_Type == "rubric") {
+      sql =
+        "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure.Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+          errors.cycle = "There was error loading the report";
+          return res.status(400).json(errors);
+        } else {
+          if (result.length < 1) {
+            No_Of_Evaluations = 0;
+            No_Met = 0;
+            Percentage_Met = 0;
+
+            row = [
+              Measure.Measure_Index,
+              No_Of_Evaluations,
+              No_Met,
+              Percentage_Met,
+              Measure.Measure_Result
+            ];
+            Outcome.Data.push(row);
+            Measure_List.shift();
+            MeasureReport(res, Cycle, Outcomes_List, Outcome, Measure_List);
+          } else {
+            Percentage_Met = parseFloat(result[0].Score);
+            Percentage_Met = Math.round(Percentage_Met * 100) / 100 + "%";
+
+            Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+            Rubric_ID = result[0].Rubric_ID;
+            Target = result[0].Target;
+
+            sql =
+              "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
+              Rubric_Measure_ID +
+              " AND Rubric_ID=" +
+              Rubric_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) {
+                errors.outcome = "There was error loading the evaluation";
+                return res.status(400).json(errors);
+              } else {
+                let No_Of_Evaluations = result[0].Total;
+
+                //sql to find the count of students with required or better grade
+                sql =
+                  "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                  Rubric_Measure_ID +
+                  " AND Student_Avg_Grade>=" +
+                  Target;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    errors.outcome = "There was error loading the evaluation";
+                    return res.status(400).json(errors);
+                  } else {
+                    let No_Met = result[0].Success_Count;
+
+                    row = [
+                      Measure.Measure_Index,
+                      No_Of_Evaluations,
+                      No_Met,
+                      Percentage_Met,
+                      Measure.Measure_Result
+                    ];
+                    Outcome.Data.push(row);
+                    Measure_List.shift();
+                    MeasureReport(
+                      res,
+                      Cycle,
+                      Outcomes_List,
+                      Outcome,
+                      Measure_List
+                    );
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    } else {
+      //for test
+      sql =
+        "SELECT * FROM TEST_MEASURES WHERE Measure_ID=" + Measure.Measure_ID;
+
+      db.query(sql, (err, result) => {
+        if (err) {
+          errors.cycle = "There was error loading the report";
+          return res.status(400).json(errors);
+        } else {
+          if (result.length < 1) {
+            No_Of_Evaluations = 0;
+            No_Met = 0;
+            Percentage_Met = 0;
+
+            row = [
+              Measure.Measure_Index,
+              No_Of_Evaluations,
+              No_Met,
+              Percentage_Met,
+              Measure.Measure_Result
+            ];
+            Outcome.Data.push(row);
+            Measure_List.shift();
+            MeasureReport(res, Cycle, Outcomes_List, Outcome, Measure_List);
+          } else {
+            Percentage_Met = parseFloat(result[0].Score);
+            Percentage_Met = Math.round(Percentage_Met * 100) / 100 + "%";
+            Test_Measure_ID = result[0].Test_Measure_ID;
+
+            Target = result[0].Target;
+
+            sql =
+              "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+              Test_Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) {
+                errors.outcome = "There was error loading the evaluation";
+                return res.status(400).json(errors);
+              } else {
+                let No_Of_Evaluations = result[0].Total;
+
+                //sql to find the count of students with required or better grade
+                sql =
+                  "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                  Test_Measure_ID +
+                  " AND Student_Avg_Grade>=" +
+                  Target;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    errors.outcome = "There was error loading the report";
+                    return res.status(400).json(errors);
+                  } else {
+                    let No_Met = result[0].Success_Count;
+
+                    row = [
+                      Measure.Measure_Index,
+                      No_Of_Evaluations,
+                      No_Met,
+                      Percentage_Met,
+                      Measure.Measure_Result
+                    ];
+                    Outcome.Data.push(row);
+                    Measure_List.shift();
+                    MeasureReport(
+                      res,
+                      Cycle,
+                      Outcomes_List,
+                      Outcome,
+                      Measure_List
+                    );
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  }
+};
 module.exports = router;

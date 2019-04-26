@@ -3,7 +3,12 @@ import Spinner from "../../common/Spinner";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getCycles, deleteCycle } from "../../actions/cycleActions";
+import {
+  getCycles,
+  deleteCycle,
+  updateCycleName,
+  submitCycle
+} from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
 
@@ -22,20 +27,14 @@ class Cycles extends Component {
     this.state = { modalShow: false };
   }
   componentWillReceiveProps(nextProps) {
-    // Typical usage (don't forget to compare props):
     if (nextProps.cycles.cycle) {
-      console.log(nextProps.cycles);
-      console.log(nextProps.errors);
-      // console.log(this.props.cycles);
-      // this.props.history.push(
-      //   "/dashboard/cycles/" + this.props.cycles.cycle.Cycle_ID
-      // );
+      // console.log(nextProps.cycles);
+      // console.log(nextProps.errors);
 
       if (isEmpty(nextProps.errors)) {
         this.setState({
           modalShow: false
         });
-        console.log(this.props.cycles.cycle);
       }
     }
 
@@ -65,6 +64,8 @@ class Cycles extends Component {
               key={value.Cycle_ID}
               value={value}
               deleteCycle={this.props.deleteCycle}
+              updateCycleName={this.props.updateCycleName}
+              submitCycle={this.props.submitCycle}
             />
           ));
         } else {
@@ -108,6 +109,7 @@ class Cycles extends Component {
 }
 Cycles.propTypes = {
   getCycles: PropTypes.func.isRequired,
+  updateCycleName: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 
@@ -119,5 +121,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCycles, deleteCycle }
+  { getCycles, deleteCycle, updateCycleName, submitCycle }
 )(Cycles);

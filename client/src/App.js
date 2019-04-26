@@ -15,7 +15,6 @@ import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./common/PrivateRoute";
 import FourOFour from "./common/FourOFour";
-import { Container } from "react-bootstrap";
 // Code that checks for token
 if (localStorage.jwtToken) {
   //Set auth token header

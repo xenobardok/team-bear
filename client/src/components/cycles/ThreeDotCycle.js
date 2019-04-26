@@ -1,5 +1,5 @@
 import React from "react";
-import { Dropdown, DropdownButton, FormControl } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,25 @@ export default function ThreeDotCycle(props) {
           Edit {props.type}
         </Dropdown.Item>
         {props.type === "Cycle" ? (
-          <Dropdown.Item>Generate Report</Dropdown.Item>
+          <Link
+            to={`/dashboard/reports/cycle/${props.Cycle_ID}`}
+            className="dropdown-item"
+          >
+            Generate Report
+          </Link>
+        ) : null}
+        {props.type === "Cycle" ? (
+          <Dropdown.Item onClick={props.submitCycleHandler}>
+            Submit Cycle
+          </Dropdown.Item>
+        ) : null}
+        {props.type === "Outcome" ? (
+          <Link
+            to={`/dashboard/reports/outcome/${props.Outcome_ID}`}
+            className="dropdown-item"
+          >
+            Generate Report
+          </Link>
         ) : null}
       </Dropdown.Menu>
     </Dropdown>

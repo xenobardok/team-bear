@@ -1,11 +1,4 @@
-import React, { Component, useState } from "react";
-import Spinner from "../../common/Spinner";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { createCycle, migrateCycle } from "../../actions/cycleActions";
-import classnames from "classnames";
+import React, { useState } from "react";
 import { Button, Modal, Form, Col, Row } from "react-bootstrap";
 import isEmpty from "../../validation/isEmpty";
 

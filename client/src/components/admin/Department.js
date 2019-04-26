@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Col, Row, InputGroup, Button } from "react-bootstrap";
+import { Form, InputGroup, Button } from "react-bootstrap";
 
 export default function Department(props) {
   const [Dept_ID, changeDeptID] = useState(props.Dept_ID);
