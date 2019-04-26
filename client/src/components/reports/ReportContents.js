@@ -8,6 +8,7 @@ import MainReport from "./MainReport";
 import MeasureReport from "./MeasureReport";
 import OutcomeReport from "./OutcomeReport";
 import TestMeasureReport from "./TestMeasureReport";
+import CycleReport from "./CycleReport";
 // import NewCycles from "../cycles/NewCycles";
 
 class ReportContents extends Component {
@@ -15,6 +16,11 @@ class ReportContents extends Component {
     return (
       <Switch>
         <Route exact path="/dashboard/reports" component={MainReport} />
+        <Route
+          exact
+          path="/dashboard/reports/cycle/:id(\d+)"
+          component={CycleReport}
+        />
         <Route
           exact
           path="/dashboard/reports/outcome/:id(\d+)"

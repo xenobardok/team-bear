@@ -3,7 +3,8 @@ import {
   GENERATE_MEASURE_REPORT,
   REPORT_LOADING,
   GET_ERRORS,
-  GENERATE_OUTCOME_REPORT
+  GENERATE_OUTCOME_REPORT,
+  GENERATE_CYCLE_REPORT
 } from "./types";
 
 export const generateMeasureReport = measureID => dispatch => {
@@ -37,6 +38,24 @@ export const generateOutcomeReport = outcomeID => dispatch => {
     .then(res => {
       dispatch({
         type: GENERATE_OUTCOME_REPORT,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const generateCycleReport = CycleID => dispatch => {
+  dispatch(reportLoading());
+  axios
+    .get(`/api/reports/cycle/${CycleID}`)
+    .then(res => {
+      dispatch({
+        type: GENERATE_CYCLE_REPORT,
         payload: res.data
       });
     })

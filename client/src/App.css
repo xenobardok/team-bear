@@ -592,7 +592,8 @@ a:hover {
 .jumbotron {
   box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75);
   border-radius: 10px;
-  padding: 20px
+  padding: 20px;
+  background-color: #f3f3f3;
 }
 
 .newa:hover{
@@ -672,4 +673,8 @@ a:hover {
 
 .dateTime{
   color: grey;
+}
+
+.measure-name{
+  width: 50%;
 }

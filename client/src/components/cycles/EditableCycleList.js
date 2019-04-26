@@ -93,7 +93,11 @@ class Editable extends Component {
                   cursor: "pointer"
                 }}
               >
-                <ThreeDotCycle editHandler={this.editHandler} type="Cycle" />
+                <ThreeDotCycle
+                  editHandler={this.editHandler}
+                  type="Cycle"
+                  Cycle_ID={this.props.value.Cycle_ID}
+                />
                 {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
               </div>
             </OverlayTrigger>

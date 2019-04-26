@@ -40,7 +40,12 @@ export default function ThreeDotCycle(props) {
           Edit {props.type}
         </Dropdown.Item>
         {props.type === "Cycle" ? (
-          <Dropdown.Item>Generate Report</Dropdown.Item>
+          <Link
+            to={`/dashboard/reports/cycle/${props.Cycle_ID}`}
+            className="dropdown-item"
+          >
+            Generate Report
+          </Link>
         ) : null}
         {props.type === "Outcome" ? (
           <Link
