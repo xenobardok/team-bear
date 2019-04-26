@@ -28,15 +28,19 @@ class OutcomeReport extends Component {
           <h5 />
           <br />
           <h3 className="font-weight-bold">Measures of Performance:</h3>
-          {report.Measures.map(measure => (
-            <div style={{ maxWidth: "600px" }} className="mx-auto">
-              <h5>{measure.Measure_Name}</h5>
-              <h6 className="text-center font-weight-bold font-weight-bold font-italic">
-                {measure.Measure_Result}
-              </h6>
-              <br />
-            </div>
-          ))}
+          {report.Measures ? (
+            <>
+              {report.Measures.map(measure => (
+                <div style={{ maxWidth: "600px" }} className="mx-auto">
+                  <h5>{measure.Measure_Name}</h5>
+                  <h6 className="text-center font-weight-bold font-weight-bold font-italic">
+                    {measure.Measure_Result}
+                  </h6>
+                  <br />
+                </div>
+              ))}
+            </>
+          ) : null}
         </>
       );
     }

@@ -122,6 +122,7 @@ class ShowCycle extends Component {
             updateOutcome={this.props.updateOutcome}
             errors={this.props.errors}
             deleteOutcome={this.props.deleteOutcome}
+            Is_Submitted={cycle.Is_Submitted}
           />
         ));
       }

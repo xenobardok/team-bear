@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { Container, Form, Button, Col } from "react-bootstrap";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { registerUser } from "../../actions/authActions";
 import axios from "axios";
-
+import { Redirect } from "react-router";
 class Register extends Component {
   constructor() {
     super();
@@ -41,12 +44,13 @@ class Register extends Component {
     };
 
     // console.log(newEmail);
-
-    axios
-      .post("/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => this.setState({ errors: err.response.data }));
+    this.props.registerUser(newUser, this.props.history);
   }
+
+  componentDidUpdate = prevProps => {
+    if (this.props.auth !== prevProps.auth) {
+    }
+  };
 
   render() {
     return (
@@ -152,4 +156,18 @@ class Register extends Component {
   }
 }
 
-export default Register;
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors,
+  reports: state.reports
+});
+
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(Register);

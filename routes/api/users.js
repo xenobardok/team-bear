@@ -66,7 +66,9 @@ router.post("/register", (req, res) => {
         db.query(sql, function(err, result) {
           console.log(err);
           if (result) {
-            return res.status(200).json(result);
+            return res
+              .status(200)
+              .json({ message: "User successfully registered!" });
           } else if (err) {
             return res.status(404).json(err);
           }

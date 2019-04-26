@@ -36,9 +36,24 @@ export default function ThreeDotCycle(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item onClick={props.editHandler}>
-          Edit {props.type}
-        </Dropdown.Item>
+        {props.type === "Outcome" && props.Is_Submitted === "false" ? (
+          <Dropdown.Item onClick={props.editHandler}>
+            Edit {props.type}
+          </Dropdown.Item>
+        ) : null}
+
+        {props.type === "Measure" ? (
+          <Dropdown.Item onClick={props.editHandler}>
+            Edit {props.type}
+          </Dropdown.Item>
+        ) : null}
+
+        {props.type === "Cycle" ? (
+          <Dropdown.Item onClick={props.editHandler}>
+            Edit {props.type}
+          </Dropdown.Item>
+        ) : null}
+
         {props.type === "Cycle" ? (
           <Link
             to={`/dashboard/reports/cycle/${props.Cycle_ID}`}

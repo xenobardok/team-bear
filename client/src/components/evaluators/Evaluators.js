@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import {
   getEvaluators,
   addEvaluator,
+  cancelInvite,
   removeEvaluator
 } from "../../actions/profileActions";
 import isEmpty from "../../validation/isEmpty";
@@ -32,10 +33,6 @@ class Evaluators extends Component {
   componentDidMount() {
     this.props.getEvaluators();
   }
-  removeEvaluator = removeEmail => {
-    console.log(removeEmail);
-    this.props.removeEvaluator(removeEmail);
-  };
   render() {
     let modalClose = () => this.setState({ modalShow: false });
     let { evaluators, loading } = this.props.profile;
@@ -59,7 +56,11 @@ class Evaluators extends Component {
                   }}
                 >
                   {/* <ThreeDot editHandler={this.editHandler} type="Cycle" /> */}
-                  <ThreeDot />
+                  <ThreeDot
+                    type="active"
+                    removeEvaluator={this.props.removeEvaluator}
+                    email={value.Email}
+                  />
                   {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
                 </div>
               </OverlayTrigger>
@@ -85,7 +86,7 @@ class Evaluators extends Component {
                   {/* <ThreeDot editHandler={this.editHandler} type="Cycle" /> */}
                   <ThreeDot
                     type="invite"
-                    removeEvaluator={this.removeEvaluator}
+                    cancelInvite={this.props.cancelInvite}
                     email={value.Email}
                   />
                   {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
@@ -133,5 +134,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getEvaluators, addEvaluator, removeEvaluator }
+  { getEvaluators, addEvaluator, cancelInvite, removeEvaluator }
 )(Evaluators);

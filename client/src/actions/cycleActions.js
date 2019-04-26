@@ -4,7 +4,8 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  CREATE_CYCLE
+  CREATE_CYCLE,
+  GET_SUBMITTED_CYCLES
 } from "./types";
 import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
@@ -18,6 +19,17 @@ export const getCycles = () => dispatch => {
     })
   );
 };
+
+export const getSubmittedCycles = () => dispatch => {
+  dispatch(setCycleLoading());
+  axios.get("/api/cycle/submitted").then(res =>
+    dispatch({
+      type: GET_SUBMITTED_CYCLES,
+      payload: res.data
+    })
+  );
+};
+
 export const updateCycleName = (cycleID, Cycle_Name) => dispatch => {
   dispatch(setCycleLoading());
   axios

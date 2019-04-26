@@ -203,6 +203,7 @@ class EditableOutcomeList extends Component {
                   editHandler={this.editHandler}
                   type="Outcome"
                   Outcome_ID={this.props.value.Outcome_ID}
+                  Is_Submitted={this.props.Is_Submitted}
                 />
               </div>
             </OverlayTrigger>
