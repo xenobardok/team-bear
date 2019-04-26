@@ -4,7 +4,8 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  CREATE_CYCLE
+  CREATE_CYCLE,
+  UPDATE_CYCLE
 } from "./types";
 import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
@@ -17,6 +18,25 @@ export const getCycles = () => dispatch => {
       payload: res.data
     })
   );
+};
+export const updateCycleName = (cycleID, Cycle_Name) => dispatch => {
+  dispatch(setCycleLoading());
+  axios
+    .put(`/api/cycle/${cycleID}`, { Cycle_Name: Cycle_Name })
+    .then(res => {
+      dispatch(getCyclesWithoutLoading());
+      toastr.success(
+        "Cycle Name Updated!",
+        "The new cycle name is " + Cycle_Name
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      toastr.error("Cycle Name Update Error!", err.response.data.error);
+    });
 };
 
 export const getCyclesWithoutLoading = () => dispatch => {

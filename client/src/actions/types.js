@@ -17,6 +17,7 @@ export const SET_MEASURE_VALUE = "SET_MEASURE_VALUE";
 export const SET_DATA_VALUE = "SET_DATA_VALUE";
 export const GET_CYCLES = "GET_CYCLES";
 export const CREATE_CYCLE = "CREATE_CYCLE";
+export const UPDATE_CYCLE = "UPDATE_CYCLE";
 export const DELETE_CYCLE = "DELETE_CYCLE";
 export const GET_MEASURES = "GET_MEASURES";
 export const MEASURE_LOADING = "MEASURE_LOADING";

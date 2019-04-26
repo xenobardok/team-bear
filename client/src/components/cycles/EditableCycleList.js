@@ -19,7 +19,8 @@ class Editable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditable: false
+      isEditable: false,
+      Cycle_Name: this.props.value.Cycle_Name
     };
   }
 
@@ -30,6 +31,12 @@ class Editable extends Component {
     });
   };
 
+  cancelButtonHandler = e => {
+    this.setState({
+      Cycle_Name: this.props.value.Cycle_Name,
+      isEditable: false
+    });
+  };
   deleteHandler = e => {
     Swal.fire({
       title: "Are you sure?",
@@ -48,6 +55,12 @@ class Editable extends Component {
     });
   };
 
+  updateButtonHandler = e => {
+    this.props.updateCycleName(
+      this.props.value.Cycle_ID,
+      this.state.Cycle_Name
+    );
+  };
   render() {
     let { isEditable } = this.state;
 
@@ -57,13 +70,16 @@ class Editable extends Component {
           <Form>
             <Form.Control
               type="text"
-              defaultValue={this.props.value.Cycle_Name}
+              value={this.state.Cycle_Name}
               className="mt-1 ml-1 mr-1"
+              onChange={e => this.setState({ Cycle_Name: e.target.value })}
             />
 
             <ButtonGroup size="sm" className="mt-1 mb-1">
-              <Button variant="primary">Update</Button>
-              <Button variant="secondary" onClick={this.editHandler}>
+              <Button variant="primary" onClick={this.updateButtonHandler}>
+                Update
+              </Button>
+              <Button variant="secondary" onClick={this.cancelButtonHandler}>
                 Cancel
               </Button>
               <Button variant="outline-danger" onClick={this.deleteHandler}>
