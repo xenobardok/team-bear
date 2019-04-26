@@ -14,7 +14,8 @@ import {
   ListGroup,
   Button,
   FormControl,
-  ButtonGroup
+  ButtonGroup,
+  Form
 } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import ShowMeasures from "./ShowMeasures";
@@ -32,7 +33,8 @@ class ShowCycle extends Component {
       newOutcome: "",
       showNewOutcome: false,
       errors: "",
-      allOutcomes: ""
+      allOutcomes: "",
+      curriculumMap: ""
     };
   }
   componentDidMount() {
@@ -61,6 +63,14 @@ class ShowCycle extends Component {
     });
   };
 
+  cancelButtonHandler = e => {
+    this.setState({
+      showNewOutcome: false,
+      errors: "",
+      newOutcome: "",
+      curriculumMap: ""
+    });
+  };
   componentDidUpdate = prevProps => {
     if (this.props.errors) {
       if (prevProps.errors !== this.props.errors) {
@@ -88,7 +98,8 @@ class ShowCycle extends Component {
     // console.log(this.state.newOutcome);
     this.props.createNewOutcome(
       this.props.match.params.id,
-      this.state.newOutcome
+      this.state.newOutcome,
+      this.state.curriculumMap
     );
   };
 
@@ -127,23 +138,42 @@ class ShowCycle extends Component {
                 <ListGroup variant="flush">
                   {outcomes}
                   {this.state.showNewOutcome ? (
-                    <div>
-                      <FormControl
-                        name="new-outcome"
-                        as="textarea"
-                        aria-label="With textarea"
-                        value={this.state.newOutcome}
-                        placeholder="Enter new Outcome"
-                        onChange={e =>
-                          this.setState({ newOutcome: e.target.value })
-                        }
-                        className={classnames("mt-1 ml-1 mr-1", {
-                          "is-invalid": this.state.errors.Outcome_Name
-                        })}
-                      />
-                      <FormControl.Feedback type="invalid">
-                        {this.state.errors.Outcome_Name}
-                      </FormControl.Feedback>
+                    <Form className="create">
+                      <Form.Group controlId="exampleForm.ControlSelect1">
+                        <Form.Label>Name of the outcome:</Form.Label>
+                        <FormControl
+                          name="new-outcome"
+                          as="textarea"
+                          aria-label="With textarea"
+                          value={this.state.newOutcome}
+                          placeholder="Enter new Outcome"
+                          onChange={e =>
+                            this.setState({ newOutcome: e.target.value })
+                          }
+                          className={classnames("mt-1 ml-1 mr-1", {
+                            "is-invalid": this.state.errors.Outcome_Name
+                          })}
+                        />
+                        <FormControl.Feedback type="invalid">
+                          {this.state.errors.Outcome_Name}
+                        </FormControl.Feedback>
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Curriculum Mapping</Form.Label>
+                        <FormControl
+                          name="new-curriculum"
+                          as="textarea"
+                          aria-label="With textarea"
+                          value={this.state.curriculumMap}
+                          placeholder="(Optional) Curriculum responsible for this outcome"
+                          onChange={e =>
+                            this.setState({ curriculumMap: e.target.value })
+                          }
+                          className={classnames("mt-1 ml-1 mr-1", {
+                            "is-invalid": this.state.errors.Outcome_Name
+                          })}
+                        />
+                      </Form.Group>
                       <ButtonGroup size="sm" className="mt-1 mb-1">
                         <Button
                           variant="primary"
@@ -153,15 +183,12 @@ class ShowCycle extends Component {
                         </Button>
                         <Button
                           variant="secondary"
-                          onClick={() => {
-                            this.setState({ showNewOutcome: false });
-                            this.setState({ errors: "" });
-                          }}
+                          onClick={this.cancelButtonHandler}
                         >
                           Cancel
                         </Button>
                       </ButtonGroup>
-                    </div>
+                    </Form>
                   ) : null}
                 </ListGroup>
               </Card.Body>

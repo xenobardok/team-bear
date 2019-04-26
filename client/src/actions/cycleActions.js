@@ -161,10 +161,17 @@ export const deleteCycle = cycleID => dispatch => {
     });
 };
 
-export const createNewOutcome = (id, Outcome_Name) => dispatch => {
+export const createNewOutcome = (
+  id,
+  Outcome_Name,
+  curriculumMap
+) => dispatch => {
   console.log(id, Outcome_Name);
   axios
-    .post(`/api/cycle/${id}/outcome/create`, { Outcome_Name: Outcome_Name })
+    .post(`/api/cycle/${id}/outcome/create`, {
+      Outcome_Name: Outcome_Name,
+      Class_Factors: curriculumMap
+    })
     .then(res => {
       dispatch(getSingleCycle(id));
     })

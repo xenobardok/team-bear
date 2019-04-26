@@ -19,12 +19,15 @@ class OutcomeReport extends Component {
     } else {
       reportContent = (
         <>
-          <h2 className="font-weight-bold">Outcome {report.Outcome_Index}</h2>
+          <h3 className="text-center font-weight-bold">
+            Outcome {report.Outcome_Index}
+          </h3>
           <h5 className="text-center">{report.Outcome_Name}</h5>
           <br />
-          <h2 className="font-weight-bold">Evaluations Instruments:</h2>
+          <h3 className="font-weight-bold">Evaluations Instruments:</h3>
+          <h5 />
           <br />
-          <h2 className="font-weight-bold">Measures of Performance:</h2>
+          <h3 className="font-weight-bold">Measures of Performance:</h3>
           {report.Measures.map(measure => (
             <div style={{ maxWidth: "600px" }} className="mx-auto">
               <h5>{measure.Measure_Name}</h5>
