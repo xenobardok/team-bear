@@ -6,12 +6,10 @@ import { connect } from "react-redux";
 import { getCurrentProfile } from "../../actions/profileActions";
 import { logoutUser } from "../../actions/authActions";
 import SideBar from "./SideBar";
-import SimpleName from "./SimpleName";
 import NavBar from "../layouts/NavBar";
 import "../../App.css";
 
 import DashboardContents from "./DashboardContents";
-import ShowCycle from "../cycles/ShowCycle";
 import Rubrics from "../rubrics/Rubrics";
 import Tasks from "../tasks/Tasks";
 import CreateRubric from "../rubrics/CreateRubric";

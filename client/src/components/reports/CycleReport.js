@@ -5,7 +5,6 @@ import { Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-import RubricStudent from "./RubricStudent";
 
 class CycleReport extends Component {
   componentDidMount() {
@@ -45,8 +44,6 @@ class CycleReport extends Component {
                           rowSpan={outcome.Data.length}
                           className="measure-name"
                         >
-                          {outcome.Outcome_Index}
-                          {". "}
                           {outcome.Outcome_Name}
                         </td>
                       ) : null}

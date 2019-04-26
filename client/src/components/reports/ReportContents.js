@@ -1,9 +1,5 @@
 import React, { Component } from "react";
 import { Switch, Route } from "react-router";
-import Cycles from "../cycles/Cycles";
-import ShowCycle from "../cycles/ShowCycle";
-import Measure from "../measures/Measure";
-import MainDashboard from "../dashboard/MainDashboard";
 import MainReport from "./MainReport";
 import MeasureReport from "./MeasureReport";
 import OutcomeReport from "./OutcomeReport";

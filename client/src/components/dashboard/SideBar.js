@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { slide as Menu } from "react-burger-menu";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "react-toggle/style.css";
-import Toggle from "react-toggle";
 import {
   faBars,
   faTimes,

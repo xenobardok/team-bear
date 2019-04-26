@@ -366,9 +366,9 @@ table.report th, table.report td{
   cursor: pointer;
 }
 
-.cycle-outcome a{
-  /* color: inherit; */
-}
+/* .cycle-outcome a{
+  /* color: inherit; 
+} */
 
 .cycle-outcome a:hover{
   color: inherit;
@@ -378,9 +378,7 @@ table.report th, table.report td{
   margin: 0px 0px 50px 0px;
 }
 
-.cycle-view .btn{
-  /* margin: 10px; */
-}
+
 
 .login-register a{
   margin: 0px 5px;
@@ -529,7 +527,7 @@ section#evaluators .singleEvaluator:hover{
 
 .department .form-control{
   display: inline;
-  width: 50%;
+  /* width: 50%; */
 }
 
 table.score{

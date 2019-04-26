@@ -1,7 +1,4 @@
 import React, { Component } from "react";
-import Spinner from "../../common/Spinner";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createCycle, migrateCycle } from "../../actions/cycleActions";
@@ -9,7 +6,7 @@ import classnames from "classnames";
 import { Button, Modal, Form, Col, Row } from "react-bootstrap";
 import isEmpty from "../../validation/isEmpty";
 
-class CreateCycle extends React.Component {
+class CreateCycle extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,7 +53,7 @@ class CreateCycle extends React.Component {
 
     if (errors.Cycle_Name === "" && errors.Migrate_Cycle_ID === "") {
       if (this.state.option === "migrate") {
-        this.props.migrateCycle(this.state.Migrate_Cycle_ID);
+        this.props.migrateCycle(this.state.name, this.state.Migrate_Cycle_ID);
       } else if (this.state.option === "scratch") {
         this.props.createCycle({ Cycle_Name: this.state.name });
         this.setState({

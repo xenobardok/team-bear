@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
-import NavBar from "./NavBar";
 
 class Landing extends Component {
   render() {

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   Form,
   ListGroup,
-  Card,
   Button,
   OverlayTrigger,
   Tooltip,
@@ -11,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 import ThreeDotCycle from "./ThreeDotCycle";
 library.add(faPlus, faEdit);
@@ -98,7 +97,6 @@ class Editable extends Component {
                   type="Cycle"
                   Cycle_ID={this.props.value.Cycle_ID}
                 />
-                {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
               </div>
             </OverlayTrigger>
           </ListGroup>

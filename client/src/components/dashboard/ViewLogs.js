@@ -20,10 +20,14 @@ class ViewLogs extends Component {
     } else {
       if (this.props.from === "dashboard") {
         let logSize = 5;
-        logsFilter = logs.slice(0, logSize).map(log => <LogView {...log} />);
+        logsFilter = logs
+          .slice(0, logSize)
+          .map((log, index) => <LogView {...log} key={log.Time + index} />);
       } else {
         let logSize = 25;
-        logsFilter = logs.slice(0, logSize).map(log => <LogView {...log} />);
+        logsFilter = logs
+          .slice(0, logSize)
+          .map((log, index) => <LogView {...log} key={log.Time + index} />);
       }
     }
 
@@ -41,16 +45,14 @@ class ViewLogs extends Component {
 const LogView = props => {
   return (
     <div className="log">
-      <p>
-        <Row>
-          <Col xs="3">
-            <span className="dateTime">
-              {props.Day} {props.Time}
-            </span>
-          </Col>
-          <Col xs="9">{props.Message}</Col>
-        </Row>
-      </p>
+      <Row>
+        <Col xs="3">
+          <span className="dateTime">
+            {props.Day} {props.Time}
+          </span>
+        </Col>
+        <Col xs="9">{props.Message}</Col>
+      </Row>
     </div>
   );
 };

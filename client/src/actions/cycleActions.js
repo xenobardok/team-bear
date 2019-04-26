@@ -4,7 +4,6 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  GET_MEASURES,
   CREATE_CYCLE
 } from "./types";
 import { toastr } from "react-redux-toastr";
@@ -79,9 +78,10 @@ export const createCycle = cycleName => dispatch => {
     });
 };
 
-export const migrateCycle = migrateCycleID => dispatch => {
+export const migrateCycle = (Cycle_Name, migrateCycleID) => dispatch => {
+  console.log(Cycle_Name, migrateCycleID);
   axios
-    .post(`/api/migrate/cycle/${migrateCycleID}`)
+    .post(`/api/migrate/cycle/${migrateCycleID}`, { Cycle_Name: Cycle_Name })
     .then(res => {
       dispatch(getCyclesWithoutLoading());
       toastr.success(
@@ -89,12 +89,13 @@ export const migrateCycle = migrateCycleID => dispatch => {
         "Cycle migration completed successfully!"
       );
     })
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+      toastr.error("Cycle Migration Error!", err.response.data.error);
+    });
 };
 
 export const deleteCycle = cycleID => dispatch => {
@@ -112,6 +113,7 @@ export const deleteCycle = cycleID => dispatch => {
           text: "The cycle contains outcomes. Please delete them first!"
         });
       }
+      console.log(err.response.data);
     });
 };
 
