@@ -166,7 +166,7 @@ export const createNewOutcome = (
   Outcome_Name,
   curriculumMap
 ) => dispatch => {
-  console.log(id, Outcome_Name);
+  console.log(id, Outcome_Name, curriculumMap);
   axios
     .post(`/api/cycle/${id}/outcome/create`, {
       Outcome_Name: Outcome_Name,
