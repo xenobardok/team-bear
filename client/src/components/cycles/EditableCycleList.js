@@ -61,6 +61,22 @@ class Editable extends Component {
       this.state.Cycle_Name
     );
   };
+  submitCycleHandler = e => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, submit it!"
+    }).then(result => {
+      if (result.value) {
+        this.props.submitCycle(this.props.value.Cycle_ID);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { isEditable } = this.state;
 
@@ -112,6 +128,7 @@ class Editable extends Component {
                   editHandler={this.editHandler}
                   type="Cycle"
                   Cycle_ID={this.props.value.Cycle_ID}
+                  submitCycleHandler={this.submitCycleHandler}
                 />
               </div>
             </OverlayTrigger>

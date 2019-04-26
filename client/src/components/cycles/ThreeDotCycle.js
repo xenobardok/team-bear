@@ -47,6 +47,11 @@ export default function ThreeDotCycle(props) {
             Generate Report
           </Link>
         ) : null}
+        {props.type === "Cycle" ? (
+          <Dropdown.Item onClick={props.submitCycleHandler}>
+            Submit Cycle
+          </Dropdown.Item>
+        ) : null}
         {props.type === "Outcome" ? (
           <Link
             to={`/dashboard/reports/outcome/${props.Outcome_ID}`}

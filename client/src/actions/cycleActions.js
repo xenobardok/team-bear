@@ -4,8 +4,7 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  CREATE_CYCLE,
-  UPDATE_CYCLE
+  CREATE_CYCLE
 } from "./types";
 import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
@@ -115,6 +114,31 @@ export const migrateCycle = (Cycle_Name, migrateCycleID) => dispatch => {
         payload: err.response.data
       });
       toastr.error("Cycle Migration Error!", err.response.data.error);
+    });
+};
+
+export const submitCycle = CycleID => dispatch => {
+  console.log(CycleID);
+  axios
+    .put(`/api/cycle/${CycleID}/submit`)
+    .then(res => {
+      dispatch(getCyclesWithoutLoading());
+      Swal.fire(
+        "Cycle Submitted!",
+        "Please view the reports from the Reports link on the sidebar!",
+        "success"
+      );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      Swal.fire({
+        type: "error",
+        title: "Oops...",
+        text: err.response.data.error
+      });
     });
 };
 

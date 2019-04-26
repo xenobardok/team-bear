@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import {
   getCycles,
   deleteCycle,
-  updateCycleName
+  updateCycleName,
+  submitCycle
 } from "../../actions/cycleActions";
 import classnames from "classnames";
 import { ListGroup, Card, Button } from "react-bootstrap";
@@ -64,6 +65,7 @@ class Cycles extends Component {
               value={value}
               deleteCycle={this.props.deleteCycle}
               updateCycleName={this.props.updateCycleName}
+              submitCycle={this.props.submitCycle}
             />
           ));
         } else {
@@ -119,5 +121,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCycles, deleteCycle, updateCycleName }
+  { getCycles, deleteCycle, updateCycleName, submitCycle }
 )(Cycles);
