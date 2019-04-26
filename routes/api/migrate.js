@@ -77,8 +77,6 @@ router.post(
                 }
               } else {
                 let New_Cycle_ID = result.insertId;
-                console.log(New_Cycle_ID);
-                console.log(result);
 
                 let Outcome_List = [];
                 sql =
@@ -126,20 +124,17 @@ duplicateOutcomes = (res, New_Cycle_ID, Outcome_List) => {
         }
       } else {
         let Outcome_Name = result[0].Outcome_Name;
-        let Outcome_index = result[0].Outcome_Index;
+        // let Outcome_index = result[0].Outcome_Index;
         let Class_Factors = result[0].Class_Factors;
         // console.log(New_Cycle_ID);
         sql =
-          "INSERT INTO OUTCOMES (Outcome_Name,Outcome_Index,Cycle_ID,Class_Factors) VALUES(" +
+          "INSERT INTO OUTCOMES (Outcome_Name,Cycle_ID,Class_Factors) VALUES(" +
           db.escape(Outcome_Name) +
-          "," +
-          Outcome_index +
           "," +
           New_Cycle_ID +
           "," +
           db.escape(Class_Factors) +
           ")";
-        // console.log(sql);
         db.query(sql, (err, result) => {
           if (err) {
             {
@@ -205,14 +200,12 @@ duplicateMeasures = (
         }
       } else {
         let Measure_label = result[0].Measure_label;
-        let Measure_Index = result[0].Measure_Index;
+        //let Measure_Index = result[0].Measure_Index;
         let Measure_Type = result[0].Measure_type;
 
         sql =
-          "INSERT INTO MEASURES (Measure_label,Measure_Index,Measure_Type,Outcome_ID) VALUES(" +
+          "INSERT INTO MEASURES (Measure_label,Measure_Type,Outcome_ID) VALUES(" +
           db.escape(Measure_label) +
-          "," +
-          Measure_Index +
           "," +
           db.escape(Measure_Type) +
           "," +

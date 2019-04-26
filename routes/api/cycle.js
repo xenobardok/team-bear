@@ -315,6 +315,7 @@ router.delete(
                     "DELETE FROM ASSESSMENT_CYCLE WHERE Cycle_ID=" + Cycle_ID;
 
                   db.query(sql, (err, result) => {
+                    // console.log(sql);
                     if (err) return res.status(400).json(err);
                     else {
                       return res.status(200).json({ message: "Cycle deleted" });
@@ -333,7 +334,7 @@ router.delete(
 );
 
 // @route   PUT api/cycle/cycle:handle
-// @desc    Update a cycle if there is no outcome
+// @desc    Update a cycle name
 // @access  Private route
 router.put(
   "/:handle",
