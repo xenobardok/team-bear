@@ -262,7 +262,7 @@ router.get(
           if (result.length < 1) {
             return res.status(404).json({ error: "Cycle Not Found" });
           }
-
+          Is_Submitted = result[0].isSubmitted;
           Cycle.Cycle_ID = Cycle_ID;
           Cycle.Cycle_Name = result[0].Cycle_Name;
           Cycle.Is_Submitted = result[0].isSubmitted;
@@ -282,7 +282,8 @@ router.get(
                   Outcome_Name: row.Outcome_Name,
                   Class_Factors: row.Class_Factors,
                   Outcome_Success: row.Outcome_Success,
-                  Outcome_Index: i
+                  Outcome_Index: i,
+                  Is_Submitted: Is_Submitted
                 };
                 i++;
                 Cycle.data.push(outcome);
@@ -322,7 +323,7 @@ router.delete(
       const Cycle = {};
 
       let sql =
-        "SELECT * FROM ASSESSMENT_CYCLE WHERE DEPT_ID =" +
+        "SELECT * FROM ASSESSMENT_CYCLE WHERE isSubmitted='false' AND DEPT_ID =" +
         dept +
         " AND Cycle_ID = " +
         Cycle_ID;
@@ -385,7 +386,7 @@ router.put(
       const Cycle = {};
 
       let sql =
-        "SELECT * FROM ASSESSMENT_CYCLE WHERE DEPT_ID =" +
+        "SELECT * FROM ASSESSMENT_CYCLE WHERE isSubmitted='false' AND DEPT_ID =" +
         dept +
         " AND Cycle_ID = " +
         Cycle_ID;
@@ -407,7 +408,11 @@ router.put(
               else {
                 return res
                   .status(200)
-                  .json({ Cycle_ID: Cycle_ID, Cycle_Name: Cycle_Name });
+                  .json({
+                    Cycle_ID: Cycle_ID,
+                    Cycle_Name: Cycle_Name,
+                    Is_Submitted: "false"
+                  });
               }
             });
           }
@@ -495,7 +500,12 @@ router.post(
 
                         res
                           .status(200)
-                          .json((outcome = { Outcome_ID: Outcome_ID }));
+                          .json(
+                            (outcome = {
+                              Outcome_ID: Outcome_ID,
+                              Is_Submitted: "false"
+                            })
+                          );
                       }
                     });
                   }
@@ -528,7 +538,7 @@ router.delete(
       const Cycle = {};
 
       let sql =
-        "SELECT * FROM ASSESSMENT_CYCLE NATURAL JOIN OUTCOMES WHERE DEPT_ID =" +
+        "SELECT * FROM ASSESSMENT_CYCLE NATURAL JOIN OUTCOMES WHERE isSubmitted='false' AND DEPT_ID =" +
         dept +
         " AND Cycle_ID = " +
         Cycle_ID +
@@ -601,7 +611,7 @@ router.post(
       } else {
         Outcome_Name = db.escape(Outcome_Name);
         let sql =
-          "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Dept_ID =" +
+          "SELECT * FROM OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Dept_ID =" +
           dept +
           " AND Cycle_ID=" +
           Cycle_ID +
@@ -671,10 +681,11 @@ router.get(
             errors.Outcome_Name = "Outcome not found";
             return res.status(200).json(errors);
           }
-
+          Is_Submitted = result[0].isSubmitted;
           Outcome.Outcome_ID = Outcome_ID;
           Outcome.Cycle_ID = result[0].Cycle_ID;
           Outcome.Class_Factors = result[0].Class_Factors;
+          Outcome.Is_Submitted = result[0].isSubmitted;
 
           Outcome.data = [];
           sql =
@@ -692,7 +703,8 @@ router.get(
                   Measure_Name: row.Measure_label,
                   Measure_Index: i,
                   Measure_type: row.Measure_type,
-                  Measure_Success: row.isSuccess
+                  Measure_Success: row.isSuccess,
+                  Is_Submitted: Is_Submitted
                 };
                 updateOutcome(row.Measure_ID);
                 i++;
@@ -800,7 +812,8 @@ router.post(
 
                               Rubric_Measure = {
                                 Measure_ID: Measure_ID,
-                                Rubric_Measure_ID: Rubric_Measure_ID
+                                Rubric_Measure_ID: Rubric_Measure_ID,
+                                Is_Submitted: "false"
                               };
                               // updateOutcome(outcomeID);
                               return res.status(200).json(Rubric_Measure);
@@ -825,7 +838,8 @@ router.post(
 
                               Test_Measure = {
                                 Measure_ID: Measure_ID,
-                                Test_Measure_ID: Test_Measure_ID
+                                Test_Measure_ID: Test_Measure_ID,
+                                Is_Submitted: "false"
                               };
                               return res.status(200).json(Test_Measure);
                             }
@@ -1054,6 +1068,7 @@ router.get(
             Measure.Measure_ID = Measure_ID;
             Measure.Measure_Label = result[0].Measure_label;
             Measure.Measure_Type = result[0].Measure_type;
+            Measure.Is_Submitted = result[0].isSubmitted;
 
             if (Measure.Measure_Type == "rubric") {
               sql =
