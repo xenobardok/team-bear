@@ -14,6 +14,17 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
 
+const tempCodeGenerator = length => {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 // @route   GET api/department
 // @desc    Gets the lists of all departments
 // @access  Private
@@ -241,10 +252,9 @@ router.put(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
-                sql =
-                  "SELECT * FROM Department WHERE Department_ID=" +
-                  Department_ID;
+                sql = "SELECT * FROM Department WHERE Dept_ID=" + New_Dept_ID;
                 db.query(sql, (err, result) => {
+                  console.log(sql);
                   if (err) return res.status(400).json(err);
                   else {
                     if (result.length > 0) {
@@ -575,6 +585,34 @@ router.post(
                                       department.admin.push(Admin);
                                     });
 
+                                    var transporter = nodemailer.createTransport(
+                                      {
+                                        service: "gmail",
+                                        auth: {
+                                          user: "ulmevaluations@gmail.com",
+                                          pass: "thebestulm"
+                                        }
+                                      }
+                                    );
+
+                                    const mailOptions = {
+                                      from: "ulmevaluations@gmail.com", // sender address
+                                      to: req.body.adminEmail, // list of receivers
+                                      subject: "Welcome to ULM Evaluations ", // Subject line
+                                      html:
+                                        `<div><p>Welcome to ULM Evaluations</p>
+                                <p>You have been promoted as the <B>Program Coordinator</B> of the department  ` +
+                                        dept +
+                                        `Please click <a href="https://team-bear.herokuapp.com/">here</a> to access your account today!
+                              </div>` // plain text body
+                                    };
+                                    transporter.sendMail(mailOptions, function(
+                                      err,
+                                      info
+                                    ) {
+                                      if (err) console.log(err);
+                                      else console.log("Email sent!");
+                                    });
                                     return res.status(200).json(department);
                                   }
                                 });
@@ -600,11 +638,14 @@ router.post(
                             }
                             //User with that  email  does not  exist at all
                             else {
+                              let Temp_Code = tempCodeGenerator(6);
                               sql =
-                                "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
+                                "INSERT INTO Evaluators(Email, Dept_ID,Temp_Code, isActive) VALUES(" +
                                 New_Admin_Email +
                                 "," +
                                 Dept_ID +
+                                "," +
+                                Temp_Code +
                                 ",'false')";
 
                               db.query(sql, (err, result) => {
@@ -647,6 +688,36 @@ router.post(
                                             department.admin.push(Admin);
                                           });
 
+                                          var transporter = nodemailer.createTransport(
+                                            {
+                                              service: "gmail",
+                                              auth: {
+                                                user:
+                                                  "ulmevaluations@gmail.com",
+                                                pass: "thebestulm"
+                                              }
+                                            }
+                                          );
+
+                                          const mailOptions = {
+                                            from: "ulmevaluations@gmail.com", // sender address
+                                            to: req.body.adminEmail, // list of receivers
+                                            subject:
+                                              "Welcome to ULM Evaluations ", // Subject line
+                                            html:
+                                              `<div><p>Welcome to ULM Evaluations</p>
+                                      <p>You have been invited to join ULM Evaluations. Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P><br><B>Please enter the following Temp Code during registration. <br>Temp Code: ` +
+                                              Temp_Code +
+                                              `
+                                    </div>` // plain text body
+                                          };
+                                          transporter.sendMail(
+                                            mailOptions,
+                                            function(err, info) {
+                                              if (err) console.log(err);
+                                              else console.log("Email sent!");
+                                            }
+                                          );
                                           return res
                                             .status(200)
                                             .json(department);
@@ -698,8 +769,8 @@ router.delete(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Department_ID=" + Dept_ID;
-          //   console.log(sql);
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
+
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
             else {
@@ -709,6 +780,8 @@ router.delete(
                   .json({ Dept_ID: "Department Not found" });
               } else {
                 let Dept_ID = db.escape(result[0].Dept_ID);
+
+                unescaped_Dept_ID = result[0].Dept_ID;
                 sql =
                   "SELECT * FROM Evaluators  E, PROGRAM_ADMIN  A  WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
                   Dept_ID +
@@ -733,32 +806,81 @@ router.delete(
                         if (err) return res.status(400).json(err);
                         else {
                           sql =
-                            "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
-                            Dept_ID;
-                          db.query(sql, (err, result) => {
-                            if (err) return res.status(400).json(err);
-                            else {
-                              department = {
-                                Dept_ID: result[0].Dept_ID,
-                                admin: []
-                              };
-                              result.forEach(row => {
-                                Fname = row.Fname;
-                                Lname = row.Lname;
-                                if (Fname == null) {
-                                  Fname = "";
-                                }
-                                if (Lname == null) {
-                                  Lname = "";
-                                }
-                                Admin = {
-                                  Admin_Name: Fname + " " + Lname,
-                                  Admin_Email: row.Admin_Email
-                                };
-                                department.admin.push(Admin);
-                              });
+                            "SELECT * FROM Evaluators WHERE Email=" +
+                            Admin_Email;
 
-                              return res.status(200).json(department);
+                          db.query(sql, (err, result) => {
+                            if (
+                              result[0].isActive == "false" &&
+                              result[0].Password == null
+                            ) {
+                              sql =
+                                "DELETE FROM Evaluators WHERE Email=" +
+                                Admin_Email;
+
+                              db.query(sql, (err, result) => {
+                                sql =
+                                  "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                  Dept_ID;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) return res.status(400).json(err);
+                                  else {
+                                    department = {
+                                      Dept_ID: unescaped_Dept_ID,
+                                      admin: []
+                                    };
+                                    result.forEach(row => {
+                                      Fname = row.Fname;
+                                      Lname = row.Lname;
+                                      if (Fname == null) {
+                                        Fname = "";
+                                      }
+                                      if (Lname == null) {
+                                        Lname = "";
+                                      }
+                                      Admin = {
+                                        Admin_Name: Fname + " " + Lname,
+                                        Admin_Email: row.Admin_Email
+                                      };
+                                      department.admin.push(Admin);
+                                    });
+
+                                    return res.status(200).json(department);
+                                  }
+                                });
+                              });
+                            } else {
+                              sql =
+                                "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                Dept_ID;
+
+                              db.query(sql, (err, result) => {
+                                if (err) return res.status(400).json(err);
+                                else {
+                                  department = {
+                                    Dept_ID: unescaped_Dept_ID,
+                                    admin: []
+                                  };
+                                  result.forEach(row => {
+                                    Fname = row.Fname;
+                                    Lname = row.Lname;
+                                    if (Fname == null) {
+                                      Fname = "";
+                                    }
+                                    if (Lname == null) {
+                                      Lname = "";
+                                    }
+                                    Admin = {
+                                      Admin_Name: Fname + " " + Lname,
+                                      Admin_Email: row.Admin_Email
+                                    };
+                                    department.admin.push(Admin);
+                                  });
+
+                                  return res.status(200).json(department);
+                                }
+                              });
                             }
                           });
                         }

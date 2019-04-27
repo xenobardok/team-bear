@@ -17,8 +17,8 @@ export default function Coordinator(props) {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        console.log(props.Dept_ID, props.Admin_Email);
-        props.removeProgramAdmin(props.Dept_ID, props.Admin_Email);
+        console.log(props.Department_ID, props.Admin_Email);
+        props.removeProgramAdmin(props.Department_ID, props.Admin_Email);
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");
       }
     });

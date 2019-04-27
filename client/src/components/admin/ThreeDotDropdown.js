@@ -20,7 +20,7 @@ class CustomToggle extends React.Component {
 
   render() {
     return (
-      <a href="" onClick={this.handleClick}>
+      <a href="" onClick={this.handleClick} className="edit-cycle">
         {this.props.children}
       </a>
     );
