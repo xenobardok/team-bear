@@ -10,6 +10,7 @@ import {
   GET_ERRORS
 } from "./types";
 import { toastr } from "react-redux-toastr";
+import Swal from "sweetalert2";
 export const listAssignedRubrics = () => dispatch => {
   dispatch(setRubricsLoading());
   axios
@@ -160,9 +161,53 @@ export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
         "Content-Type": "multipart/form-data"
       }
     })
-    .then(res => dispatch(listAssignedTests()))
+    .then(res => {
+      dispatch(listAssignedTests());
+      toastr.success(
+        "Student Graded!",
+        "Students graded using file upload method"
+      );
+    })
     .catch(err => {
       dispatch(listAssignedTests());
       toastr.error("Error occured", "Student grade not added");
+    });
+};
+
+export const submitRubricTask = rubricMeasureID => dispatch => {
+  axios
+    .post(`/api/evaluations/rubricMeasure/${rubricMeasureID}/submit`)
+    .then(res =>
+      Swal.fire(
+        "Task Submitted!",
+        "Program coordinator has been notified of your work!",
+        "success"
+      )
+    )
+    .catch(err => {
+      Swal.fire({
+        type: "error",
+        title: "Oops...",
+        text: err.response.data.submit
+      });
+    });
+};
+
+export const submitTestTask = testMeasureID => dispatch => {
+  axios
+    .post(`/api/evaluations/testMeasure/${testMeasureID}/submit`)
+    .then(res =>
+      Swal.fire(
+        "Task Submitted!",
+        "Program coordinator has been notified of your work!",
+        "success"
+      )
+    )
+    .catch(err => {
+      Swal.fire({
+        type: "error",
+        title: "Oops...",
+        text: err.response.data.submit
+      });
     });
 };

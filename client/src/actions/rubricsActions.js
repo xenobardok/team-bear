@@ -130,14 +130,12 @@ export const setDataValue = (id, value) => dispatch => {
 
 export const deleteRubric = rubricID => dispatch => {
   // dispatch(setProgramLoading());
+  console.log(rubricID);
   axios
     .delete(`/api/rubrics/${rubricID}`)
     .then(res => {
       Swal.fire("Deleted!", `Rubric has been deleted.`, "success");
-      dispatch({
-        type: DELETE_RUBRIC,
-        payload: res.data.admin
-      });
+      dispatch(getRubrics());
     })
     .catch(err => {
       dispatch({

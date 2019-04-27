@@ -45,7 +45,7 @@ class NavBar extends Component {
     return (
       <Navbar>
         <Container>
-          <Link to="/" style={{ paddingLeft: "55px" }}>
+          <Link to="/dashboard" style={{ paddingLeft: "55px" }}>
             <Navbar.Brand>ULM Evaluations</Navbar.Brand>
           </Link>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />

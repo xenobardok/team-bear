@@ -127,7 +127,7 @@ export const removeEvaluator = removeEmail => dispatch => {
         `We've removed ${res.data.Email} from the list of evaluators!`,
         "success"
       );
-      dispatch(this.getEvaluators());
+      dispatch(getEvaluators());
     })
     .catch(err => {
       dispatch({

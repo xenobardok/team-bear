@@ -294,7 +294,7 @@ table.report th, table.report td{
 }
 
 .cells:hover {
-  border: 1.5px solid black !important;
+  border: 2px solid black !important;
   border-radius: 5px !important;
   cursor: pointer;
 }
@@ -584,6 +584,10 @@ a:hover {
   /* font-size: 30px !important; */
 }
 
+.grade-table{
+
+} 
+
 .students {
   max-width: 400px!important; 
 }
@@ -676,4 +680,12 @@ a:hover {
 
 .measure-name{
   width: 50%;
+}
+
+pre{
+  white-space: pre-wrap;
+  font-family: inherit;
+  padding: 5px;
+  margin-bottom: 0px;
+  border: none;
 }

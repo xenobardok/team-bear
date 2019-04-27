@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getRubrics } from "../../actions/rubricsActions";
+import { getRubrics, deleteRubric } from "../../actions/rubricsActions";
 import { ListGroup, Card, Button } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
+import EditableRubricList from "./EditableRubricList";
 // import SideBar from "./SideBar";
 
 class Rubrics extends Component {
@@ -22,14 +23,19 @@ class Rubrics extends Component {
       // Check if logged in user has rubrics to view
       if (Object.keys(allRubrics).length > 0) {
         rubricsList = allRubrics.map(value => (
-          <Link
+          <EditableRubricList
             key={value.Rubric_ID}
-            to={"/dashboard/rubrics/" + value.Rubric_ID}
-          >
-            <ListGroup.Item action key={value.Rubric_ID}>
-              {value.Rubrics_Name}
-            </ListGroup.Item>
-          </Link>
+            {...value}
+            deleteRubric={this.props.deleteRubric}
+          />
+          // <Link
+          //   key={value.Rubric_ID}
+          //   to={"/dashboard/rubrics/" + value.Rubric_ID}
+          // >
+          //   <ListGroup.Item action key={value.Rubric_ID}>
+          //     {value.Rubrics_Name}
+          //   </ListGroup.Item>
+          // </Link>
         ));
       } else {
         rubricsList = (
@@ -80,5 +86,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getRubrics }
+  { getRubrics, deleteRubric }
 )(Rubrics);
