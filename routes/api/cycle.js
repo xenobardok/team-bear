@@ -158,9 +158,43 @@ router.put(
                 .status(400)
                 .json({ error: "There was some problem adding it" });
             else {
-              return res
-                .status(200)
-                .json({ message: "Cycle Successfully Submitted" });
+              sql =
+                "SELECT * FROM RUBRIC_MEASURES NATURAL JOIN MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE Cycle_ID=" +
+                Cycle_ID;
+
+              db.query(sql, (err, result) => {
+                if (err)
+                  return res
+                    .status(400)
+                    .json({ error: "There was some problem adding it" });
+                else if (result.length > 0) {
+                  sql = "";
+
+                  result.forEach(row => {
+                    Rubric_ID = row.Rubric_ID;
+
+                    sql +=
+                      " UPDATE RUBRIC SET isVisible='false' WHERE Rubric_ID= " +
+                      Rubric_ID +
+                      ";";
+                  });
+                  db.query(sql, (err, result) => {
+                    if (err)
+                      return res
+                        .status(400)
+                        .json({ error: "There was some problem adding it" });
+                    else {
+                      return res
+                        .status(200)
+                        .json({ message: "Cycle Successfully Submitted" });
+                    }
+                  });
+                } else {
+                  return res
+                    .status(200)
+                    .json({ message: "Cycle Successfully Submitted" });
+                }
+              });
             }
           });
         }
