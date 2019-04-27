@@ -273,8 +273,9 @@ class ViewRubric extends Component {
               {this.state.Student_Grades[index]}
             </td>
             {rubric.isWeighted === "true" ? (
-              <td key="Score" className="borderedCell grade centerAlign">
-                {/* <FormControl
+              <>
+                <td className="borderedCell grade centerAlign">
+                  {/* <FormControl
                   name={"Student_Grades[" + index + "]"}
                   as="textarea"
                   aria-label="With textarea"
@@ -282,8 +283,12 @@ class ViewRubric extends Component {
                   className="grade centerAlign cells"
                   disabled
                 /> */}
-                {this.state.Weighted_Grades[index]}
-              </td>
+                  {this.state.Weighted_Grades[index]}
+                </td>
+                <td className="borderedCell grade centerAlign">
+                  {singleRow.Rubric_Row_Weight}
+                </td>
+              </>
             ) : null}
           </tr>
         ));
@@ -343,7 +348,12 @@ class ViewRubric extends Component {
                       {scalesRow}
                       <th className="grade centerAlign borderedCell">Score</th>
                       {rubric.isWeighted === "true" ? (
-                        <th className="grade centerAlign borderedCell">WS</th>
+                        <>
+                          <th className="grade centerAlign borderedCell">WS</th>
+                          <th className="grade centerAlign borderedCell">
+                            Percentage
+                          </th>
+                        </>
                       ) : null}
                     </tr>
                   </thead>
