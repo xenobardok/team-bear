@@ -55,6 +55,9 @@ let calculateMeasure = Rubric_Measure_ID => {
               }
 
               //sql to update the percent of success and isSuccess for a Rubric Measure
+              if (Threshold == 0) {
+                Measure_Success = db.escape("false");
+              }
 
               sql =
                 "UPDATE RUBRIC_MEASURES SET Score=" +

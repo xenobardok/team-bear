@@ -833,7 +833,7 @@ router.post(
               "There was some problem submitting the evaluation. Please try again later";
             return res.status(400).json(errors);
           }
-          message = " have  evaluated the test  " + Test_Name + ".";
+          message = " have evaluated the test  " + Test_Name + ".";
           sql =
             "INSERT INTO ACTIVITY_LOG(To_Dept_ID,From_Email,Message) VALUES(" +
             To_Dept +
@@ -907,7 +907,7 @@ router.post(
             return res.status(400).json(errors);
           }
           message =
-            " have evlauted the rubric  " +
+            " have evaluated the rubric  " +
             Rubric_Name +
             " of the class " +
             Class_Name +

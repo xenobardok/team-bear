@@ -52,6 +52,10 @@ let calculateTestMeasure = Test_Measure_ID => {
                 Measure_Success = db.escape("true");
               }
 
+              if (Threshold == 0) {
+                Measure_Success = db.escape("false");
+              }
+
               //sql to update the percent of success and isSuccess for a Test Measure
 
               sql =
