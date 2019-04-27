@@ -356,7 +356,7 @@ router.get(
 );
 
 // @route   POST api/rubrics/measures/update/:handle
-// @desc    update the changes in  a measure factor of a rubric
+// @desc    update the changes in a measure factor of a rubric
 // @access  Private route
 router.post(
   "/measure/update/:handle",
