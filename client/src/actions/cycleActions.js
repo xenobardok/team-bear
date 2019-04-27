@@ -4,7 +4,8 @@ import {
   LOADING,
   GET_SINGLE_CYCLE,
   GET_ERRORS,
-  CREATE_CYCLE
+  CREATE_CYCLE,
+  GET_SUBMITTED_CYCLES
 } from "./types";
 import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
@@ -18,6 +19,17 @@ export const getCycles = () => dispatch => {
     })
   );
 };
+
+export const getSubmittedCycles = () => dispatch => {
+  dispatch(setCycleLoading());
+  axios.get("/api/cycle/submitted").then(res =>
+    dispatch({
+      type: GET_SUBMITTED_CYCLES,
+      payload: res.data
+    })
+  );
+};
+
 export const updateCycleName = (cycleID, Cycle_Name) => dispatch => {
   dispatch(setCycleLoading());
   axios
@@ -161,10 +173,17 @@ export const deleteCycle = cycleID => dispatch => {
     });
 };
 
-export const createNewOutcome = (id, Outcome_Name) => dispatch => {
-  console.log(id, Outcome_Name);
+export const createNewOutcome = (
+  id,
+  Outcome_Name,
+  curriculumMap
+) => dispatch => {
+  console.log(id, Outcome_Name, curriculumMap);
   axios
-    .post(`/api/cycle/${id}/outcome/create`, { Outcome_Name: Outcome_Name })
+    .post(`/api/cycle/${id}/outcome/create`, {
+      Outcome_Name: Outcome_Name,
+      Class_Factors: curriculumMap
+    })
     .then(res => {
       dispatch(getSingleCycle(id));
     })

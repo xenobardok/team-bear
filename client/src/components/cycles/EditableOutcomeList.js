@@ -185,7 +185,7 @@ class EditableOutcomeList extends Component {
             </Link>
             <OverlayTrigger
               placement="top"
-              overlay={<Tooltip>Edit Outcome</Tooltip>}
+              overlay={<Tooltip>Options</Tooltip>}
             >
               <div
                 style={{
@@ -203,6 +203,7 @@ class EditableOutcomeList extends Component {
                   editHandler={this.editHandler}
                   type="Outcome"
                   Outcome_ID={this.props.value.Outcome_ID}
+                  Is_Submitted={this.props.Is_Submitted}
                 />
               </div>
             </OverlayTrigger>

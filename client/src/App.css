@@ -294,7 +294,7 @@ table.report th, table.report td{
 }
 
 .cells:hover {
-  border: 1.5px solid black !important;
+  border: 2px solid black !important;
   border-radius: 5px !important;
   cursor: pointer;
 }
@@ -315,8 +315,9 @@ table.report th, table.report td{
 
 #page-wrap .card{
   margin: 0px auto;
-  max-width: 700px;
-  border-radius: 10px;
+  max-width: 400px;
+  /* border-radius: 10px; */
+  box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75);
 }
 
 #page-wrap {
@@ -583,6 +584,10 @@ a:hover {
   /* font-size: 30px !important; */
 }
 
+.grade-table{
+
+} 
+
 .students {
   max-width: 400px!important; 
 }
@@ -675,4 +680,36 @@ a:hover {
 
 .measure-name{
   width: 50%;
+}
+
+pre{
+  white-space: pre-wrap;
+  font-family: inherit;
+  padding: 5px;
+  margin-bottom: 0px;
+  border: none;
+}
+
+.mark-as-complete{
+  margin: 0px 10px;
+  float: right;
+  transition: 0.5s all;
+  
+}
+.mark-as-complete:hover{
+  color: green;
+  cursor: pointer;
+}
+
+.marked-as-complete {
+  margin: 0px 10px;
+  float: right;
+  transition: 0.5s all;
+  color: green;
+  cursor: pointer;
+}
+
+#page-wrap .card.report {
+  min-width: 400px;
+  max-width: 500px;
 }

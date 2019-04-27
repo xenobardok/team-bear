@@ -79,6 +79,7 @@ class ShowMeasures extends Component {
     let { measure, loading } = this.props.measures;
     let { id, outcomeID } = this.props.match.params;
     let measures = "";
+    let footer = "";
     if (loading || isEmpty(measure)) {
       measures = <Spinner />;
     } else if (measure.data) {
@@ -91,8 +92,20 @@ class ShowMeasures extends Component {
           updateMeasureLabel={this.props.updateMeasureLabel}
           measureID={value.Measure_ID}
           deleteMeasure={this.props.deleteMeasure}
+          Is_Submitted={measure.Is_Submitted}
         />
       ));
+
+      footer =
+        measure.Is_Submitted === "false" ? (
+          <Card.Footer
+            style={{ cursor: "pointer" }}
+            onClick={this.createNewMeasure.bind(this)}
+          >
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;&nbsp;&nbsp;Create a new measure
+          </Card.Footer>
+        ) : null;
     } else {
       measures = <ListGroup.Item>This measure does not exist</ListGroup.Item>;
     }
@@ -156,13 +169,7 @@ class ShowMeasures extends Component {
               ) : null}
             </ListGroup>
           </Card.Body>
-          <Card.Footer
-            style={{ cursor: "pointer" }}
-            onClick={this.createNewMeasure.bind(this)}
-          >
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;&nbsp;&nbsp;Create a new measure
-          </Card.Footer>
+          {footer}
         </Card>
       </div>
     );

@@ -10,7 +10,7 @@ import CycleReport from "./CycleReport";
 class ReportContents extends Component {
   render() {
     return (
-      <Switch>
+      <Switch className="report">
         <Route exact path="/dashboard/reports" component={MainReport} />
         <Route
           exact

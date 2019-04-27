@@ -284,17 +284,21 @@ export default class DefineMeasure extends Component {
               </OverlayTrigger>
             </>
           ) : (
-            <OverlayTrigger
-              key="save"
-              placement="top"
-              overlay={<Tooltip id="save">Edit Defination</Tooltip>}
-            >
-              <FontAwesomeIcon
-                icon="edit"
-                className="edit"
-                onClick={this.editToggle}
-              />
-            </OverlayTrigger>
+            <>
+              {this.props.Is_Submitted === "true" ? null : (
+                <OverlayTrigger
+                  key="save"
+                  placement="top"
+                  overlay={<Tooltip id="save">Edit Defination</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="edit"
+                    className="edit"
+                    onClick={this.editToggle}
+                  />
+                </OverlayTrigger>
+              )}
+            </>
           )}
           <h5>
             Measure Definition{" "}

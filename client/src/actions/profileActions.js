@@ -68,15 +68,16 @@ export const addEvaluator = newEmail => dispatch => {
         `We've sent email to ${res.data.Email} with instructions to register!`
       );
     })
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+      toastr.error("Error!", err.response.data.message);
+    });
 };
 
-export const removeEvaluator = removeEmail => dispatch => {
+export const cancelInvite = removeEmail => dispatch => {
   axios
     .delete("/api/users/cancelInvite", { data: { removeEmail: removeEmail } })
     .then(res => {
@@ -93,6 +94,40 @@ export const removeEvaluator = removeEmail => dispatch => {
       //   "Evaluator invite removed!",
       //   `We've removed ${res.data.Email} from the list of evaluators!`
       // );
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+      if (err.response.data.email) {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: err.response.data.email
+        });
+      } else {
+        Swal.fire({
+          type: "error",
+          title: "Oops...",
+          text: `Your process could not be processed at the moment`
+        });
+      }
+    });
+};
+
+export const removeEvaluator = removeEmail => dispatch => {
+  axios
+    .delete("/api/users/removeEvaluator", {
+      data: { removeEmail: removeEmail }
+    })
+    .then(res => {
+      Swal.fire(
+        "Deleted!",
+        `We've removed ${res.data.Email} from the list of evaluators!`,
+        "success"
+      );
+      dispatch(getEvaluators());
     })
     .catch(err => {
       dispatch({

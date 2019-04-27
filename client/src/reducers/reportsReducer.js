@@ -2,12 +2,14 @@ import {
   GENERATE_MEASURE_REPORT,
   REPORT_LOADING,
   GENERATE_OUTCOME_REPORT,
-  GENERATE_CYCLE_REPORT
+  GENERATE_CYCLE_REPORT,
+  GET_SUBMITTED_CYCLES
 } from "../actions/types";
 
 const initialState = {
   report: null,
-  loading: false
+  loading: false,
+  cycles: null
 };
 
 export default function(state = initialState, action) {
@@ -34,6 +36,12 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         report: action.payload
+      };
+    case GET_SUBMITTED_CYCLES:
+      return {
+        ...state,
+        loading: false,
+        cycles: action.payload
       };
     default:
       return state;

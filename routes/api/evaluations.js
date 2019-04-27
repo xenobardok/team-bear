@@ -34,7 +34,7 @@ router.get(
 
     Rubrics = [];
     let sql =
-      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
+      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name, Did_Submit  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN MEASURES NATURAL  JOIN OUTCOMES NATURAL JOIN RUBRIC NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
       email;
 
     db.query(sql, (err, result) => {
@@ -44,10 +44,11 @@ router.get(
         result.forEach(row => {
           id = row.Rubric_Measure_ID;
           name = row.Rubric_Name;
-
+          hasSubmitted = row.Did_Submit;
           rubric = {
             Rubric_Measure_ID: id,
-            Rubric_Name: name
+            Rubric_Name: name,
+            hasSubmitted: hasSubmitted
           };
           Rubrics.push(rubric);
         });
@@ -70,9 +71,10 @@ router.get(
 
     Tests = [];
     let sql =
-      "SELECT Test_Measure_ID, Exam_Name  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR WHERE Evaluator_Email =" +
+      "SELECT Test_Measure_ID, Exam_Name, Did_Submit  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR NATURAL JOIN MEASURES NATURAL  JOIN OUTCOMES  NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
       email;
 
+    console.log(sql);
     db.query(sql, (err, result) => {
       if (err)
         res.status(404).json({ error: "There was a problem loading it" });
@@ -80,9 +82,11 @@ router.get(
         result.forEach(row => {
           id = row.Test_Measure_ID;
           name = row.Exam_Name;
+          hasSubmitted = row.Did_Submit;
           test = {
             Test_Measure_ID: id,
-            Test_Name: name
+            Test_Name: name,
+            hasSubmitted: hasSubmitted
           };
           Tests.push(test);
         });
@@ -127,6 +131,7 @@ router.get(
         Rubric.isWeighted = result[0].isWeighted;
         Rubric.Students = [];
         Rubric.data = [];
+        Rubric.hasSubmitted = result[0].Did_Submit;
 
         sql =
           "SELECT * FROM RUBRIC NATURAL JOIN RUBRIC_SCALE WHERE Rubric_ID =" +
@@ -255,6 +260,7 @@ router.get(
         Test.Test_Name = result[0].Exam_Name;
         Test.StudentsData = [];
         Test.Test_Type = result[0].Test_Type;
+        Test.hasSubmitted = result[0].Did_Submit;
 
         sql =
           "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
@@ -828,7 +834,7 @@ router.post(
               "There was some problem submitting the evaluation. Please try again later";
             return res.status(400).json(errors);
           }
-          message = " have been evlauted the test  " + Test_Name + ".";
+          message = " have evaluated the test  " + Test_Name + ".";
           sql =
             "INSERT INTO ACTIVITY_LOG(To_Dept_ID,From_Email,Message) VALUES(" +
             To_Dept +
@@ -841,7 +847,8 @@ router.post(
           db.query(sql, (err, result) => {
             if (err) {
               return res.status(400).json({
-                error: "There was some problem adding  the evaluator"
+                submit:
+                  "There was some problem submitting the evaluation. Please try again later"
               });
             }
             return res
@@ -901,7 +908,7 @@ router.post(
             return res.status(400).json(errors);
           }
           message =
-            " have evlauted the rubric  " +
+            " have evaluated the rubric  " +
             Rubric_Name +
             " of the class " +
             Class_Name +
@@ -918,7 +925,7 @@ router.post(
           db.query(sql, (err, result) => {
             if (err) {
               return res.status(400).json({
-                error: "There was some problem adding  the evaluator"
+                submit: "There was some problem submitting the task"
               });
             }
             return res

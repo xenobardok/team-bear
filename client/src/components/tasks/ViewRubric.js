@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import {
   viewRubricMeasure,
   viewStudentGradeRubricMeasure,
-  gradeStudentRubricMeasure
+  gradeStudentRubricMeasure,
+  submitRubricTask
 } from "../../actions/evaluationsActions";
 import {
   Table,
@@ -15,11 +16,18 @@ import {
   Card,
   ListGroup,
   Button,
-  Alert
+  Alert,
+  OverlayTrigger,
+  Tooltip
 } from "react-bootstrap";
 import { toastr } from "react-redux-toastr";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+library.add(faCheckCircle);
 
 let scalesRow, dataRow;
 
@@ -193,6 +201,24 @@ class ViewRubric extends Component {
     let value = this.state.rubricScale[rowIndex];
     this.changeStudentGrade(index, value);
   };
+
+  markAsComplete = () => {
+    let { rubricMeasureId } = this.props.match.params;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Your program coordinators will be notified!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, mark it!"
+    }).then(result => {
+      if (result.value) {
+        this.props.submitRubricTask(rubricMeasureId);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { rubric, loading } = this.props.evaluations;
     let displayRubric = "";
@@ -209,57 +235,92 @@ class ViewRubric extends Component {
 
         dataRow = rubric.data.map((singleRow, index) => (
           <tr key={singleRow.Rubric_Row_ID}>
-            <td className="borderedCell">
-              <FormControl
+            <td className="borderedCell measureTitle centerAlign">
+              {/* <FormControl
                 as="textarea"
                 aria-label="With textarea"
                 defaultValue={singleRow.Measure_Factor}
                 className="measureTitle centerAlign cells"
                 disabled
-              />
+              /> */}
+              {singleRow.Measure_Factor}
             </td>
             {singleRow.Column_values.map((cell, rowIndex) => (
               <td
                 key={cell.Column_ID}
-                className="borderedCell"
+                className="borderedCell cells"
                 onClick={this.boxClickHandler.bind(this, index, rowIndex)}
               >
-                <FormControl
+                {/* <FormControl
                   as="textarea"
                   aria-label="With textarea"
                   defaultValue={cell.value}
                   className="cells"
                   disabled
-                />
+                /> */}
+                <pre>{cell.value}</pre>
               </td>
             ))}
-            <td className="borderedCell">
-              <FormControl
+            <td className="borderedCell grade centerAlign">
+              {/* <FormControl
                 name={"Student_Grades[" + index + "]"}
                 as="textarea"
                 aria-label="With textarea"
                 value={this.state.Student_Grades[index]}
                 className="grade centerAlign cells"
                 onChange={this.onChangeHandlerArray.bind(this, index)}
-              />
+              /> */}
+              {this.state.Student_Grades[index]}
             </td>
             {rubric.isWeighted === "true" ? (
-              <td key="Score" className="borderedCell">
-                <FormControl
+              <td key="Score" className="borderedCell grade centerAlign">
+                {/* <FormControl
                   name={"Student_Grades[" + index + "]"}
                   as="textarea"
                   aria-label="With textarea"
                   value={this.state.Weighted_Grades[index]}
                   className="grade centerAlign cells"
                   disabled
-                />
+                /> */}
+                {this.state.Weighted_Grades[index]}
               </td>
             ) : null}
           </tr>
         ));
         displayRubric = (
-          <div style={{ margin: "0px auto", maxWidth: "1600px" }}>
-            <h2>{rubric.Rubric_Name}</h2>
+          <div
+            style={{
+              margin: "0px auto",
+              maxWidth: "1600px",
+              marginBottom: "100px"
+            }}
+          >
+            <h2>
+              {rubric.hasSubmitted === "false" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Mark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="mark-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Remark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="marked-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              )}
+              {rubric.Rubric_Name}
+            </h2>
             <h5>
               {isEmpty(this.state.Student_Name) ? (
                 <Alert variant="info" className="text-center">
@@ -273,7 +334,7 @@ class ViewRubric extends Component {
             </h5>
             <Row>
               <Col xs={9}>
-                <Table bordered striped>
+                <Table bordered striped className="grade-table">
                   <thead>
                     <tr className="header">
                       <th className="measureTitle centerAlign borderedCell">
@@ -295,7 +356,7 @@ class ViewRubric extends Component {
                   <Card.Body
                     style={{
                       padding: "0px",
-                      maxHeight: "800px",
+                      maxHeight: "680px",
                       overflowY: "scroll"
                     }}
                   >
@@ -360,6 +421,7 @@ export default connect(
   {
     viewRubricMeasure,
     viewStudentGradeRubricMeasure,
-    gradeStudentRubricMeasure
+    gradeStudentRubricMeasure,
+    submitRubricTask
   }
 )(ViewRubric);

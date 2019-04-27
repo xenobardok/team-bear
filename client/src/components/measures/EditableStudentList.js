@@ -35,6 +35,13 @@ class EditableStudentList extends Component {
     });
   };
 
+  cancelStudent = e => {
+    this.setState({
+      edit: !this.state.edit,
+      Student_Name: this.props.Student_Name,
+      Student_ID: this.props.Student_ID
+    });
+  };
   deleteStudent = e => {
     this.props.removeStudentButton(this.state.Student_ID);
   };
@@ -61,33 +68,41 @@ class EditableStudentList extends Component {
     let student;
     if (!edit) {
       student = (
-        <div
-          onMouseEnter={this.onMouseEnterHandler}
-          onMouseLeave={this.onMouseExitHandler}
-        >
-          {this.state.showEdit ? (
-            <OverlayTrigger
-              key="top"
-              placement="right"
-              overlay={
-                <Tooltip id="edit-student">
-                  Edit {this.state.Student_Name}
-                </Tooltip>
-              }
+        <>
+          {this.props.Is_Submitted === "true" ? (
+            <li key={Student_Name}>
+              {Student_Name} : {Student_ID}
+            </li>
+          ) : (
+            <div
+              onMouseEnter={this.onMouseEnterHandler}
+              onMouseLeave={this.onMouseExitHandler}
             >
-              <FontAwesomeIcon
-                icon="edit"
-                className="edit"
-                onClick={this.editStudent}
-              />
-            </OverlayTrigger>
-          ) : null}
-          {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
+              {this.state.showEdit ? (
+                <OverlayTrigger
+                  key="top"
+                  placement="right"
+                  overlay={
+                    <Tooltip id="edit-student">
+                      Edit {this.state.Student_Name}
+                    </Tooltip>
+                  }
+                >
+                  <FontAwesomeIcon
+                    icon="edit"
+                    className="edit"
+                    onClick={this.editStudent}
+                  />
+                </OverlayTrigger>
+              ) : null}
+              {/* <FontAwesomeIcon icon="edit" className="edit" /> */}
 
-          <li key={Student_Name}>
-            {Student_Name} : {Student_ID}
-          </li>
-        </div>
+              <li key={Student_Name}>
+                {Student_Name} : {Student_ID}
+              </li>
+            </div>
+          )}
+        </>
       );
     } else {
       student = (
@@ -130,7 +145,10 @@ class EditableStudentList extends Component {
                 placement="top"
                 overlay={<Tooltip>Cancel</Tooltip>}
               >
-                <Button variant="outline-secondary" onClick={this.editStudent}>
+                <Button
+                  variant="outline-secondary"
+                  onClick={this.cancelStudent}
+                >
                   <FontAwesomeIcon icon="window-close" />
                 </Button>
               </OverlayTrigger>

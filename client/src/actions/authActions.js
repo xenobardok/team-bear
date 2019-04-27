@@ -1,8 +1,13 @@
 import axios from "axios";
 import setAuthToken from "../util/setAuthToken";
 import jwt_decode from "jwt-decode";
-import { SET_CURRENT_USER, GET_ERRORS, RECENT_CYCLE } from "./types";
-
+import {
+  SET_CURRENT_USER,
+  GET_ERRORS,
+  RECENT_CYCLE,
+  REGISTER_USER
+} from "./types";
+import { toastr } from "react-redux-toastr";
 // Login - Get User token
 export const loginUser = userData => dispatch => {
   axios
@@ -19,6 +24,7 @@ export const loginUser = userData => dispatch => {
       const decoded = jwt_decode(token);
       // Set current user
       dispatch(setCurrentUser(decoded));
+      toastr.success("Successfully logged in!", "Welcome to ULM Evaluations!");
     })
     .catch(err =>
       dispatch({
@@ -59,4 +65,23 @@ export const recentCycle = () => dispatch => {
         payload: err.response.data
       });
     });
+};
+
+export const registerUser = (newUser, history) => dispatch => {
+  axios
+    .post("/api/users/register", newUser)
+    .then(res => {
+      dispatch({
+        type: REGISTER_USER,
+        payload: res.data
+      });
+      toastr.success("Successfully registered!", "Pleases login now!");
+      history.push("/login");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };

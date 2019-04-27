@@ -58,3 +58,5 @@ export const DELETE_RUBRIC = "DELETE_RUBRIC";
 export const RECENT_CYCLE = "RECENT_CYCLE";
 export const GET_LOGS = "GET_LOGS";
 export const LOADING_LOGS = "LOADING_LOGS";
+export const GET_SUBMITTED_CYCLES = "GET_SUBMITTED_CYCLES";
+export const REGISTER_USER = "REGISTER_USER";

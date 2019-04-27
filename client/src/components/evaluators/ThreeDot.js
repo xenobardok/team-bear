@@ -30,6 +30,23 @@ class CustomToggle extends React.Component {
 }
 
 export default function ThreeDotCycle(props) {
+  let cancelInvite = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(result => {
+      if (result.value) {
+        props.cancelInvite(props.email);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
+
   let removeEvaluator = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -54,9 +71,11 @@ export default function ThreeDotCycle(props) {
 
       <Dropdown.Menu>
         {props.type === "invite" ? (
-          <Dropdown.Item onClick={removeEvaluator}>Cancel Invite</Dropdown.Item>
+          <Dropdown.Item onClick={cancelInvite}>Cancel Invite</Dropdown.Item>
         ) : (
-          <Dropdown.Item>Remove Evaluator</Dropdown.Item>
+          <Dropdown.Item onClick={removeEvaluator}>
+            Remove Evaluator
+          </Dropdown.Item>
         )}
       </Dropdown.Menu>
     </Dropdown>

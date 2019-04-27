@@ -4,7 +4,8 @@ import {
   REPORT_LOADING,
   GET_ERRORS,
   GENERATE_OUTCOME_REPORT,
-  GENERATE_CYCLE_REPORT
+  GENERATE_CYCLE_REPORT,
+  GET_SUBMITTED_CYCLES
 } from "./types";
 
 export const generateMeasureReport = measureID => dispatch => {
@@ -59,6 +60,24 @@ export const generateCycleReport = CycleID => dispatch => {
         payload: res.data
       });
     })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+export const getSubmittedCycles = () => dispatch => {
+  dispatch(reportLoading());
+  axios
+    .get("/api/cycle/submitted")
+    .then(res =>
+      dispatch({
+        type: GET_SUBMITTED_CYCLES,
+        payload: res.data
+      })
+    )
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

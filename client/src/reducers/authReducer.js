@@ -1,4 +1,8 @@
-import { SET_CURRENT_USER, RECENT_CYCLE } from "../actions/types";
+import {
+  SET_CURRENT_USER,
+  RECENT_CYCLE,
+  REGISTER_USER
+} from "../actions/types";
 import isEmpty from "../validation/isEmpty";
 
 const initialState = {
@@ -19,6 +23,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         dashboard: action.payload
+      };
+    case REGISTER_USER:
+      return {
+        ...state,
+        user: {
+          registered: !isEmpty(action.payload)
+        }
       };
     default:
       return state;

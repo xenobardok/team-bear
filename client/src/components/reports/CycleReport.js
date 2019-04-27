@@ -17,47 +17,49 @@ class CycleReport extends Component {
     if (loading || isEmpty(report)) {
       tableContent = <Spinner />;
     } else {
-      tableContent = (
-        <>
-          <h3 className="text-center">
-            {report.Cycle_Name} - Summary of Results
-          </h3>
-          <Table striped bordered hover className="text-center report">
-            <thead>
-              <tr>
-                {report.Header.map((head, index) =>
-                  index === 0 ? (
-                    <th className="measure-name">{head}</th>
-                  ) : (
-                    <th>{head}</th>
-                  )
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {report.Outcomes.map(outcome => (
-                <>
-                  {outcome.Data.map((data, index) => (
-                    <tr>
-                      {index === 0 ? (
-                        <td
-                          rowSpan={outcome.Data.length}
-                          className="measure-name"
-                        >
-                          {outcome.Outcome_Name}
-                        </td>
-                      ) : null}
-                      {data.map(singleCol => (
-                        <td>{singleCol}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </>
-              ))}
-            </tbody>
-          </Table>
-        </>
-      );
+      if (!isEmpty(report.Outcomes)) {
+        tableContent = (
+          <>
+            <h3 className="text-center">
+              {report.Cycle_Name} - Summary of Results
+            </h3>
+            <Table striped bordered hover className="text-center report">
+              <thead>
+                <tr>
+                  {report.Header.map((head, index) =>
+                    index === 0 ? (
+                      <th className="measure-name">{head}</th>
+                    ) : (
+                      <th>{head}</th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {report.Outcomes.map(outcome => (
+                  <>
+                    {outcome.Data.map((data, index) => (
+                      <tr>
+                        {index === 0 ? (
+                          <td
+                            rowSpan={outcome.Data.length}
+                            className="measure-name"
+                          >
+                            {outcome.Outcome_Name}
+                          </td>
+                        ) : null}
+                        {data.map(singleCol => (
+                          <td>{singleCol}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </>
+                ))}
+              </tbody>
+            </Table>
+          </>
+        );
+      }
     }
     return <>{tableContent}</>;
   }

@@ -32,19 +32,20 @@ class EvaluatorBox extends Component {
   render() {
     let { Evaluator_Name, Evaluator_Email } = this.props;
     let content = "";
-    console.log("HERERERER");
-    console.log(Evaluator_Name, Evaluator_Email);
     if (
       !isEmpty(this.props.Evaluator_Name) ||
       !isEmpty(this.props.Evaluator_Email)
     ) {
       content = (
         <div className="singleEvaluator">
-          <FontAwesomeIcon
-            icon="times-circle"
-            className="crossIcon"
-            onClick={this.removeEvaluatorMeasureButton}
-          />
+          {this.props.Is_Submitted === "true" ? null : (
+            <FontAwesomeIcon
+              icon="times-circle"
+              className="crossIcon"
+              onClick={this.removeEvaluatorMeasureButton}
+            />
+          )}
+
           <div
             style={{ paddingRight: "30px" }}
             onClick={this.evaluatorBoxClickHandler}
