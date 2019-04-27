@@ -241,10 +241,9 @@ router.put(
                   .status(400)
                   .json({ Dept_ID: "Department Not found" });
               } else {
-                sql =
-                  "SELECT * FROM Department WHERE Department_ID=" +
-                  Department_ID;
+                sql = "SELECT * FROM Department WHERE Dept_ID=" + New_Dept_ID;
                 db.query(sql, (err, result) => {
+                  console.log(sql);
                   if (err) return res.status(400).json(err);
                   else {
                     if (result.length > 0) {
