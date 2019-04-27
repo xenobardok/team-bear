@@ -739,7 +739,7 @@ router.get(
                   }
                   i++;
                 }
-                Measure.Outcome_Index = i;
+                Outcome.Outcome_Index = i;
 
                 Outcome.data = [];
                 sql =
@@ -759,7 +759,7 @@ router.get(
                         Measure_type: row.Measure_type,
                         Measure_Success: row.isSuccess,
                         Is_Submitted: Is_Submitted,
-                        Outcome_Index: Measure.Outcome_Index
+                        Outcome_Index: Outcome.Outcome_Index
                       };
                       updateOutcome(row.Measure_ID);
                       i++;
