@@ -780,6 +780,8 @@ router.delete(
                   .json({ Dept_ID: "Department Not found" });
               } else {
                 let Dept_ID = db.escape(result[0].Dept_ID);
+
+                unescaped_Dept_ID = result[0].Dept_ID;
                 sql =
                   "SELECT * FROM Evaluators  E, PROGRAM_ADMIN  A  WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
                   Dept_ID +
@@ -806,11 +808,12 @@ router.delete(
                           sql =
                             "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
                             Dept_ID;
+
                           db.query(sql, (err, result) => {
                             if (err) return res.status(400).json(err);
                             else {
                               department = {
-                                Dept_ID: result[0].Dept_ID,
+                                Dept_ID: unescaped_Dept_ID,
                                 admin: []
                               };
                               result.forEach(row => {
