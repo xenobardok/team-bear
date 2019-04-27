@@ -6,6 +6,11 @@ import { getRubrics, deleteRubric } from "../../actions/rubricsActions";
 import { ListGroup, Card, Button } from "react-bootstrap";
 import Spinner from "../../common/Spinner";
 import EditableRubricList from "./EditableRubricList";
+
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+library.add(faPlus);
 // import SideBar from "./SideBar";
 
 class Rubrics extends Component {
@@ -42,11 +47,11 @@ class Rubrics extends Component {
           <div>
             <br />
 
-            <h4>There is no rubrics to view for you!</h4>
-            {/* <Link to="/dashboard">
-              <Button variant="info">Return to Dashboard</Button>
-            </Link> */}
-            {/* <br /> */}
+            <h5>There are no rubrics to view for you!</h5>
+            <Link to="/dashboard">
+              <Button variant="primary">Return to Dashboard</Button>
+            </Link>
+            <br />
             <br />
           </div>
         );
@@ -54,11 +59,7 @@ class Rubrics extends Component {
     }
 
     if (this.props.auth.user.type === "Admin") {
-      createRubric = (
-        <Link to="/dashboard/rubrics/create">
-          <Button variant="primary">Create a new rubric</Button>
-        </Link>
-      );
+      createRubric = <Link to="/dashboard/rubrics/create" />;
     }
     return (
       <Card className="text-center">
@@ -66,7 +67,13 @@ class Rubrics extends Component {
         <Card.Body style={{ padding: "0px" }}>
           <ListGroup variant="flush">{rubricsList}</ListGroup>
         </Card.Body>
-        <Card.Footer>{createRubric}</Card.Footer>
+        <Card.Footer
+          onClick={() => this.props.history.push("/dashboard/rubrics/create")}
+          style={{ cursor: "pointer" }}
+        >
+          <FontAwesomeIcon icon="plus" />
+          &nbsp;&nbsp;&nbsp; Create a new rubric
+        </Card.Footer>
       </Card>
     );
   }

@@ -72,9 +72,9 @@ class Cycles extends Component {
           cyclesList = (
             <div>
               <br />
-              <h4>There is no cycles to view for you!</h4>
+              <h5>There are no active cycles to view for you!</h5>
               <Link to="/dashboard">
-                <Button variant="info">Return to Dashboard</Button>
+                <Button variant="primary">Return to Dashboard</Button>
               </Link>
               <br />
               <br />
