@@ -645,7 +645,7 @@ router.post(
                                 "," +
                                 Dept_ID +
                                 "," +
-                                Temp_Code +
+                                db.escape(Temp_Code) +
                                 ",'false')";
 
                               db.query(sql, (err, result) => {
