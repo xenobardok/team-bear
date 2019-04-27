@@ -34,7 +34,7 @@ router.get(
 
     Rubrics = [];
     let sql =
-      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name, Did_Submit  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
+      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name, Did_Submit  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN MEASURES NATURAL  JOIN OUTCOMES NATURAL JOIN RUBRIC NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
       email;
 
     db.query(sql, (err, result) => {
@@ -71,9 +71,10 @@ router.get(
 
     Tests = [];
     let sql =
-      "SELECT Test_Measure_ID, Exam_Name, Did_Submit  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
+      "SELECT Test_Measure_ID, Exam_Name, Did_Submit  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR NATURAL JOIN MEASURES NATURAL  JOIN OUTCOMES  NATURAL JOIN  ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email =" +
       email;
 
+    console.log(sql);
     db.query(sql, (err, result) => {
       if (err)
         res.status(404).json({ error: "There was a problem loading it" });
