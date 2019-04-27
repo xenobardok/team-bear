@@ -162,7 +162,7 @@ class EditableMeasureList extends Component {
             </Link>
             <OverlayTrigger
               placement="top"
-              overlay={<Tooltip>Edit Measure</Tooltip>}
+              overlay={<Tooltip>Options</Tooltip>}
             >
               <div
                 style={{
@@ -172,7 +172,13 @@ class EditableMeasureList extends Component {
                   cursor: "pointer"
                 }}
               >
-                <ThreeDotCycle editHandler={this.editHandler} type="Measure" />
+                <ThreeDotCycle
+                  editHandler={this.editHandler}
+                  type="Measure"
+                  Is_Submitted={this.props.Is_Submitted}
+                  Measure_ID={this.props.value.Measure_ID}
+                  Measure_type={this.props.value.Measure_type}
+                />
                 {/* <FontAwesomeIcon
                   icon="edit"
                   className="edit"

@@ -299,6 +299,7 @@ class Measure extends Component {
             Measure_Type={this.state.Measure_Type}
             Test_Name={this.state.Test_Name}
             Test_Type={this.props.measures.singleMeasure.Test_Type}
+            Is_Submitted={this.props.measures.singleMeasure.Is_Submitted}
           />
           <br />
           <Stats
@@ -310,19 +311,24 @@ class Measure extends Component {
           <br />
 
           <section id="evaluators">
-            <span style={{ float: "right", fontSize: "1.25rem" }}>
-              <OverlayTrigger
-                key="top"
-                placement="top"
-                overlay={<Tooltip id="add-evaluator">Add Evaluator</Tooltip>}
-              >
-                <FontAwesomeIcon
-                  icon="user-plus"
-                  onClick={this.addEvaluator}
-                  className="addEvaluatorIcon"
-                />
-              </OverlayTrigger>
-            </span>
+            {this.props.measures.singleMeasure.Is_Submitted ===
+            "true" ? null : (
+              <span style={{ float: "right", fontSize: "1.25rem" }}>
+                {" "}
+                <OverlayTrigger
+                  key="top"
+                  placement="top"
+                  overlay={<Tooltip id="add-evaluator">Add Evaluator</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="user-plus"
+                    onClick={this.addEvaluator}
+                    className="addEvaluatorIcon"
+                  />
+                </OverlayTrigger>
+              </span>
+            )}
+
             <h5>Evaluators</h5>
             <div className="evaluators">
               {!isEmpty(Evaluators)
@@ -335,6 +341,9 @@ class Measure extends Component {
                       removeEvaluatorMeasure={this.props.removeEvaluatorMeasure}
                       cycleID={this.props.match.params.id}
                       outcomeID={this.props.match.params.outcomeID}
+                      Is_Submitted={
+                        this.props.measures.singleMeasure.Is_Submitted
+                      }
                     />
                   ))
                 : null}
@@ -359,6 +368,9 @@ class Measure extends Component {
                           key={value.Student_ID}
                           removeStudentButton={this.removeStudentButton}
                           Measure_ID={Measure_ID}
+                          Is_Submitted={
+                            this.props.measures.singleMeasure.Is_Submitted
+                          }
                         />
                       ))
                     ) : (
@@ -367,91 +379,96 @@ class Measure extends Component {
                   </>
                 )}
               </ol>
-              {!addStudentBox ? (
-                <DropdownButton
-                  size="sm"
-                  variant="primary"
-                  title="Add Students"
-                  id="student-add"
-                  key="addStudentDropdown"
-                  style={{ textAlign: "center" }}
-                >
-                  <Dropdown.Item
-                    eventKey="1"
-                    onClick={this.toggleAddStudentButton}
-                  >
-                    Add a Student
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    eventKey="2"
-                    onClick={this.toggleAddStudentsFromFileButton}
-                  >
-                    Upload a file
-                  </Dropdown.Item>
-                </DropdownButton>
-              ) : (
+              {this.props.measures.singleMeasure.Is_Submitted ===
+              "true" ? null : (
                 <>
-                  {fileUpload ? (
-                    <Form
-                      onSubmit={this.fileUploadHandler}
-                      encType="multipart/form-data"
+                  {!addStudentBox ? (
+                    <DropdownButton
+                      size="sm"
+                      variant="primary"
+                      title="Add Students"
+                      id="student-add"
+                      key="addStudentDropdown"
                       style={{ textAlign: "center" }}
                     >
-                      <UploadFileButton
-                        fileUploadHandler={this.fileUploadHandler}
-                      />
-                      <Button
-                        variant="secondary"
+                      <Dropdown.Item
+                        eventKey="1"
+                        onClick={this.toggleAddStudentButton}
+                      >
+                        Add a Student
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        eventKey="2"
                         onClick={this.toggleAddStudentsFromFileButton}
                       >
-                        Cancel
-                      </Button>
-                    </Form>
+                        Upload a file
+                      </Dropdown.Item>
+                    </DropdownButton>
                   ) : (
-                    <Form onSubmit={this.addStudentButton}>
-                      <InputGroup className="mb-3">
-                        <FormControl
-                          placeholder="Student name"
-                          aria-label="Student name"
-                          aria-describedby="basic-addon2"
-                          name="Student_Name"
-                          value={this.state.Student_Name}
-                          onChange={this.onChangeHandler}
-                        />
-                        <FormControl
-                          placeholder="ID"
-                          aria-label="ID"
-                          aria-describedby="basic-addon2"
-                          name="Student_ID"
-                          value={this.state.Student_ID}
-                          onChange={this.onChangeHandler}
-                        />
-                        <InputGroup.Append>
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Save Changes</Tooltip>}
+                    <>
+                      {fileUpload ? (
+                        <Form
+                          onSubmit={this.fileUploadHandler}
+                          encType="multipart/form-data"
+                          style={{ textAlign: "center" }}
+                        >
+                          <UploadFileButton
+                            fileUploadHandler={this.fileUploadHandler}
+                          />
+                          <Button
+                            variant="secondary"
+                            onClick={this.toggleAddStudentsFromFileButton}
                           >
-                            <Button
-                              variant="primary"
-                              onClick={this.addStudentButton}
-                            >
-                              <FontAwesomeIcon icon="check-circle" />
-                            </Button>
-                          </OverlayTrigger>
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={<Tooltip>Cancel</Tooltip>}
-                          >
-                            <Button
-                              variant="outline-secondary"
-                              onClick={this.toggleAddStudentButton}
-                            >
-                              <FontAwesomeIcon icon="window-close" />
-                            </Button>
-                          </OverlayTrigger>
-                        </InputGroup.Append>
-                      </InputGroup>
-                    </Form>
+                            Cancel
+                          </Button>
+                        </Form>
+                      ) : (
+                        <Form onSubmit={this.addStudentButton}>
+                          <InputGroup className="mb-3">
+                            <FormControl
+                              placeholder="Student name"
+                              aria-label="Student name"
+                              aria-describedby="basic-addon2"
+                              name="Student_Name"
+                              value={this.state.Student_Name}
+                              onChange={this.onChangeHandler}
+                            />
+                            <FormControl
+                              placeholder="ID"
+                              aria-label="ID"
+                              aria-describedby="basic-addon2"
+                              name="Student_ID"
+                              value={this.state.Student_ID}
+                              onChange={this.onChangeHandler}
+                            />
+                            <InputGroup.Append>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>Save Changes</Tooltip>}
+                              >
+                                <Button
+                                  variant="primary"
+                                  onClick={this.addStudentButton}
+                                >
+                                  <FontAwesomeIcon icon="check-circle" />
+                                </Button>
+                              </OverlayTrigger>
+                              <OverlayTrigger
+                                placement="top"
+                                overlay={<Tooltip>Cancel</Tooltip>}
+                              >
+                                <Button
+                                  variant="outline-secondary"
+                                  onClick={this.toggleAddStudentButton}
+                                >
+                                  <FontAwesomeIcon icon="window-close" />
+                                </Button>
+                              </OverlayTrigger>
+                            </InputGroup.Append>
+                          </InputGroup>
+                        </Form>
+                      )}
+                    </>
                   )}
                 </>
               )}

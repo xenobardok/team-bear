@@ -73,6 +73,12 @@ class MeasureReport extends Component {
             </tbody>
           </Table>
         );
+      } else {
+        tableContent = (
+          <h3 className="text-center">
+            There is no data on this measure to show report
+          </h3>
+        );
       }
     }
     return <>{tableContent}</>;

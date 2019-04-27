@@ -708,3 +708,8 @@ pre{
   color: green;
   cursor: pointer;
 }
+
+#page-wrap .card.report {
+  min-width: 400px;
+  max-width: 500px;
+}

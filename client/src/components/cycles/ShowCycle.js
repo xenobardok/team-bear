@@ -107,6 +107,7 @@ class ShowCycle extends Component {
     const { cycle, loading, allCycles } = this.props.cycles;
     let outcomes = "";
     let cycleName = "";
+    let footer = "";
     if (loading) {
       outcomes = <Spinner />;
     } else if (cycle === null) {
@@ -126,6 +127,17 @@ class ShowCycle extends Component {
           />
         ));
       }
+
+      footer =
+        cycle.Is_Submitted === "false" ? (
+          <Card.Footer
+            style={{ cursor: "pointer" }}
+            onClick={this.createNewOutcome}
+          >
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;&nbsp;&nbsp;Create a new outcome
+          </Card.Footer>
+        ) : null;
     }
 
     return (
@@ -193,14 +205,7 @@ class ShowCycle extends Component {
                   ) : null}
                 </ListGroup>
               </Card.Body>
-
-              <Card.Footer
-                style={{ cursor: "pointer" }}
-                onClick={this.createNewOutcome}
-              >
-                <FontAwesomeIcon icon="plus" />
-                &nbsp;&nbsp;&nbsp;Create a new outcome
-              </Card.Footer>
+              {footer}
             </Card>
           </div>
           <Route

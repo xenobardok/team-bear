@@ -5,9 +5,16 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getSubmittedCycles } from "../../actions/cycleActions";
 import classnames from "classnames";
-import { ListGroup, Card, Button } from "react-bootstrap";
+import {
+  ListGroup,
+  Card,
+  Button,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 
 import isEmpty from "../../validation/isEmpty";
+import ThreeDotReport from "./ThreeDotReport";
 
 class MainReport extends Component {
   constructor() {
@@ -31,14 +38,30 @@ class MainReport extends Component {
         //   Check if logged in user has cycles to view
         if (Object.keys(cycles).length > 0) {
           cyclesList = cycles.map(value => (
-            <Link
-              to={"/dashboard/cycles/" + value.Cycle_ID}
-              style={{ flexGrow: "1" }}
-            >
-              <ListGroup.Item action key={value.Cycle_ID}>
-                {value.Cycle_Name}
-              </ListGroup.Item>
-            </Link>
+            <ListGroup key={value.Cycle_ID} className="edit-post">
+              <Link
+                to={"/dashboard/cycles/" + value.Cycle_ID}
+                style={{ flexGrow: "1" }}
+              >
+                <ListGroup.Item action key={value.Cycle_ID}>
+                  {value.Cycle_Name}
+                </ListGroup.Item>
+              </Link>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Options</Tooltip>}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignSelf: "center",
+                    cursor: "pointer"
+                  }}
+                >
+                  <ThreeDotReport Cycle_ID={value.Cycle_ID} />
+                </div>
+              </OverlayTrigger>
+            </ListGroup>
           ));
         } else {
           cyclesList = (
@@ -57,7 +80,7 @@ class MainReport extends Component {
     }
     return (
       <>
-        <Card className="text-center">
+        <Card className="text-center report">
           <Card.Header>List of Submitted Cycles</Card.Header>
           <Card.Body style={{ padding: "0px" }}>
             <ListGroup variant="flush">{cyclesList}</ListGroup>

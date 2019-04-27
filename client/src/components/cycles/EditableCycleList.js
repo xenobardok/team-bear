@@ -115,7 +115,7 @@ class Editable extends Component {
             </Link>
             <OverlayTrigger
               placement="top"
-              overlay={<Tooltip>Edit {this.props.value.Cycle_Name}</Tooltip>}
+              overlay={<Tooltip>Options</Tooltip>}
             >
               <div
                 style={{

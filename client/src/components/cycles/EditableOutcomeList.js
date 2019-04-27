@@ -185,7 +185,7 @@ class EditableOutcomeList extends Component {
             </Link>
             <OverlayTrigger
               placement="top"
-              overlay={<Tooltip>Edit Outcome</Tooltip>}
+              overlay={<Tooltip>Options</Tooltip>}
             >
               <div
                 style={{
