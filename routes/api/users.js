@@ -20,6 +20,17 @@ router.get("/test", (req, res) =>
   })
 );
 
+const tempCodeGenerator = length => {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 // @route   GET api/users/register
 // @desc    Register user
 // @access  Public
@@ -28,51 +39,57 @@ router.post("/register", (req, res) => {
 
   //Check for validation
   if (!isValid) {
-    return res.status(404).json(errors);
+    return res.status(400).json(errors);
   } else {
     let email = db.escape(req.body.email);
     let sql = "SELECT * FROM Evaluators WHERE email = " + email;
-    console.log(sql);
+
     db.query(sql, (err, result) => {
       if (result.length > 0 && result[0].isActive === "true") {
         errors.email = "User already exists, please login!";
-        return res.status(400).json(errors);
-      } else if (result.length > 0 && result[0].Fname !== null) {
-        errors.email =
-          "You have already registered, please verify by logging into your email";
+
         return res.status(400).json(errors);
       } else if (
         result.length > 0 &&
         result[0].isActive === "false" &&
-        result[0].Fname === null &&
-        result[0].isDeleted === "false"
+        result[0].isDeleted === "false" &&
+        result[0].password == null
       ) {
         let firstname = db.escape(req.body.firstname);
         let lastname = db.escape(req.body.lastname);
         let password = db.escape(req.body.password);
-        sql =
-          "UPDATE Evaluators SET Fname =" +
-          firstname +
-          ", Lname = " +
-          lastname +
-          ", Password = PASSWORD(" +
-          password +
-          "), " +
-          "isActive = " +
-          db.escape("true") +
-          " WHERE Email = " +
-          email;
-        console.log(sql);
-        db.query(sql, function(err, result) {
-          console.log(err);
-          if (result) {
-            return res
-              .status(200)
-              .json({ message: "User successfully registered!" });
-          } else if (err) {
-            return res.status(404).json(err);
-          }
-        });
+        let Temp_Code = req.body.tempCode;
+        console.log(Temp_Code);
+        console.log(result[0].Temp_Code);
+        if (result[0].Temp_Code == Temp_Code) {
+          sql =
+            "UPDATE Evaluators SET Temp_Code=null, Fname =" +
+            firstname +
+            ", Lname = " +
+            lastname +
+            ", Password = PASSWORD(" +
+            password +
+            "), " +
+            "isActive = " +
+            db.escape("true") +
+            " WHERE Email = " +
+            email;
+          console.log(sql);
+          db.query(sql, function(err, result) {
+            console.log(err);
+            if (result) {
+              return res
+                .status(200)
+                .json({ message: "User successfully registered!" });
+            } else if (err) {
+              return res.status(404).json(err);
+            }
+          });
+        } else {
+          errors.tempCode =
+            "Temp Code does not match. Please contact Program Administrator";
+          return res.status(400).json(errors);
+        }
       } else {
         errors.email = "Email not found. Please contact your department head";
         return res.status(400).json(errors);
@@ -175,7 +192,7 @@ router.delete(
                 if (err) return res.status(400).json(err);
                 if (result.length > 0) {
                   sql =
-                    "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                    "UPDATE Evaluators SET isDeleted='true',isActive='false' WHERE Email=" +
                     removeEmail;
 
                   db.query(sql, (err, result) => {
@@ -194,7 +211,7 @@ router.delete(
                     if (err) return res.status(400).json(err);
                     if (result.length > 0) {
                       sql =
-                        "UPDATE Evaluators SET isDeleted='true' WHERE Email=" +
+                        "UPDATE Evaluators SET isDeleted='true', isActive='false', Password=Null WHERE Email=" +
                         removeEmail;
 
                       db.query(sql, (err, result) => {
@@ -250,46 +267,115 @@ router.post(
         let newEmail = db.escape(req.body.newEmail);
 
         let isActive = db.escape("false");
-        let sql =
-          "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
-          newEmail +
-          "," +
-          dept +
-          "," +
-          isActive +
-          ")";
-        console.log(sql);
+        let Temp_Code = tempCodeGenerator(6);
+
+        sql = "SELECT * FROM Evaluators where Email=" + newEmail;
+
         db.query(sql, (err, result) => {
           if (err) {
-            errors.message = "There was some problem adding a new user.";
-            return res.status(400).json(errors);
-          }
-          user = {
-            Email: req.body.newEmail,
-            isActive: "false"
-          };
+            return res.status(400).json({ error: "Something went wrong" });
+          } else {
+            if (result.length > 0) {
+              if (result[0].isDeleted == "false") {
+                errors.message = "Evaluator is active. Please delete first";
+                return res.status(400).json(errors);
+              } else {
+                sql =
+                  "UPDATE Evaluators set isDeleted='false', Password=Null, Dept_ID=" +
+                  dept +
+                  ", isActive=" +
+                  isActive +
+                  ", Temp_Code=" +
+                  db.escape(Temp_Code) +
+                  " WHERE Email=" +
+                  newEmail;
+                console.log(sql);
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    errors.message =
+                      "There was some problem adding a new user.";
+                    return res.status(400).json(errors);
+                  }
+                  user = {
+                    Email: req.body.newEmail,
+                    isActive: "false"
+                  };
 
-          var transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: "ulmevaluations@gmail.com",
-              pass: "thebestulm"
-            }
-          });
+                  var transporter = nodemailer.createTransport({
+                    service: "gmail",
+                    auth: {
+                      user: "ulmevaluations@gmail.com",
+                      pass: "thebestulm"
+                    }
+                  });
 
-          const mailOptions = {
-            from: "ulmevaluations@gmail.com", // sender address
-            to: req.body.newEmail, // list of receivers
-            subject: "Welcome to ULM Evaluations ", // Subject line
-            html: `<div><p style="text-align: center">Welcome to ULM Evaluations</p>
-              <p style="text-align: center">Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P>
+                  const mailOptions = {
+                    from: "ulmevaluations@gmail.com", // sender address
+                    to: req.body.newEmail, // list of receivers
+                    subject: "Welcome to ULM Evaluations ", // Subject line
+                    html:
+                      `<div><p>Welcome to ULM Evaluations</p>
+              <p>You have been invited to join ULM Evaluations. Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P><br><B>Please enter the following Temp Code during registration. <br>Temp Code: ` +
+                      Temp_Code +
+                      `
             </div>` // plain text body
-          };
-          transporter.sendMail(mailOptions, function(err, info) {
-            if (err) console.log(err);
-            else console.log("Email sent!");
-          });
-          return res.status(200).json(user);
+                  };
+                  transporter.sendMail(mailOptions, function(err, info) {
+                    if (err) console.log(err);
+                    else console.log("Email sent!");
+                  });
+                  return res.status(200).json(user);
+                });
+              }
+            } else {
+              sql =
+                "INSERT INTO Evaluators(Email, Dept_ID, isActive, Temp_Code) VALUES(" +
+                newEmail +
+                "," +
+                dept +
+                "," +
+                isActive +
+                "," +
+                db.escape(Temp_Code) +
+                ")";
+              console.log(sql);
+              db.query(sql, (err, result) => {
+                if (err) {
+                  errors.message = "There was some problem adding a new user.";
+                  return res.status(400).json(errors);
+                }
+                user = {
+                  Email: req.body.newEmail,
+                  isActive: "false"
+                };
+
+                var transporter = nodemailer.createTransport({
+                  service: "gmail",
+                  auth: {
+                    user: "ulmevaluations@gmail.com",
+                    pass: "thebestulm"
+                  }
+                });
+
+                const mailOptions = {
+                  from: "ulmevaluations@gmail.com", // sender address
+                  to: req.body.newEmail, // list of receivers
+                  subject: "Welcome to ULM Evaluations ", // Subject line
+                  html:
+                    `<div><p>Welcome to ULM Evaluations</p>
+                  <p>You have been invited to join ULM Evaluations. Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P><br><B>Please enter the following Temp Code during registration. <br>Temp Code: ` +
+                    Temp_Code +
+                    `
+                </div>` // plain text body
+                };
+                transporter.sendMail(mailOptions, function(err, info) {
+                  if (err) console.log(err);
+                  else console.log("Email sent!");
+                });
+                return res.status(200).json(user);
+              });
+            }
+          }
         });
       }
     } else {
@@ -311,7 +397,7 @@ router.post("/login", (req, res) => {
 
   let email = db.escape(req.body.email);
   let password = db.escape(req.body.password);
-  sql = "SELECT * from Evaluators where email = " + email;
+  sql = "SELECT * from Evaluators where isDeleted='false' AND email = " + email;
   db.query(sql, (err, result) => {
     if (result.length < 1) {
       errors.email = "Email not found";
