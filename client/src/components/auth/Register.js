@@ -15,6 +15,7 @@ class Register extends Component {
       email: "",
       password: "",
       password2: "",
+      tempCode: "",
       errors: {}
     };
 
@@ -48,7 +49,8 @@ class Register extends Component {
   }
 
   componentDidUpdate = prevProps => {
-    if (this.props.auth !== prevProps.auth) {
+    if (this.props.errors !== prevProps.errors) {
+      this.setState({ errors: this.props.errors });
     }
   };
 
@@ -145,6 +147,24 @@ class Register extends Component {
             />
             <Form.Control.Feedback type="invalid">
               Password do not match
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="formtempCode">
+            <Form.Label>
+              Enter your temporary code sent to your email
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Temp Code"
+              value={this.state.tempCode}
+              name="tempCode"
+              onChange={this.onChange}
+              className={classnames("", {
+                "is-invalid": this.state.errors.tempCode
+              })}
+            />
+            <Form.Control.Feedback type="invalid">
+              Temp Code does not match
             </Form.Control.Feedback>
           </Form.Group>
           <Button variant="primary" type="submit">
