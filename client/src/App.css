@@ -713,3 +713,7 @@ pre{
   min-width: 400px;
   max-width: 500px;
 }
+
+.export-btn {
+  float: right!important;
+}

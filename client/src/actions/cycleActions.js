@@ -207,7 +207,7 @@ export const updateOutcome = (
       Class_Factors: curriculumMap
     })
     .then(res => {
-      console.log("Successfully updated outcome");
+      toastr.success("Update Successful!", "Outcome updated successfully!");
       dispatch(getSingleCycle(cycleID));
     })
     .catch(err =>
