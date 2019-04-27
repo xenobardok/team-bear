@@ -34,7 +34,7 @@ router.get(
 
     Rubrics = [];
     let sql =
-      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
+      "SELECT Rubric_Measure_ID, CONCAT(Class_Name,'  ',Rubric_Name) AS Rubric_Name, Did_Submit  FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN RUBRIC WHERE Evaluator_Email =" +
       email;
 
     db.query(sql, (err, result) => {
@@ -44,10 +44,11 @@ router.get(
         result.forEach(row => {
           id = row.Rubric_Measure_ID;
           name = row.Rubric_Name;
-
+          hasSubmitted = row.Did_Submit;
           rubric = {
             Rubric_Measure_ID: id,
-            Rubric_Name: name
+            Rubric_Name: name,
+            hasSubmitted: hasSubmitted
           };
           Rubrics.push(rubric);
         });
@@ -70,7 +71,7 @@ router.get(
 
     Tests = [];
     let sql =
-      "SELECT Test_Measure_ID, Exam_Name  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR WHERE Evaluator_Email =" +
+      "SELECT Test_Measure_ID, Exam_Name, Did_Submit  FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR WHERE Evaluator_Email =" +
       email;
 
     db.query(sql, (err, result) => {
@@ -80,9 +81,11 @@ router.get(
         result.forEach(row => {
           id = row.Test_Measure_ID;
           name = row.Exam_Name;
+          hasSubmitted = row.Did_Submit;
           test = {
             Test_Measure_ID: id,
-            Test_Name: name
+            Test_Name: name,
+            hasSubmitted: hasSubmitted
           };
           Tests.push(test);
         });

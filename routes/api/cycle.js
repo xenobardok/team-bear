@@ -288,16 +288,19 @@ router.get(
                 i++;
                 Cycle.data.push(outcome);
               });
-
-              sql =
-                "UPDATE Evaluators SET Last_Cycle_ID=" +
-                Cycle_ID +
-                " WHERE Email=" +
-                email;
-              db.query(sql, (err, result) => {
-                if (err) res.send(err);
+              if (Is_Submitted == "false") {
+                sql =
+                  "UPDATE Evaluators SET Last_Cycle_ID=" +
+                  Cycle_ID +
+                  " WHERE Email=" +
+                  email;
+                db.query(sql, (err, result) => {
+                  if (err) res.send(err);
+                  return res.status(200).json(Cycle);
+                });
+              } else {
                 return res.status(200).json(Cycle);
-              });
+              }
             }
           });
         }
@@ -406,13 +409,11 @@ router.put(
             db.query(sql, (err, result) => {
               if (err) return res.status(400).json(err);
               else {
-                return res
-                  .status(200)
-                  .json({
-                    Cycle_ID: Cycle_ID,
-                    Cycle_Name: Cycle_Name,
-                    Is_Submitted: "false"
-                  });
+                return res.status(200).json({
+                  Cycle_ID: Cycle_ID,
+                  Cycle_Name: Cycle_Name,
+                  Is_Submitted: "false"
+                });
               }
             });
           }
@@ -498,14 +499,12 @@ router.post(
                       else {
                         let Outcome_ID = db.escape(result.insertId);
 
-                        res
-                          .status(200)
-                          .json(
-                            (outcome = {
-                              Outcome_ID: Outcome_ID,
-                              Is_Submitted: "false"
-                            })
-                          );
+                        res.status(200).json(
+                          (outcome = {
+                            Outcome_ID: Outcome_ID,
+                            Is_Submitted: "false"
+                          })
+                        );
                       }
                     });
                   }
