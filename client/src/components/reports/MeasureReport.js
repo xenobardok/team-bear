@@ -86,7 +86,7 @@ class MeasureReport extends Component {
                 </tr>
                 <tr>
                   <td colSpan={report.header.length + 1}>
-                    % >= {report.Target}
+                    Percentage >= {report.Target}
                   </td>
                   <td>{Math.round(report.Achieved_Threshold * 100) / 100}</td>
                 </tr>
