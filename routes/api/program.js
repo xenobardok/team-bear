@@ -806,33 +806,81 @@ router.delete(
                         if (err) return res.status(400).json(err);
                         else {
                           sql =
-                            "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
-                            Dept_ID;
+                            "SELECT * FROM Evaluators WHERE Email=" +
+                            Admin_Email;
 
                           db.query(sql, (err, result) => {
-                            if (err) return res.status(400).json(err);
-                            else {
-                              department = {
-                                Dept_ID: unescaped_Dept_ID,
-                                admin: []
-                              };
-                              result.forEach(row => {
-                                Fname = row.Fname;
-                                Lname = row.Lname;
-                                if (Fname == null) {
-                                  Fname = "";
-                                }
-                                if (Lname == null) {
-                                  Lname = "";
-                                }
-                                Admin = {
-                                  Admin_Name: Fname + " " + Lname,
-                                  Admin_Email: row.Admin_Email
-                                };
-                                department.admin.push(Admin);
-                              });
+                            if (
+                              result[0].isActive == "false" &&
+                              result[0].Password == null
+                            ) {
+                              sql =
+                                "DELETE FROM Evaluators WHERE Email=" +
+                                Admin_Email;
 
-                              return res.status(200).json(department);
+                              db.query(sql, (err, result) => {
+                                sql =
+                                  "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                  Dept_ID;
+
+                                db.query(sql, (err, result) => {
+                                  if (err) return res.status(400).json(err);
+                                  else {
+                                    department = {
+                                      Dept_ID: unescaped_Dept_ID,
+                                      admin: []
+                                    };
+                                    result.forEach(row => {
+                                      Fname = row.Fname;
+                                      Lname = row.Lname;
+                                      if (Fname == null) {
+                                        Fname = "";
+                                      }
+                                      if (Lname == null) {
+                                        Lname = "";
+                                      }
+                                      Admin = {
+                                        Admin_Name: Fname + " " + Lname,
+                                        Admin_Email: row.Admin_Email
+                                      };
+                                      department.admin.push(Admin);
+                                    });
+
+                                    return res.status(200).json(department);
+                                  }
+                                });
+                              });
+                            } else {
+                              sql =
+                                "SELECT * FROM Evaluators E, PROGRAM_ADMIN A WHERE E.Email=A.Admin_Email AND E.Dept_ID= A.Dept_ID AND A.Dept_ID=" +
+                                Dept_ID;
+
+                              db.query(sql, (err, result) => {
+                                if (err) return res.status(400).json(err);
+                                else {
+                                  department = {
+                                    Dept_ID: unescaped_Dept_ID,
+                                    admin: []
+                                  };
+                                  result.forEach(row => {
+                                    Fname = row.Fname;
+                                    Lname = row.Lname;
+                                    if (Fname == null) {
+                                      Fname = "";
+                                    }
+                                    if (Lname == null) {
+                                      Lname = "";
+                                    }
+                                    Admin = {
+                                      Admin_Name: Fname + " " + Lname,
+                                      Admin_Email: row.Admin_Email
+                                    };
+                                    department.admin.push(Admin);
+                                  });
+
+                                  return res.status(200).json(department);
+                                }
+                              });
                             }
                           });
                         }
