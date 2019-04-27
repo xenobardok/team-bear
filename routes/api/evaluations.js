@@ -841,7 +841,8 @@ router.post(
           db.query(sql, (err, result) => {
             if (err) {
               return res.status(400).json({
-                error: "There was some problem adding  the evaluator"
+                submit:
+                  "There was some problem submitting the evaluation. Please try again later"
               });
             }
             return res
@@ -918,7 +919,7 @@ router.post(
           db.query(sql, (err, result) => {
             if (err) {
               return res.status(400).json({
-                error: "There was some problem adding  the evaluator"
+                submit: "There was some problem submitting the task"
               });
             }
             return res

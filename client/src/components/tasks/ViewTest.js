@@ -13,6 +13,7 @@ import "./Test.css";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import UploadFileButton from "../../common/UploadFileButton";
+import { toastr } from "react-redux-toastr";
 
 class ViewTest extends Component {
   constructor(props) {
@@ -34,10 +35,14 @@ class ViewTest extends Component {
 
   fileUploadHandler = file => {
     let { testMeasureId } = this.props.match.params;
-    const data = new FormData();
-    data.append("StudentsGrade", file);
-    console.log(testMeasureId, file);
-    this.props.studentFilefromCSV(testMeasureId, data);
+    if (file) {
+      const data = new FormData();
+      data.append("StudentsGrade", file);
+      console.log(testMeasureId, file);
+      this.props.studentFilefromCSV(testMeasureId, data);
+    } else {
+      toastr.error("Error occured", "Please upload a file first");
+    }
   };
 
   gradeStudentTestMeasure = (studentID, Score) => {

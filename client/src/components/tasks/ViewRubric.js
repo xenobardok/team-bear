@@ -209,56 +209,66 @@ class ViewRubric extends Component {
 
         dataRow = rubric.data.map((singleRow, index) => (
           <tr key={singleRow.Rubric_Row_ID}>
-            <td className="borderedCell">
-              <FormControl
+            <td className="borderedCell measureTitle centerAlign">
+              {/* <FormControl
                 as="textarea"
                 aria-label="With textarea"
                 defaultValue={singleRow.Measure_Factor}
                 className="measureTitle centerAlign cells"
                 disabled
-              />
+              /> */}
+              {singleRow.Measure_Factor}
             </td>
             {singleRow.Column_values.map((cell, rowIndex) => (
               <td
                 key={cell.Column_ID}
-                className="borderedCell"
+                className="borderedCell cells"
                 onClick={this.boxClickHandler.bind(this, index, rowIndex)}
               >
-                <FormControl
+                {/* <FormControl
                   as="textarea"
                   aria-label="With textarea"
                   defaultValue={cell.value}
                   className="cells"
                   disabled
-                />
+                /> */}
+                <pre>{cell.value}</pre>
               </td>
             ))}
-            <td className="borderedCell">
-              <FormControl
+            <td className="borderedCell grade centerAlign">
+              {/* <FormControl
                 name={"Student_Grades[" + index + "]"}
                 as="textarea"
                 aria-label="With textarea"
                 value={this.state.Student_Grades[index]}
                 className="grade centerAlign cells"
                 onChange={this.onChangeHandlerArray.bind(this, index)}
-              />
+              /> */}
+              {this.state.Student_Grades[index]}
             </td>
             {rubric.isWeighted === "true" ? (
-              <td key="Score" className="borderedCell">
-                <FormControl
+              <td key="Score" className="borderedCell grade centerAlign">
+                {/* <FormControl
                   name={"Student_Grades[" + index + "]"}
                   as="textarea"
                   aria-label="With textarea"
                   value={this.state.Weighted_Grades[index]}
                   className="grade centerAlign cells"
                   disabled
-                />
+                /> */}
+                {this.state.Weighted_Grades[index]}
               </td>
             ) : null}
           </tr>
         ));
         displayRubric = (
-          <div style={{ margin: "0px auto", maxWidth: "1600px" }}>
+          <div
+            style={{
+              margin: "0px auto",
+              maxWidth: "1600px",
+              marginBottom: "100px"
+            }}
+          >
             <h2>{rubric.Rubric_Name}</h2>
             <h5>
               {isEmpty(this.state.Student_Name) ? (
@@ -273,7 +283,7 @@ class ViewRubric extends Component {
             </h5>
             <Row>
               <Col xs={9}>
-                <Table bordered striped>
+                <Table bordered striped className="grade-table">
                   <thead>
                     <tr className="header">
                       <th className="measureTitle centerAlign borderedCell">
@@ -295,7 +305,7 @@ class ViewRubric extends Component {
                   <Card.Body
                     style={{
                       padding: "0px",
-                      maxHeight: "800px",
+                      maxHeight: "680px",
                       overflowY: "scroll"
                     }}
                   >

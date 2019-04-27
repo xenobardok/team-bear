@@ -22,7 +22,7 @@ class CustomToggle extends React.Component {
 
   render() {
     return (
-      <a href="" onClick={this.handleClick}>
+      <a href="" onClick={this.handleClick} className="edit-cycle">
         {this.props.children}
       </a>
     );
@@ -54,8 +54,8 @@ export default function ThreeDotDropdown(props) {
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        <Dropdown.Item onClick={deleteButtonHandler}>
-          Delete Rubric
+        <Dropdown.Item onClick={props.editHandler}>
+          Edit {props.type}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
