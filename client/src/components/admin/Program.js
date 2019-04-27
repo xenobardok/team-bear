@@ -152,13 +152,7 @@ class Program extends Component {
                                 newCoordinatorEmail: e.target.value
                               })
                             }
-                            className={classnames("", {
-                              "is-invalid": this.props.errors.email
-                            })}
                           />
-                          <Form.Control.Feedback type="invalid">
-                            {this.props.errors.email}
-                          </Form.Control.Feedback>
                         </Col>
                       </Form.Group>
                     </td>

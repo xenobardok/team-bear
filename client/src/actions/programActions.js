@@ -85,13 +85,21 @@ export const addProgramAdmin = (deptName, adminEmail) => dispatch => {
         type: ADD_PROGRAM_ADMIN,
         payload: res.data.admin
       });
+      toastr.success(
+        "Program Coordinator added!",
+        res.data.admin[0].Admin_Email + "added successfully!"
+      );
     })
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+
+      if (err.response.data.email) {
+        toastr.error("Error!", err.response.data.email);
+      }
+    });
 };
 
 export const removeProgramAdmin = (deptID, adminEmail) => dispatch => {

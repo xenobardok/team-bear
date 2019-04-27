@@ -67,9 +67,9 @@ class MainReport extends Component {
           cyclesList = (
             <div>
               <br />
-              <h4>There is no submitted cycles yet!</h4>
+              <h5>There are no submitted cycles yet!</h5>
               <Link to="/dashboard">
-                <Button variant="info">Return to Dashboard</Button>
+                <Button variant="primary">Return to Dashboard</Button>
               </Link>
               <br />
               <br />

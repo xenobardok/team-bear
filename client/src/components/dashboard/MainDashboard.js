@@ -13,11 +13,19 @@ class MainDashboard extends Component {
   render() {
     let { auth } = this.props;
     let latestCycle = "";
-    if (!isEmpty(auth.dashboard)) {
+    if (!isEmpty(auth.dashboard.Cycle_ID)) {
       latestCycle = (
         <Link to={`/dashboard/cycles/${auth.dashboard.Cycle_ID}`}>
           <div className="latestCycle">
             <p>{auth.dashboard.Cycle_Name}</p>
+          </div>
+        </Link>
+      );
+    } else {
+      latestCycle = (
+        <Link to={`/dashboard/cycles`}>
+          <div className="latestCycle">
+            <p>All Cycles</p>
           </div>
         </Link>
       );
