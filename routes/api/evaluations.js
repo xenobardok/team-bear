@@ -130,7 +130,7 @@ router.get(
         Rubric.isWeighted = result[0].isWeighted;
         Rubric.Students = [];
         Rubric.data = [];
-        Rubric.hasSubmitted = row.Did_Submit;
+        Rubric.hasSubmitted = result[0].Did_Submit;
 
         sql =
           "SELECT * FROM RUBRIC NATURAL JOIN RUBRIC_SCALE WHERE Rubric_ID =" +
