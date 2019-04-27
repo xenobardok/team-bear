@@ -41,7 +41,8 @@ class Register extends Component {
       lastname: this.state.lastname,
       email: this.state.email,
       password: this.state.password,
-      password2: this.state.password2
+      password2: this.state.password2,
+      tempCode: this.state.tempCode
     };
 
     // console.log(newEmail);
