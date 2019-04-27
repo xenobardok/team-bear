@@ -14,6 +14,17 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
 
+const tempCodeGenerator = length => {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 // @route   GET api/department
 // @desc    Gets the lists of all departments
 // @access  Private
@@ -574,6 +585,34 @@ router.post(
                                       department.admin.push(Admin);
                                     });
 
+                                    var transporter = nodemailer.createTransport(
+                                      {
+                                        service: "gmail",
+                                        auth: {
+                                          user: "ulmevaluations@gmail.com",
+                                          pass: "thebestulm"
+                                        }
+                                      }
+                                    );
+
+                                    const mailOptions = {
+                                      from: "ulmevaluations@gmail.com", // sender address
+                                      to: req.body.adminEmail, // list of receivers
+                                      subject: "Welcome to ULM Evaluations ", // Subject line
+                                      html:
+                                        `<div><p>Welcome to ULM Evaluations</p>
+                                <p>You have been promoted as the <B>Program Coordinator</B> of the department  ` +
+                                        dept +
+                                        `Please click <a href="https://team-bear.herokuapp.com/">here</a> to access your account today!
+                              </div>` // plain text body
+                                    };
+                                    transporter.sendMail(mailOptions, function(
+                                      err,
+                                      info
+                                    ) {
+                                      if (err) console.log(err);
+                                      else console.log("Email sent!");
+                                    });
                                     return res.status(200).json(department);
                                   }
                                 });
@@ -646,6 +685,36 @@ router.post(
                                             department.admin.push(Admin);
                                           });
 
+                                          var transporter = nodemailer.createTransport(
+                                            {
+                                              service: "gmail",
+                                              auth: {
+                                                user:
+                                                  "ulmevaluations@gmail.com",
+                                                pass: "thebestulm"
+                                              }
+                                            }
+                                          );
+
+                                          const mailOptions = {
+                                            from: "ulmevaluations@gmail.com", // sender address
+                                            to: req.body.adminEmail, // list of receivers
+                                            subject:
+                                              "Welcome to ULM Evaluations ", // Subject line
+                                            html:
+                                              `<div><p>Welcome to ULM Evaluations</p>
+                                      <p>You have been invited to join ULM Evaluations. Please click <a href="https://team-bear.herokuapp.com/register">here</a> to register and access your account today!</P><br><B>Please enter the following Temp Code during registration. <br>Temp Code: ` +
+                                              Temp_Code +
+                                              `
+                                    </div>` // plain text body
+                                          };
+                                          transporter.sendMail(
+                                            mailOptions,
+                                            function(err, info) {
+                                              if (err) console.log(err);
+                                              else console.log("Email sent!");
+                                            }
+                                          );
                                           return res
                                             .status(200)
                                             .json(department);
