@@ -638,11 +638,14 @@ router.post(
                             }
                             //User with that  email  does not  exist at all
                             else {
+                              let Temp_Code = tempCodeGenerator(6);
                               sql =
-                                "INSERT INTO Evaluators(Email, Dept_ID, isActive) VALUES(" +
+                                "INSERT INTO Evaluators(Email, Dept_ID,Temp_Code, isActive) VALUES(" +
                                 New_Admin_Email +
                                 "," +
                                 Dept_ID +
+                                "," +
+                                Temp_Code +
                                 ",'false')";
 
                               db.query(sql, (err, result) => {
@@ -766,8 +769,8 @@ router.delete(
             .status(400)
             .json({ User: "You do not have enough privileges" });
         } else {
-          sql = "SELECT * FROM Department WHERE Department_ID=" + Dept_ID;
-          //   console.log(sql);
+          sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
+          console.log(sql);
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
             else {
