@@ -632,7 +632,7 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Cycle_ID = db.escape(req.params.cycleID);
     const Outcome_ID = db.escape(req.params.outcomeID);
-    const Class_Factors = db.escape(req.user.Class_Factors);
+    const Class_Factors = db.escape(req.body.Class_Factors);
     let Outcome_Name = req.body.Outcome_Name;
     let errors = {};
 
@@ -648,14 +648,14 @@ router.post(
           dept +
           " AND Cycle_ID=" +
           Cycle_ID +
-          " AND Outcome_Name =" +
-          Outcome_Name;
+          " AND Outcome_ID =" +
+          Outcome_ID;
 
         db.query(sql, (err, result) => {
           if (err) res.send(err);
           else {
-            if (result.length > 0) {
-              errors.Outcome_Name = "Outcome with that name already exists.";
+            if (result.length < 1) {
+              errors.Outcome_Name = "Outcome cannot be found.";
               return res.status(404).json(errors);
             } else {
               sql =
@@ -758,8 +758,7 @@ router.get(
                         Measure_Index: i,
                         Measure_type: row.Measure_type,
                         Measure_Success: row.isSuccess,
-                        Is_Submitted: Is_Submitted,
-                        Outcome_Index: Outcome.Outcome_Index
+                        Is_Submitted: Is_Submitted
                       };
                       updateOutcome(row.Measure_ID);
                       i++;
