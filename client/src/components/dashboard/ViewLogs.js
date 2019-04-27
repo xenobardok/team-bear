@@ -15,8 +15,14 @@ class ViewLogs extends Component {
   render() {
     let { logs, loading } = this.props.logs;
     let logsFilter;
-    if (loading || isEmpty(logs)) {
+    if (loading) {
       logsFilter = <Spinner />;
+    } else if (isEmpty(logs)) {
+      logsFilter = (
+        <p className="text-center">
+          There are no logs for you to view at this time
+        </p>
+      );
     } else {
       if (this.props.from === "dashboard") {
         let logSize = 5;

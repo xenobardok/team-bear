@@ -77,7 +77,7 @@ class SideBar extends Component {
           </Link>
           <Link className="menu-item" to="/dashboard/logs">
             <FontAwesomeIcon icon="envelope" />
-            &nbsp;&nbsp;Activity Logs
+            &nbsp;&nbsp;Notifications
           </Link>
           <Link className="menu-item" to="/dashboard/reports">
             <FontAwesomeIcon icon="file-alt" />
@@ -118,7 +118,7 @@ class SideBar extends Component {
           </Link>
           <Link className="menu-item" to="/dashboard/logs">
             <FontAwesomeIcon icon="envelope" />
-            &nbsp;&nbsp;Activity Logs
+            &nbsp;&nbsp;Notifications
           </Link>
         </Menu>
       );

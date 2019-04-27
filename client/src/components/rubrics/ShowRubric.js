@@ -118,10 +118,6 @@ class AnalyseRubric extends Component {
     ));
     return (
       <div key={this.props.Rubric_ID}>
-        <ThreeDotDropdown
-          deleteRubric={this.props.deleteRubric}
-          Rubric_ID={this.props.Rubric_ID}
-        />
         <h2>{this.props.Rubric_Name}</h2>
         <br />
         <Table bordered striped>

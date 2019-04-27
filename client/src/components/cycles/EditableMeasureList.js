@@ -157,7 +157,9 @@ class EditableMeasureList extends Component {
               style={{ flexGrow: "1" }}
             >
               <ListGroup.Item action key={this.props.value.Measure_ID}>
-                {this.state.Measure_Name}
+                {this.props.Outcome_Index}
+                {"."}
+                {this.props.value.Measure_Index} {this.state.Measure_Name}
               </ListGroup.Item>
             </Link>
             <OverlayTrigger
