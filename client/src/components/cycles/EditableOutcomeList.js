@@ -28,6 +28,7 @@ class EditableOutcomeList extends Component {
     this.state = {
       isEditable: false,
       textValue: this.props.value.Outcome_Name,
+      curriculumMap: this.props.value.Class_Factors,
       errors: {}
     };
   }
@@ -55,7 +56,8 @@ class EditableOutcomeList extends Component {
 
     if (this.props.value !== prevProps.value) {
       this.setState({
-        textValue: this.props.value.Outcome_Name
+        textValue: this.props.value.Outcome_Name,
+        curriculumMap: this.props.value.Class_Factors
       });
     }
   };
@@ -82,7 +84,8 @@ class EditableOutcomeList extends Component {
     this.props.updateOutcome(
       this.props.cycleID,
       this.props.value.Outcome_ID,
-      this.state.textValue
+      this.state.textValue,
+      this.state.curriculumMap
     );
   };
   deleteButtonHandler = () => {
@@ -109,19 +112,36 @@ class EditableOutcomeList extends Component {
     return (
       <>
         {isEditable ? (
-          <Form>
-            <Form.Control
-              as="textarea"
-              rows="3"
-              value={this.state.textValue}
-              onChange={e => this.setState({ textValue: e.target.value })}
-              className={classnames("mt-1 ml-1 mr-1", {
-                "is-invalid": this.state.errors.Outcome_Name
-              })}
-            />
-            <Form.Control.Feedback type="invalid">
-              {this.state.errors.Outcome_Name}
-            </Form.Control.Feedback>
+          <Form className="create">
+            <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Label>Name of the outcome:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows="3"
+                value={this.state.textValue}
+                onChange={e => this.setState({ textValue: e.target.value })}
+                className={classnames("mt-1 ml-1 mr-1", {
+                  "is-invalid": this.state.errors.Outcome_Name
+                })}
+              />
+              <Form.Control.Feedback type="invalid">
+                {this.state.errors.Outcome_Name}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Curriculum Mapping</Form.Label>
+              <Form.Control
+                name="new-curriculum"
+                as="textarea"
+                aria-label="With textarea"
+                value={this.state.curriculumMap}
+                placeholder="(Optional) Curriculum responsible for this outcome"
+                onChange={e => this.setState({ curriculumMap: e.target.value })}
+                className={classnames("mt-1 ml-1 mr-1", {
+                  "is-invalid": this.state.errors.Outcome_Name
+                })}
+              />
+            </Form.Group>
             <ButtonGroup size="sm" className="mt-1 mb-1">
               <Button variant="primary" onClick={this.updateOutcomeButton}>
                 Update
@@ -180,6 +200,8 @@ class EditableOutcomeList extends Component {
               style={{ flexGrow: "1" }}
             >
               <ListGroup.Item action name={this.props.value.Outcome_ID}>
+                {this.props.value.Outcome_Index}
+                {". "}
                 {this.state.textValue}
               </ListGroup.Item>
             </Link>

@@ -632,7 +632,7 @@ router.post(
     const dept = db.escape(req.user.dept);
     const Cycle_ID = db.escape(req.params.cycleID);
     const Outcome_ID = db.escape(req.params.outcomeID);
-    const Class_Factors = db.escape(req.user.Class_Factors);
+    const Class_Factors = db.escape(req.body.Class_Factors);
     let Outcome_Name = req.body.Outcome_Name;
     let errors = {};
 

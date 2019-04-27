@@ -195,10 +195,16 @@ export const createNewOutcome = (
     });
 };
 
-export const updateOutcome = (cycleID, outcomeID, Outcome_Name) => dispatch => {
+export const updateOutcome = (
+  cycleID,
+  outcomeID,
+  Outcome_Name,
+  curriculumMap
+) => dispatch => {
   axios
     .post(`/api/cycle/${cycleID}/outcome/${outcomeID}/update`, {
-      Outcome_Name: Outcome_Name
+      Outcome_Name: Outcome_Name,
+      Class_Factors: curriculumMap
     })
     .then(res => {
       console.log("Successfully updated outcome");
