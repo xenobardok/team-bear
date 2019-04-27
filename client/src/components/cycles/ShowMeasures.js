@@ -93,6 +93,7 @@ class ShowMeasures extends Component {
           measureID={value.Measure_ID}
           deleteMeasure={this.props.deleteMeasure}
           Is_Submitted={measure.Is_Submitted}
+          Outcome_Index={measure.Outcome_Index}
         />
       ));
 
