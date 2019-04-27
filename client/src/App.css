@@ -346,7 +346,7 @@ table.report th, table.report td{
 }
 
 #page-wrap div.special-container .card {
-  min-width: 400px;
+  min-width: 500px;
   max-width: 500px;
   box-shadow: -1px 11px 20px 0px rgba(206, 206, 206, 0.75)
 }
