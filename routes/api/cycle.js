@@ -713,40 +713,65 @@ router.get(
           if (result.length < 1) {
             errors.Outcome_Name = "Outcome not found";
             return res.status(200).json(errors);
+          } else {
+            Is_Submitted = result[0].isSubmitted;
+            Outcome.Outcome_ID = Outcome_ID;
+            Outcome.Cycle_ID = result[0].Cycle_ID;
+            Outcome.Class_Factors = result[0].Class_Factors;
+            Outcome.Is_Submitted = result[0].isSubmitted;
+
+            sql =
+              "SELECT * FROM OUTCOMES WHERE Cycle_ID=" +
+              Cycle_ID +
+              " ORDER BY Outcome_Index";
+
+            db.query(sql, (err, result) => {
+              if (err) {
+                errors.outcome = "There was error loading the evaluation";
+                return res.status(400).json(errors);
+              } else {
+                let found = false;
+                let i = 0;
+
+                while (i < result.length && !found) {
+                  if (result[i].Outcome_ID == Outcome_ID) {
+                    found = true;
+                  }
+                  i++;
+                }
+                Measure.Outcome_Index = i;
+
+                Outcome.data = [];
+                sql =
+                  "SELECT * FROM MEASURES WHERE Outcome_ID= " +
+                  Outcome_ID +
+                  " ORDER BY Measure_Index";
+
+                db.query(sql, (err, result) => {
+                  if (err) res.send(err);
+                  else {
+                    i = 1;
+                    result.forEach(row => {
+                      measure = {
+                        Measure_ID: row.Measure_ID,
+                        Measure_Name: row.Measure_label,
+                        Measure_Index: i,
+                        Measure_type: row.Measure_type,
+                        Measure_Success: row.isSuccess,
+                        Is_Submitted: Is_Submitted,
+                        Outcome_Index: Measure.Outcome_Index
+                      };
+                      updateOutcome(row.Measure_ID);
+                      i++;
+                      Outcome.data.push(measure);
+                    });
+
+                    return res.status(200).json(Outcome);
+                  }
+                });
+              }
+            });
           }
-          Is_Submitted = result[0].isSubmitted;
-          Outcome.Outcome_ID = Outcome_ID;
-          Outcome.Cycle_ID = result[0].Cycle_ID;
-          Outcome.Class_Factors = result[0].Class_Factors;
-          Outcome.Is_Submitted = result[0].isSubmitted;
-
-          Outcome.data = [];
-          sql =
-            "SELECT * FROM MEASURES WHERE Outcome_ID= " +
-            Outcome_ID +
-            " ORDER BY Measure_Index";
-
-          db.query(sql, (err, result) => {
-            if (err) res.send(err);
-            else {
-              i = 1;
-              result.forEach(row => {
-                measure = {
-                  Measure_ID: row.Measure_ID,
-                  Measure_Name: row.Measure_label,
-                  Measure_Index: i,
-                  Measure_type: row.Measure_type,
-                  Measure_Success: row.isSuccess,
-                  Is_Submitted: Is_Submitted
-                };
-                updateOutcome(row.Measure_ID);
-                i++;
-                Outcome.data.push(measure);
-              });
-
-              return res.status(200).json(Outcome);
-            }
-          });
         }
       });
     } else {
