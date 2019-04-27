@@ -689,3 +689,22 @@ pre{
   margin-bottom: 0px;
   border: none;
 }
+
+.mark-as-complete{
+  margin: 0px 10px;
+  float: right;
+  transition: 0.5s all;
+  
+}
+.mark-as-complete:hover{
+  color: green;
+  cursor: pointer;
+}
+
+.marked-as-complete {
+  margin: 0px 10px;
+  float: right;
+  transition: 0.5s all;
+  color: green;
+  cursor: pointer;
+}
