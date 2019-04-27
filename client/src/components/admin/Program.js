@@ -129,7 +129,7 @@ class Program extends Component {
                     <td>{index + 1}</td>
                     <Coordinator
                       {...admin}
-                      Dept_ID={program.Dept_ID}
+                      Department_ID={program.Department_ID}
                       removeProgramAdmin={this.props.removeProgramAdmin}
                     />
                   </tr>
