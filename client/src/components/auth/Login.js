@@ -77,6 +77,7 @@ class Login extends Component {
               value={this.state.email}
               onChange={this.onChange}
               className={classnames("", { "is-invalid": errors.email })}
+              autoComplete="on"
             />
             <Form.Control.Feedback type="invalid">
               {errors.email}
@@ -91,6 +92,7 @@ class Login extends Component {
               value={this.state.password}
               onChange={this.onChange}
               className={classnames("", { "is-invalid": errors.password })}
+              autoComplete="on"
             />
             <Form.Control.Feedback type="invalid">
               {errors.password}
