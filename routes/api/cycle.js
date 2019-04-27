@@ -1103,260 +1103,289 @@ router.get(
             Measure.Measure_Type = result[0].Measure_type;
             Measure.Is_Submitted = result[0].isSubmitted;
 
-            if (Measure.Measure_Type == "rubric") {
-              sql =
-                " SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" + Measure_ID;
-              db.query(sql, (err, result) => {
-                if (err) return res.status(200).json(err);
-                else {
-                  Rubric_Measure_ID = result[0].Rubric_Measure_ID;
-                  Measure.Rubric_ID = result[0].Rubric_ID;
-                  Measure.End_Date = result[0].End_Date;
-                  Measure.Target = result[0].Target;
-                  Measure.Threshold = result[0].Threshold;
-                  Measure.Achieved_Threshold = result[0].Score;
-                  Measure.Is_Success = result[0].Is_Success;
-                  Measure.Class_Name = result[0].Class_Name;
+            let Outcome_Index = -1;
 
-                  calculateMeasure(Rubric_Measure_ID);
+            sql =
+              "SELECT * FROM OUTCOMES WHERE Cycle_ID=" +
+              Cycle_ID +
+              " ORDER BY Outcome_Index";
 
+            db.query(sql, (err, result) => {
+              if (err) {
+                errors.outcome = "There was error loading the evaluation";
+                return res.status(400).json(errors);
+              } else {
+                let found = false;
+                let i = 0;
+
+                while (i < result.length && !found) {
+                  if (result[i].Outcome_ID == Outcome_ID) {
+                    found = true;
+                  }
+                  i++;
+                }
+                Measure.Outcome_Index = i;
+                if (Measure.Measure_Type == "rubric") {
                   sql =
-                    "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
-                    Rubric_Measure_ID +
-                    " AND Rubric_ID=" +
-                    Measure.Rubric_ID;
-
+                    " SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID=" +
+                    Measure_ID;
                   db.query(sql, (err, result) => {
-                    if (err) throw err;
+                    if (err) return res.status(200).json(err);
                     else {
-                      const Total_Students = result[0].Total;
-                      Measure.Total_Students = Total_Students;
+                      Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+                      Measure.Rubric_ID = result[0].Rubric_ID;
+                      Measure.End_Date = result[0].End_Date;
+                      Measure.Target = result[0].Target;
+                      Measure.Threshold = result[0].Threshold;
+                      Measure.Achieved_Threshold = result[0].Score;
+                      Measure.Is_Success = result[0].Is_Success;
+                      Measure.Class_Name = result[0].Class_Name;
 
-                      //sql to find the count of students with required or better grade
+                      calculateMeasure(Rubric_Measure_ID);
+
                       sql =
-                        "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                        "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
                         Rubric_Measure_ID +
-                        " AND Student_Avg_Grade>=" +
-                        Measure.Target;
+                        " AND Rubric_ID=" +
+                        Measure.Rubric_ID;
 
                       db.query(sql, (err, result) => {
                         if (err) throw err;
                         else {
-                          Measure.Student_Achieved_Target_Count =
-                            result[0].Success_Count;
+                          const Total_Students = result[0].Total;
+                          Measure.Total_Students = Total_Students;
 
+                          //sql to find the count of students with required or better grade
                           sql =
-                            " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
-                            Rubric_Measure_ID;
-                          //console.log(sql);
-                          Measure.Evaluators = [];
+                            "SELECT Count(*) AS Success_Count FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                            Rubric_Measure_ID +
+                            " AND Student_Avg_Grade>=" +
+                            Measure.Target;
+
                           db.query(sql, (err, result) => {
-                            if (err) res.status(400).json(err);
-                            result.forEach(row => {
-                              evaluator = {
-                                Evaluator_Email: row.Evaluator_Email,
-                                Evaluator_Name: row.FullName,
-                                hasSubmitted: row.Did_Submit
-                              };
-                              Measure.Evaluators.push(evaluator);
-                            });
-
-                            Measure.Students = [];
-
-                            sql =
-                              "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
-                              Rubric_Measure_ID +
-                              " ORDER BY Student_Name ASC";
-
-                            db.query(sql, (err, result) => {
-                              if (err) res.status(400).json(err);
-                              result.forEach(row => {
-                                student = {
-                                  Student_ID: row.Student_ID,
-                                  Student_Name: row.Student_Name
-                                };
-                                Measure.Students.push(student);
-                              });
-                              Measure.Rubric_Name = "";
+                            if (err) throw err;
+                            else {
+                              Measure.Student_Achieved_Target_Count =
+                                result[0].Success_Count;
 
                               sql =
-                                " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
-                                Measure_ID;
-
+                                " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM RUBRIC_MEASURES NATURAL JOIN RUBRIC_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Rubric_Measure_ID = " +
+                                Rubric_Measure_ID;
+                              //console.log(sql);
+                              Measure.Evaluators = [];
                               db.query(sql, (err, result) => {
                                 if (err) res.status(400).json(err);
-                                if (result.length > 0) {
-                                  Measure.Rubric_Name = result[0].Rubric_Name;
-                                }
+                                result.forEach(row => {
+                                  evaluator = {
+                                    Evaluator_Email: row.Evaluator_Email,
+                                    Evaluator_Name: row.FullName,
+                                    hasSubmitted: row.Did_Submit
+                                  };
+                                  Measure.Evaluators.push(evaluator);
+                                });
+
+                                Measure.Students = [];
 
                                 sql =
-                                  "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_ID=E.Rubric_ID AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID AND A.Rubric_Measure_ID=S.Rubric_Measure_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_ID=" +
-                                  Measure.Rubric_ID +
-                                  " AND A.Rubric_Measure_ID=" +
+                                  "SELECT Student_ID, Student_Name FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID= " +
                                   Rubric_Measure_ID +
-                                  " ORDER BY A.Evaluator_Email, Student_Name ASC ";
+                                  " ORDER BY Student_Name ASC";
 
-                                // console.log(sql);
                                 db.query(sql, (err, result) => {
                                   if (err) res.status(400).json(err);
-                                  Measure.Unevaluated = [];
                                   result.forEach(row => {
-                                    let Student_Name = row.Student_Name;
-                                    let Evaluator_Name = row.Evaluator_Name;
-
-                                    let isFound = false;
-
-                                    Measure.Unevaluated.forEach(Evaluator => {
-                                      if (
-                                        Evaluator.Evaluator_Name ==
-                                        Evaluator_Name
-                                      ) {
-                                        Evaluator.Student_List.push(
-                                          Student_Name
-                                        );
-                                        isFound = true;
-                                      }
-                                    });
-                                    if (!isFound) {
-                                      Evaluator = {
-                                        Evaluator_Name: Evaluator_Name,
-                                        Student_List: [Student_Name]
-                                      };
-                                      Measure.Unevaluated.push(Evaluator);
-                                    }
+                                    student = {
+                                      Student_ID: row.Student_ID,
+                                      Student_Name: row.Student_Name
+                                    };
+                                    Measure.Students.push(student);
                                   });
-                                  res.status(200).json(Measure);
+                                  Measure.Rubric_Name = "";
+
+                                  sql =
+                                    " SELECT Rubric_Name FROM RUBRIC_MEASURES  NATURAL JOIN RUBRIC WHERE Measure_ID=" +
+                                    Measure_ID;
+
+                                  db.query(sql, (err, result) => {
+                                    if (err) res.status(400).json(err);
+                                    if (result.length > 0) {
+                                      Measure.Rubric_Name =
+                                        result[0].Rubric_Name;
+                                    }
+
+                                    sql =
+                                      "SELECT DISTINCT S.Student_Name AS Student_Name,CONCAT(EV.Fname,' ',EV.Lname) AS Evaluator_Name FROM ALL_ASSIGNED A LEFT JOIN EVALUATED E ON A.Student_ID = E.Student_ID AND A.Evaluator_Email= E.Evaluator_Email AND A.Rubric_ID=E.Rubric_ID AND A.Rubric_Measure_ID=E.Rubric_Measure_ID JOIN RUBRIC_STUDENTS S ON A.Student_ID=S.Student_ID AND A.Rubric_Measure_ID=S.Rubric_Measure_ID JOIN Evaluators EV ON EV.Email = A.Evaluator_Email WHERE E.Student_ID IS null AND A.Rubric_ID=" +
+                                      Measure.Rubric_ID +
+                                      " AND A.Rubric_Measure_ID=" +
+                                      Rubric_Measure_ID +
+                                      " ORDER BY A.Evaluator_Email, Student_Name ASC ";
+
+                                    // console.log(sql);
+                                    db.query(sql, (err, result) => {
+                                      if (err) res.status(400).json(err);
+                                      Measure.Unevaluated = [];
+                                      result.forEach(row => {
+                                        let Student_Name = row.Student_Name;
+                                        let Evaluator_Name = row.Evaluator_Name;
+
+                                        let isFound = false;
+
+                                        Measure.Unevaluated.forEach(
+                                          Evaluator => {
+                                            if (
+                                              Evaluator.Evaluator_Name ==
+                                              Evaluator_Name
+                                            ) {
+                                              Evaluator.Student_List.push(
+                                                Student_Name
+                                              );
+                                              isFound = true;
+                                            }
+                                          }
+                                        );
+                                        if (!isFound) {
+                                          Evaluator = {
+                                            Evaluator_Name: Evaluator_Name,
+                                            Student_List: [Student_Name]
+                                          };
+                                          Measure.Unevaluated.push(Evaluator);
+                                        }
+                                      });
+                                      res.status(200).json(Measure);
+                                    });
+                                  });
                                 });
                               });
-                            });
+                            }
                           });
                         }
                       });
                     }
                   });
-                }
-              });
-            } else {
-              // for test measure
+                } else {
+                  // for test measure
 
-              sql =
-                " SELECT * FROM TEST_MEASURES WHERE Measure_ID=" + Measure_ID;
-              db.query(sql, (err, result) => {
-                if (err) return res.status(200).json(err);
-                else {
-                  Test_Measure_ID = result[0].Test_Measure_ID;
-                  Measure.End_Date = result[0].End_Date;
-                  Measure.Target = result[0].Target;
-                  Measure.Threshold = result[0].Threshold;
-                  Measure.Achieved_Threshold = result[0].Score;
-                  Measure.Is_Success = result[0].Is_Success;
-                  Measure.Test_Name = result[0].Exam_Name;
-                  Measure.Test_Type = result[0].Test_Type;
-
-                  calculateTestMeasure(Test_Measure_ID);
                   sql =
-                    "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
-                    Test_Measure_ID;
-
+                    " SELECT * FROM TEST_MEASURES WHERE Measure_ID=" +
+                    Measure_ID;
                   db.query(sql, (err, result) => {
-                    // console.log(sql);
-
-                    if (err) throw err;
+                    if (err) return res.status(200).json(err);
                     else {
-                      const Total_Students = result[0].Total;
-                      Measure.Total_Students = Total_Students;
+                      Test_Measure_ID = result[0].Test_Measure_ID;
+                      Measure.End_Date = result[0].End_Date;
+                      Measure.Target = result[0].Target;
+                      Measure.Threshold = result[0].Threshold;
+                      Measure.Achieved_Threshold = result[0].Score;
+                      Measure.Is_Success = result[0].Is_Success;
+                      Measure.Test_Name = result[0].Exam_Name;
+                      Measure.Test_Type = result[0].Test_Type;
 
-                      //sql to find the count of students with required or better grade
+                      calculateTestMeasure(Test_Measure_ID);
                       sql =
-                        "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
-                        Test_Measure_ID +
-                        " AND Student_Avg_Grade>=" +
-                        Measure.Target;
+                        "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
+                        Test_Measure_ID;
 
                       db.query(sql, (err, result) => {
                         // console.log(sql);
 
                         if (err) throw err;
                         else {
-                          Measure.Student_Achieved_Target_Count =
-                            result[0].Success_Count;
+                          const Total_Students = result[0].Total;
+                          Measure.Total_Students = Total_Students;
 
+                          //sql to find the count of students with required or better grade
                           sql =
-                            "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
+                            "SELECT Count(*) AS Success_Count FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
                             Test_Measure_ID +
-                            " ORDER BY Student_Name ASC";
+                            " AND Student_Avg_Grade>=" +
+                            Measure.Target;
 
-                          Measure.Students = [];
                           db.query(sql, (err, result) => {
-                            if (err) res.status(400).json(err);
-                            // console.log(result);
+                            // console.log(sql);
 
-                            result.forEach(row => {
-                              student = {
-                                Student_ID: row.Student_ID,
-                                Student_Name: row.Student_Name
-                              };
-                              Measure.Students.push(student);
-                            });
+                            if (err) throw err;
+                            else {
+                              Measure.Student_Achieved_Target_Count =
+                                result[0].Success_Count;
 
-                            sql =
-                              " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
-                              Test_Measure_ID;
-
-                            Measure.Evaluators = [];
-                            db.query(sql, (err, result) => {
-                              if (err) res.status(400).json(err);
-
-                              result.forEach(row => {
-                                evaluator = {
-                                  Evaluator_Email: row.Evaluator_Email,
-                                  Evaluator_Name: row.FullName,
-                                  hasSubmitted: row.Did_Submit
-                                };
-                                Measure.Evaluators.push(evaluator);
-                              });
-                              // console.log(sql);
                               sql =
-                                "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                                "SELECT Student_ID, Student_Name FROM TEST_STUDENTS NATURAL JOIN TEST_MEASURES WHERE Test_Measure_ID= " +
                                 Test_Measure_ID +
-                                " ORDER BY S.Student_Name";
+                                " ORDER BY Student_Name ASC";
+
+                              Measure.Students = [];
                               db.query(sql, (err, result) => {
                                 if (err) res.status(400).json(err);
-                                Measure.Unevaluated = [];
+                                // console.log(result);
 
-                                // console.log(sql);
-                                if (
-                                  result.length > 0 &&
-                                  Measure.Evaluators.length > 0
-                                ) {
-                                  Evaluator = {
-                                    Evaluator_Name:
-                                      Measure.Evaluators[0].Evaluator_Name,
-                                    Student_List: []
+                                result.forEach(row => {
+                                  student = {
+                                    Student_ID: row.Student_ID,
+                                    Student_Name: row.Student_Name
                                   };
+                                  Measure.Students.push(student);
+                                });
+
+                                sql =
+                                  " SELECT Did_Submit,Evaluator_Email,CONCAT( Fname,' ', Lname) AS FullName FROM TEST_MEASURES NATURAL JOIN TEST_MEASURE_EVALUATOR EV JOIN Evaluators E on EV.Evaluator_Email = E.Email WHERE Test_Measure_ID = " +
+                                  Test_Measure_ID;
+
+                                Measure.Evaluators = [];
+                                db.query(sql, (err, result) => {
+                                  if (err) res.status(400).json(err);
+
                                   result.forEach(row => {
-                                    Evaluator.Student_List.push(
-                                      row.Student_Name
-                                    );
+                                    evaluator = {
+                                      Evaluator_Email: row.Evaluator_Email,
+                                      Evaluator_Name: row.FullName,
+                                      hasSubmitted: row.Did_Submit
+                                    };
+                                    Measure.Evaluators.push(evaluator);
+                                  });
+                                  // console.log(sql);
+                                  sql =
+                                    "SELECT * FROM TEST_STUDENTS S WHERE S.Test_Student_ID NOT IN (SELECT Test_Student_ID FROM STUDENTS_TEST_GRADE) AND Test_Measure_ID=" +
+                                    Test_Measure_ID +
+                                    " ORDER BY S.Student_Name";
+                                  db.query(sql, (err, result) => {
+                                    if (err) res.status(400).json(err);
+                                    Measure.Unevaluated = [];
+
+                                    // console.log(sql);
+                                    if (
+                                      result.length > 0 &&
+                                      Measure.Evaluators.length > 0
+                                    ) {
+                                      Evaluator = {
+                                        Evaluator_Name:
+                                          Measure.Evaluators[0].Evaluator_Name,
+                                        Student_List: []
+                                      };
+                                      result.forEach(row => {
+                                        Evaluator.Student_List.push(
+                                          row.Student_Name
+                                        );
+                                      });
+
+                                      Measure.Unevaluated.push(Evaluator);
+                                      return res.status(200).json(Measure);
+                                    } else {
+                                      return res.status(200).json(Measure);
+                                    }
                                   });
 
-                                  Measure.Unevaluated.push(Evaluator);
-                                  return res.status(200).json(Measure);
-                                } else {
-                                  return res.status(200).json(Measure);
-                                }
+                                  // console.log(Measure);
+                                });
                               });
-
-                              // console.log(Measure);
-                            });
+                            }
                           });
                         }
                       });
                     }
                   });
                 }
-              });
-            }
+              }
+            });
           }
         }
       });
