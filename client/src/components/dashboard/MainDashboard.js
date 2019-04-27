@@ -30,28 +30,52 @@ class MainDashboard extends Component {
         </div>
       </Link>
     );
+
+    let adminTools = (
+      <Link to={`/dashboard/programs`}>
+        <div className="latestCycle">
+          <p>Admin Tools</p>
+        </div>
+      </Link>
+    );
+
     return (
       <div>
         <Jumbotron fluid>
           <Container>
             <h1>Hello {auth.user.firstname},</h1>
-            {auth.user.type === "Admin" ? (
-              <p>You are a coordinator of {auth.user.dept} department!</p>
+            {auth.user.isSuperUser === "false" ? (
+              <>
+                {auth.user.type === "Admin" ? (
+                  <p>You are a coordinator of {auth.user.dept} department!</p>
+                ) : (
+                  <p>You are an evaluator of {auth.user.dept} department!</p>
+                )}
+              </>
             ) : (
-              <p>You are a evaluator of {auth.user.dept} department!</p>
+              <p>Thank you for maintaining ULM Evaluations!</p>
             )}
           </Container>
         </Jumbotron>
         <Jumbotron fluid>
-          {auth.user.type === "Admin" ? (
-            <Container>
-              <h5>Link to your recently working cycle:</h5>
-              {latestCycle}
-            </Container>
+          {auth.user.isSuperUser === "false" ? (
+            <>
+              {auth.user.type === "Admin" ? (
+                <Container>
+                  <h5>Link to your recently working cycle:</h5>
+                  {latestCycle}
+                </Container>
+              ) : (
+                <Container>
+                  <h5>Link to your tasks:</h5>
+                  {tasks}
+                </Container>
+              )}
+            </>
           ) : (
             <Container>
-              <h5>Link to your tasks:</h5>
-              {tasks}
+              <h5>Link to Admin Tools:</h5>
+              {adminTools}
             </Container>
           )}
         </Jumbotron>

@@ -5,6 +5,7 @@ import { Table } from "react-bootstrap";
 import PropTypes from "prop-types";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 class CycleReport extends Component {
   componentDidMount() {
@@ -22,8 +23,22 @@ class CycleReport extends Component {
           <>
             <h3 className="text-center">
               {report.Cycle_Name} - Summary of Results
+              <ReactHTMLTableToExcel
+                id="test-table-xls-button"
+                className="btn btn-primary export-btn"
+                table="table-to-xls"
+                filename="Report"
+                sheet="Report"
+                buttonText="Download as Excel File"
+              />
             </h3>
-            <Table striped bordered hover className="text-center report">
+            <Table
+              striped
+              bordered
+              hover
+              className="text-center report"
+              id="table-to-xls"
+            >
               <thead>
                 <tr>
                   {report.Header.map((head, index) =>

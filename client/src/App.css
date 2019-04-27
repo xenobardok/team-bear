@@ -675,7 +675,7 @@ a:hover {
 }
 
 .dateTime{
-  color: grey;
+  color: #7b3449;
 }
 
 .measure-name{
@@ -712,4 +712,8 @@ pre{
 #page-wrap .card.report {
   min-width: 400px;
   max-width: 500px;
+}
+
+.export-btn {
+  float: right!important;
 }
