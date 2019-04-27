@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { ListGroup, Row, Col, Card } from "react-bootstrap";
+import {
+  ListGroup,
+  Row,
+  Col,
+  Card,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import {
   listAssignedRubrics,
   listAssignedTests
@@ -8,6 +15,13 @@ import { Link } from "react-router-dom";
 import Spinner from "../../common/Spinner";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheckCircle,
+  faTimesCircle
+} from "@fortawesome/free-solid-svg-icons";
+library.add(faCheckCircle, faTimesCircle);
 
 class Tasks extends Component {
   componentDidMount() {
@@ -23,20 +37,78 @@ class Tasks extends Component {
       testsList = <Spinner />;
     } else {
       rubricsList = allRubrics.map(rubric => (
-        <Link
-          to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}
-          key={rubric.Rubric_Name}
-        >
-          <ListGroup.Item action>{rubric.Rubric_Name}</ListGroup.Item>
-        </Link>
+        <ListGroup className="edit-post" key={rubric.Rubric_Name}>
+          <div
+            style={{
+              display: "inline",
+              alignSelf: "center",
+              padding: "0px 10px 0px 15px",
+              cursor: "pointer"
+            }}
+          >
+            {rubric.hasSubmitted === "true" ? (
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Status: Submitted</Tooltip>}
+              >
+                <FontAwesomeIcon
+                  icon="check-circle"
+                  className="status success"
+                />
+              </OverlayTrigger>
+            ) : (
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Status: Not Submitted</Tooltip>}
+              >
+                <FontAwesomeIcon icon="times-circle" className="status fail" />
+              </OverlayTrigger>
+            )}
+          </div>
+          <Link
+            to={`/dashboard/tasks/rubric/${rubric.Rubric_Measure_ID}`}
+            style={{ flexGrow: "1" }}
+          >
+            <ListGroup.Item action>{rubric.Rubric_Name}</ListGroup.Item>
+          </Link>
+        </ListGroup>
       ));
       testsList = allTests.map(test => (
-        <Link
-          to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}
-          key={test.Test_Measure_ID}
-        >
-          <ListGroup.Item action>{test.Test_Name}</ListGroup.Item>
-        </Link>
+        <ListGroup className="edit-post" key={test.Test_Measure_ID}>
+          <div
+            style={{
+              display: "inline",
+              alignSelf: "center",
+              padding: "0px 10px 0px 15px",
+              cursor: "pointer"
+            }}
+          >
+            {test.hasSubmitted === "true" ? (
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Status: Submitted</Tooltip>}
+              >
+                <FontAwesomeIcon
+                  icon="check-circle"
+                  className="status success"
+                />
+              </OverlayTrigger>
+            ) : (
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Status: Not Submitted</Tooltip>}
+              >
+                <FontAwesomeIcon icon="times-circle" className="status fail" />
+              </OverlayTrigger>
+            )}
+          </div>
+          <Link
+            to={`/dashboard/tasks/test/${test.Test_Measure_ID}`}
+            style={{ flexGrow: "1" }}
+          >
+            <ListGroup.Item action>{test.Test_Name}</ListGroup.Item>
+          </Link>
+        </ListGroup>
       ));
     }
 

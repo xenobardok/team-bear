@@ -5,15 +5,27 @@ import { connect } from "react-redux";
 import {
   viewTestMeasure,
   studentFilefromCSV,
-  gradeStudentTestMeasure
+  gradeStudentTestMeasure,
+  submitTestTask
 } from "../../actions/evaluationsActions";
-import { Table, Form, Container } from "react-bootstrap";
+import {
+  Table,
+  Form,
+  Container,
+  OverlayTrigger,
+  Tooltip
+} from "react-bootstrap";
 import "./Test.css";
 // import classnames from "classnames";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import UploadFileButton from "../../common/UploadFileButton";
 import { toastr } from "react-redux-toastr";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Swal from "sweetalert2";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+library.add(faCheckCircle);
 
 class ViewTest extends Component {
   constructor(props) {
@@ -45,6 +57,23 @@ class ViewTest extends Component {
     }
   };
 
+  markAsComplete = () => {
+    let { testMeasureId } = this.props.match.params;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Your program coordinators will be notified!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, mark it!"
+    }).then(result => {
+      if (result.value) {
+        this.props.submitTestTask(testMeasureId);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   gradeStudentTestMeasure = (studentID, Score) => {
     let { testMeasureId } = this.props.match.params;
     console.log(testMeasureId, studentID, Score);
@@ -60,7 +89,33 @@ class ViewTest extends Component {
       if (test) {
         displayTest = (
           <Container>
-            <h2>{test.Test_Name}</h2>
+            <h2>
+              {test.hasSubmitted === "false" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Mark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="mark-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Remark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="marked-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              )}
+
+              {test.Test_Name}
+            </h2>
             <Table striped bordered hover className="test">
               <thead>
                 <tr className="text-center">
@@ -157,6 +212,7 @@ export default connect(
   {
     viewTestMeasure,
     studentFilefromCSV,
-    gradeStudentTestMeasure
+    gradeStudentTestMeasure,
+    submitTestTask
   }
 )(ViewTest);

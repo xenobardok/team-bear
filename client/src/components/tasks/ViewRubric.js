@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import {
   viewRubricMeasure,
   viewStudentGradeRubricMeasure,
-  gradeStudentRubricMeasure
+  gradeStudentRubricMeasure,
+  submitRubricTask
 } from "../../actions/evaluationsActions";
 import {
   Table,
@@ -15,11 +16,18 @@ import {
   Card,
   ListGroup,
   Button,
-  Alert
+  Alert,
+  OverlayTrigger,
+  Tooltip
 } from "react-bootstrap";
 import { toastr } from "react-redux-toastr";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+library.add(faCheckCircle);
 
 let scalesRow, dataRow;
 
@@ -193,6 +201,24 @@ class ViewRubric extends Component {
     let value = this.state.rubricScale[rowIndex];
     this.changeStudentGrade(index, value);
   };
+
+  markAsComplete = () => {
+    let { rubricMeasureId } = this.props.match.params;
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Your program coordinators will be notified!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, mark it!"
+    }).then(result => {
+      if (result.value) {
+        this.props.submitRubricTask(rubricMeasureId);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+  };
   render() {
     let { rubric, loading } = this.props.evaluations;
     let displayRubric = "";
@@ -269,7 +295,32 @@ class ViewRubric extends Component {
               marginBottom: "100px"
             }}
           >
-            <h2>{rubric.Rubric_Name}</h2>
+            <h2>
+              {rubric.hasSubmitted === "false" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Mark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="mark-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Remark As Complete</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="check-circle"
+                    className="marked-as-complete"
+                    onClick={this.markAsComplete}
+                  />
+                </OverlayTrigger>
+              )}
+              {rubric.Rubric_Name}
+            </h2>
             <h5>
               {isEmpty(this.state.Student_Name) ? (
                 <Alert variant="info" className="text-center">
@@ -370,6 +421,7 @@ export default connect(
   {
     viewRubricMeasure,
     viewStudentGradeRubricMeasure,
-    gradeStudentRubricMeasure
+    gradeStudentRubricMeasure,
+    submitRubricTask
   }
 )(ViewRubric);
