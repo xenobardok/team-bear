@@ -770,7 +770,7 @@ router.delete(
             .json({ User: "You do not have enough privileges" });
         } else {
           sql = "SELECT * FROM Department WHERE Department_ID=" + Department_ID;
-          console.log(sql);
+
           db.query(sql, (err, result) => {
             if (err) return res.status(400).json(err);
             else {

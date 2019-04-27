@@ -59,8 +59,7 @@ router.post("/register", (req, res) => {
         let lastname = db.escape(req.body.lastname);
         let password = db.escape(req.body.password);
         let Temp_Code = req.body.tempCode;
-        console.log(Temp_Code);
-        console.log(result[0].Temp_Code);
+
         if (result[0].Temp_Code == Temp_Code) {
           sql =
             "UPDATE Evaluators SET Temp_Code=null, Fname =" +
@@ -74,9 +73,8 @@ router.post("/register", (req, res) => {
             db.escape("true") +
             " WHERE Email = " +
             email;
-          console.log(sql);
+
           db.query(sql, function(err, result) {
-            console.log(err);
             if (result) {
               return res
                 .status(200)
