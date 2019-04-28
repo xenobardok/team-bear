@@ -159,7 +159,9 @@ class EditableMeasureList extends Component {
               <ListGroup.Item action key={this.props.value.Measure_ID}>
                 {this.props.Outcome_Index}
                 {"."}
-                {this.props.value.Measure_Index} {this.state.Measure_Name}
+                {this.props.value.Measure_Index}
+                {". "}
+                {this.state.Measure_Name}
               </ListGroup.Item>
             </Link>
             <OverlayTrigger

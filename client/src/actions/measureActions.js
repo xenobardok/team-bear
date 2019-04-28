@@ -196,7 +196,13 @@ export const addStudentsFromCSV = (
         }
       }
     )
-    .then(res => dispatch({ type: ADD_STUDENT_FROM_FILE, payload: res.data }))
+    .then(res => {
+      dispatch({ type: ADD_STUDENT_FROM_FILE, payload: res.data });
+      toastr.success(
+        "Student added!",
+        "Students added using file upload method!"
+      );
+    })
     .catch(err => {
       dispatch({ type: ERROR_FILE_UPLOAD, payload: [] });
       toastr.error("Duplicate ID(s) found", "Students not added!");

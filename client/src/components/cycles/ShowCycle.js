@@ -89,7 +89,8 @@ class ShowCycle extends Component {
         allOutcomes: this.props.cycles.cycle,
         showNewOutcome: false,
         newOutcome: "",
-        errors: ""
+        errors: "",
+        curriculumMap: ""
       });
     }
   };

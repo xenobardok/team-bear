@@ -18,6 +18,7 @@ import {
   faCheck,
   faEdit
 } from "@fortawesome/free-solid-svg-icons";
+import classnames from "classnames";
 library.add(faTimesCircle, faCheck, faEdit);
 
 export default class DefineMeasure extends Component {
@@ -46,7 +47,10 @@ export default class DefineMeasure extends Component {
       scale: "",
       complete: true,
       Test_Name: Test_Name,
-      Test_Type: Test_Type
+      Test_Type: Test_Type,
+      errors: {
+        Threshold: ""
+      }
     };
   }
 
@@ -62,17 +66,29 @@ export default class DefineMeasure extends Component {
     } = this.state;
 
     if (this.props.Measure_Type === "rubric") {
-      let measureValue = {
-        Threshold: Threshold.toString(),
-        Class_Name: Class_Name,
-        Rubric_ID: rubric,
-        Target: scale.toString()
-      };
-      console.log(measureValue);
-      this.setState({
-        isEditing: false
-      });
-      this.props.measureDefination(measureValue);
+      console.log(Number(Threshold), Threshold);
+      if (
+        isEmpty(Threshold) ||
+        isEmpty(Class_Name) ||
+        isEmpty(rubric) ||
+        isEmpty(scale)
+      ) {
+        toastr.warning("One or more input field is empty!");
+      } else if (Number(Threshold) >= 100 || Number(Threshold) <= 0) {
+        toastr.warning("Percentage should be greater than 0 and less than 100");
+      } else {
+        let measureValue = {
+          Threshold: Threshold.toString(),
+          Class_Name: Class_Name,
+          Rubric_ID: rubric,
+          Target: scale.toString()
+        };
+        console.log(measureValue);
+        this.setState({
+          isEditing: false
+        });
+        this.props.measureDefination(measureValue);
+      }
     } else if (this.props.Measure_Type === "test") {
       if (
         isEmpty(Threshold) ||
@@ -223,6 +239,19 @@ export default class DefineMeasure extends Component {
     this.setState({
       [e.target.name]: e.target.value
     });
+
+    if (e.target.name === "Threshold" && e.target.value >= 100) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          Threshold: "Threshold cannot exceed 100"
+        }
+      });
+    } else {
+      this.setState({
+        errors: { ...this.state.errors, Threshold: "" }
+      });
+    }
   };
 
   handleOptionChange = e => {
