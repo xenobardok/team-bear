@@ -2235,6 +2235,7 @@ router.delete(
                               "There was some problem removing the evaluator"
                           });
                         } else {
+                          updateStudentsTestScore(Test_Measure_ID, () => {});
                           message =
                             " have been removed from the evaluation of the test  " +
                             Test_Name +
@@ -2565,7 +2566,7 @@ router.post(
                           let newArray = newCWID.filter(value =>
                             regCWID.includes(value)
                           );
-                          console.log(newArray);
+                          // console.log(newArray);
 
                           if (newArray.length > 0) {
                             return res.status(400).json(newArray);
@@ -2629,7 +2630,6 @@ router.post(
                     newStudents.shift();
                     newCWID.shift();
 
-                    // console.log(newStudents);
                     if (new Set(newCWID).size !== newCWID.length) {
                       errors.students = "Duplicate Student ID in file";
 
@@ -2653,7 +2653,7 @@ router.post(
                           let newArray = newCWID.filter(value =>
                             regCWID.includes(value)
                           );
-                          console.log(newArray);
+                          // console.log(newArray);
 
                           if (newArray.length > 0) {
                             return res.status(400).json(newArray);
