@@ -268,6 +268,7 @@ router.get(
           " ORDER BY S.Student_Name ";
 
         // console.log(sql);
+
         db.query(sql, (err, result) => {
           if (err) return res.status(400).json(err);
           else {
@@ -287,6 +288,7 @@ router.get(
               };
               Test.StudentsData.push(astudent);
             });
+
             res.status(200).json(Test);
           }
         });
@@ -659,8 +661,15 @@ router.post(
                 uploadedID.push(element[0]);
               });
 
+              uploadedID.shift();
+              uploadedStudents.shift();
+
               if (new Set(uploadedID).size !== uploadedID.length) {
                 errors.students = "Duplicate Student ID in file";
+
+                return res.status(400).json(errors);
+              } else if (uploadedID.length == 0) {
+                errors.students = "File is Empty";
 
                 return res.status(400).json(errors);
               } else {
@@ -759,24 +768,105 @@ router.post(
                         if (!isEmpty(errors)) {
                           return res.status(400).json(errors);
                         } else {
-                          sql = updateStudentsSql + addStudentsSql;
+                          sql = addStudentsSql + updateStudentsSql;
+
+                          if (addStudentsSql != "") {
+                            db.query(addStudentsSql, (err, result) => {
+                              // console.log(err);
+                              if (err) {
+                                errors.students =
+                                  "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                                return res.status(400).json(errors);
+                              } else {
+                                if (updateStudentsSql != "") {
+                                  db.query(updateStudentsSql, (err, result) => {
+                                    if (err) {
+                                      errors.students =
+                                        "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                                      return res.status(400).json(errors);
+                                    } else {
+                                      updateStudentsTestScore(
+                                        Test_Measure_ID,
+                                        () => {}
+                                      );
+                                      return res.status(200).json({
+                                        message:
+                                          "successfully  added and updated"
+                                      });
+                                    }
+                                  });
+                                } else {
+                                  console.log(result);
+
+                                  sql =
+                                    "SELECT * FROM STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+                                    Test_Measure_ID;
+
+                                  db.query(sql, (err, result) => {
+                                    result.forEach(student => {
+                                      let Student_ID = student.Test_Student_ID;
+
+                                      let Grade = student.Score;
+
+                                      if (Grade == null) {
+                                        Grade = 0;
+                                      }
+
+                                      let astudent = {
+                                        Student_ID: Student_ID,
+
+                                        Grade: Grade
+                                      };
+                                      console.log(astudent);
+                                    });
+
+                                    updateStudentsTestScore(
+                                      Test_Measure_ID,
+                                      () => {}
+                                    );
+                                    return res
+                                      .status(200)
+                                      .json({ message: "successfully added" });
+                                  });
+                                }
+                              }
+                            });
+                          } else {
+                            db.query(updateStudentsSql, (err, result) => {
+                              if (err) {
+                                errors.students =
+                                  "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                                return res.status(400).json(errors);
+                              } else {
+                                updateStudentsTestScore(
+                                  Test_Measure_ID,
+                                  () => {}
+                                );
+                                return res
+                                  .status(200)
+                                  .json({ message: "successfully updated" });
+                              }
+                            });
+                          }
+
                           // console.log(sql);
-                          db.query(sql, (err, result) => {
-                            // console.log(err);
-                            if (err) {
-                              errors.students =
-                                "There was some problem adding the evaluatees. Please check your csv file and try again.";
-                              return res.status(400).json(errors);
-                            } else {
-                              updateStudentsTestScore(
-                                Test_Measure_ID,
-                                () => {}
-                              );
-                              return res
-                                .status(200)
-                                .json({ message: "successfully updated" });
-                            }
-                          });
+                          // db.query(sql, (err, result) => {
+                          //   // console.log(err);
+                          //   if (err) {
+                          //     errors.students =
+                          //       "There was some problem adding the evaluatees. Please check your csv file and try again.";
+                          //     return res.status(400).json(errors);
+                          //   } else {
+                          //     updateStudentsTestScore(
+                          //       Test_Measure_ID,
+                          //       () => {}
+                          //     );
+
+                          //     return res
+                          //       .status(200)
+                          //       .json({ message: "successfully updated" });
+                          //   }
+                          // }
                         }
                       }
                     });
