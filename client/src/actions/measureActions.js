@@ -48,6 +48,7 @@ export const createMeasure = (
     })
     .then(res => {
       dispatch(getMeasures(cycleID, Outcome_ID));
+      toastr.success("New Measure created!");
     })
     .catch(err => {
       dispatch({
@@ -74,6 +75,10 @@ export const updateMeasureLabel = (
     .then(res => {
       // dispatch(getMeasures(Outcome_ID));
       console.log("measure name updated");
+      toastr.success(
+        "Measure Label Updated!",
+        "The new measure label is " + Measure_Name
+      );
     })
     .catch(err => {
       dispatch({
@@ -125,12 +130,19 @@ export const assignEvaluatorToMeasure = (
         Evaluator_Email: Evaluator_Email
       }
     )
-    .then(res =>
+    .then(res => {
       dispatch({
         type: ADD_EVALUATOR_MEASURE,
         payload: res.data
-      })
-    );
+      });
+      toastr.success(
+        "Evaluator Added!",
+        Evaluator_Email + " added as an evaluator"
+      );
+    })
+    .catch(err => {
+      toastr.error("Error!", err.response.data.Measure);
+    });
 };
 
 export const defineMeasure = (

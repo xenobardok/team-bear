@@ -21,7 +21,9 @@ class TestReport extends Component {
     } else {
       title = (
         <h4 className="text-center">
-          Outcome , Measure: {report.Measure_Label}
+          Outcome {report.Outcome_Index}, Measure
+          {" " + report.Outcome_Index + "." + report.Measure_Index}:{" "}
+          {report.Measure_Label}
         </h4>
       );
       tableContent = (

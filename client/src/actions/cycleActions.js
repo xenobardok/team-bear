@@ -106,6 +106,7 @@ export const createCycle = cycleName => dispatch => {
         type: GET_ERRORS,
         payload: err.response.data
       });
+      toastr.error("Cycle Creation Error!");
     });
 };
 

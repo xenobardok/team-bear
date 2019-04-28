@@ -162,14 +162,14 @@ export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
       }
     })
     .then(res => {
-      dispatch(listAssignedTests());
+      dispatch(viewTestMeasure());
       toastr.success(
         "Student Graded!",
         "Students graded using file upload method"
       );
     })
     .catch(err => {
-      dispatch(listAssignedTests());
+      dispatch(viewTestMeasure());
       toastr.error("Error occured", "Student grade not added");
     });
 };
