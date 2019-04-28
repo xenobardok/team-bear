@@ -2254,12 +2254,26 @@ router.delete(
                                 error:
                                   "There was some problem removing the evaluator"
                               });
+                            } else {
+                              sql =
+                                "DELETE FROM STUDENTS_TEST_GRADE WHERE Evaluator_Email=" +
+                                db.escape(Evaluator_Email);
+
+                              db.query(sql, (err, result) => {
+                                if (err) {
+                                  return res.status(400).json({
+                                    error:
+                                      "There was some problem removing the evaluator"
+                                  });
+                                } else {
+                                  return res.status(200).json({
+                                    // message: "Evaluator has successfully been assigned."
+                                    Evaluator_Email: req.body.Evaluator_Email,
+                                    Evaluator_Name: Evaluator_Name
+                                  });
+                                }
+                              });
                             }
-                            return res.status(200).json({
-                              // message: "Evaluator has successfully been assigned."
-                              Evaluator_Email: req.body.Evaluator_Email,
-                              Evaluator_Name: Evaluator_Name
-                            });
                           });
                         }
                       });
@@ -2525,6 +2539,9 @@ router.post(
                       newCWID.push(element[0]);
                     });
 
+                    newStudents.shift();
+                    newCWID.shift();
+
                     if (new Set(newCWID).size !== newCWID.length) {
                       errors.students = "Duplicate Student ID in file";
 
@@ -2608,6 +2625,10 @@ router.post(
                       );
                       newCWID.push(element[0]);
                     });
+
+                    newStudents.shift();
+                    newCWID.shift();
+
                     // console.log(newStudents);
                     if (new Set(newCWID).size !== newCWID.length) {
                       errors.students = "Duplicate Student ID in file";
