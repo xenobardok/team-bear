@@ -9,7 +9,7 @@ const router = express.Router(),
 const isEmpty = require("../../validation/isEmpty");
 
 // Loading Input Validation
-var validator = require("validator");
+const validator = require("validator");
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
@@ -886,6 +886,67 @@ router.delete(
                         }
                       });
                     }
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+);
+
+// @route   Delete api/program/user/reset
+// @desc   Reset password of an evaluator
+// @access  Private
+router.put(
+  "/user/reset",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    let Evaluator_Email = db.escape(req.body.Email.toLowerCase());
+    let Password = db.escape(req.body.Password);
+    let errors = {};
+    let sql =
+      "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
+      db.escape(email);
+
+    if (!validator.isLength(req.body.Password, { min: 6, max: 20 })) {
+      errors.Name = "Password must be 6-20 characters long";
+      return res.status(400).json(errors);
+    }
+    db.query(sql, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ User: "You do not have enough privileges" });
+        } else {
+          sql = "SELECT * FROM Evaluators WHERE Email  = " + Evaluator_Email;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            else {
+              if (result.length < 1) {
+                errors.Email = "User not found";
+              } else {
+                sql =
+                  "UPDATE Evaluators SET Password=PASSWORD(" +
+                  Password +
+                  ") WHERE  Email=" +
+                  Evaluator_Email;
+
+                db.query(sql, (err, result) => {
+                  if (err) return res.status(400).json(err);
+                  else {
+                    return res
+                      .status(200)
+                      .json({ Email: "Password successfully updated" });
                   }
                 });
               }

@@ -10,6 +10,9 @@ const router = express.Router(),
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
+const isEmpty = require("../../validation/isEmpty");
+
+const validator = require("Validator");
 
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -532,6 +535,85 @@ router.get(
       });
     } else {
       res.status(200).json(profiles);
+    }
+  }
+);
+
+// @route   Delete api/users/changeName
+// @desc   Change your own name
+// @access  Private
+router.put(
+  "/changeName",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    let Fname = db.escape(req.body.Fname);
+    let Mname = db.escape(req.body.Mname);
+    let Lname = db.escape(req.body.Lname);
+
+    if (req.body.Mname == "") {
+      Mname = null;
+    }
+
+    let errors = {};
+
+    if (isEmpty(req.body.Fname) || isEmpty(req.body.Lname)) {
+      errors.Name = "First Name or Last Name cannot be empty";
+      return res.status(400).json(errors);
+    } else {
+      sql =
+        "UPDATE Evaluators SET Fname=" +
+        Fname +
+        ", Mname=" +
+        Mname +
+        ",Lname=" +
+        Lname +
+        " WHERE Email=" +
+        db.escape(email);
+
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          res.status(200).json({ Email: "Name successfully updated" });
+        }
+      });
+    }
+  }
+);
+
+// @route   Delete api/users/changePassword
+// @desc   Change your own name
+// @access  Private
+router.put(
+  "/changePassword",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    let Password = db.escape(req.body.Password);
+    let errors = {};
+
+    if (!validator.isLength(req.body.Password, { min: 6, max: 20 })) {
+      errors.Password = "Password must be 6-20 characters long";
+      return res.status(400).json(errors);
+    } else {
+      sql =
+        "UPDATE Evaluators SET Password=PASSWORD(" +
+        Password +
+        ") WHERE  Email=" +
+        db.escape(email);
+
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          res.status(200).json({ Email: "Password successfully updated" });
+        }
+      });
     }
   }
 );

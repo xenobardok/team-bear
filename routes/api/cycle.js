@@ -2473,6 +2473,163 @@ router.post(
   }
 );
 
+// @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/changeName/:StudentID
+// @desc    Add a student to a  Measure
+// @access  Private
+router.post(
+  "/:cycleID/outcome/:outcomeID/measure/:MeasureID/changeName/:StudentID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = db.escape(req.user.email);
+    const type = req.user.type;
+    const dept = db.escape(req.user.dept);
+
+    const Measure_ID = db.escape(req.params.measureID);
+    const Outcome_ID = req.params.outcomeID;
+    const Cycle_ID = req.params.cycleID;
+
+    const Student_ID = db.escape(req.params.StudentID);
+    let Student_Name = db.escape(req.body.Student_Name);
+
+    const errors = {};
+
+    if (isEmpty(req.body.Student_Name)) {
+      errors.Student_Name = "Student Name cannot be empty";
+      return res.status(400).json(Student_Name);
+    }
+
+    if (type == "Admin") {
+      let sql =
+        "SELECT Measure_type FROM MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted= 'false' AND Measure_ID = " +
+        Measure_ID +
+        " AND Outcome_ID=" +
+        Outcome_ID +
+        " AND Cycle_ID=" +
+        Cycle_ID;
+      db.query(sql, (err, result) => {
+        if (err) return res.status(400).json(err);
+        else {
+          if (result.length < 1) {
+            errors.error = "Measure Not found Or the cycle is closed";
+            return res.status(404).json(errors);
+          }
+          //for rubric Measure Type
+          if (result[0].Measure_type == "rubric") {
+            sql =
+              "SELECT * FROM RUBRIC_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Rubric_Measure_ID = result[0].Rubric_Measure_ID;
+
+                sql =
+                  "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
+                  Rubric_Measure_ID +
+                  " AND Student_ID=" +
+                  db.escape(Student_ID);
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluatee"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res
+                      .status(400)
+                      .json({ error: "Student cannot be found" });
+                  } else {
+                    Rubric_Student_ID = result[0].Rubric_Student_ID;
+
+                    sql =
+                      "UPDATE RUBRIC_STUDENTS SET Student_Name=" +
+                      Student_Name +
+                      " WHERE Rubric_Student_ID=" +
+                      Rubric_Student_ID;
+
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json({
+                          error: "There was some problem adding  the Evaluatee"
+                        });
+                      } else {
+                        calculateMeasure(Rubric_Measure_ID);
+                        return res.status(200).json({
+                          Student_Name: req.params.Student_Name,
+                          Student_ID: req.params.StudentID
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+          //for test Measure
+          else {
+            sql = "SELECT * FROM TEST_MEASURES WHERE Measure_ID =" + Measure_ID;
+
+            // console.log(sql);
+            db.query(sql, (err, result) => {
+              if (err) res.send(err);
+              else {
+                let Test_Measure_ID = result[0].Test_Measure_ID;
+
+                sql =
+                  "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                  Test_Measure_ID +
+                  " AND Student_ID=" +
+                  db.escape(Student_ID);
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json({
+                      error: "There was some problem adding the Evaluatee"
+                    });
+                  }
+
+                  if (result.length < 1) {
+                    return res
+                      .status(400)
+                      .json({ error: "Student cannot be found" });
+                  } else {
+                    Test_Student_ID = result[0].Test_Student_ID;
+
+                    sql =
+                      "UPDATE TEST_STUDENTS SET Student_Name=" +
+                      Student_Name +
+                      " WHERE Test_Student_ID=" +
+                      Test_Student_ID;
+
+                    db.query(sql, (err, result) => {
+                      if (err) {
+                        return res.status(400).json({
+                          error: "There was some problem adding  the Evaluatee"
+                        });
+                      } else {
+                        calculateTestMeasure(Test_Measure_ID);
+                        return res.status(200).json({
+                          Student_Name: req.params.Student_Name,
+                          Student_ID: req.params.StudentID
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    } else {
+      res.status(404).json({ error: "Not an Admin" });
+    }
+  }
+);
+
 // @route   POST api/cycle/:cycleID/outcome/:outcomeID/measure/:MeasureID/addStudent/fileUpload
 // @desc    Add a student to a Rubric Measure using file upload
 // @access  Private
