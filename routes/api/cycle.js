@@ -2692,9 +2692,9 @@ router.post(
                     let output = [];
                     fileRows.forEach(function(element) {
                       newStudents.push(
-                        new Array(Rubric_Measure_ID, element[0], element[1], 0)
+                        new Array(Rubric_Measure_ID, element[1], element[0], 0)
                       );
-                      newCWID.push(element[0]);
+                      newCWID.push(element[1]);
                     });
 
                     newStudents.shift();
@@ -2779,9 +2779,9 @@ router.post(
                     let output = [];
                     fileRows.forEach(function(element) {
                       newStudents.push(
-                        new Array(Test_Measure_ID, element[0], element[1], 0)
+                        new Array(Test_Measure_ID, element[1], element[0], 0)
                       );
-                      newCWID.push(element[0]);
+                      newCWID.push(element[1]);
                     });
 
                     newStudents.shift();
@@ -2838,6 +2838,7 @@ router.post(
                                     };
                                     output.push(student);
                                   });
+
                                   return res.status(200).json(output);
                                 });
                               }
