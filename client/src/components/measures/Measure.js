@@ -2,6 +2,7 @@ import React, { Component } from "react";
 // import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Container,
   Badge,
@@ -47,6 +48,7 @@ import EditableStudentList from "./EditableStudentList";
 import { toastr } from "react-redux-toastr";
 import "./measure.css";
 import UploadFileButton from "../../common/UploadFileButton";
+import SampleFile from "./students.csv";
 library.add(faPlus, faEdit, faUserPlus, faCheckCircle, faWindowClose);
 
 class Measure extends Component {
@@ -412,6 +414,10 @@ class Measure extends Component {
                           encType="multipart/form-data"
                           style={{ textAlign: "center" }}
                         >
+                          <a href={SampleFile} className="download-file">
+                            Download a sample file
+                          </a>
+                          <br />
                           <UploadFileButton
                             fileUploadHandler={this.fileUploadHandler}
                           />

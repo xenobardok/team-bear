@@ -751,3 +751,7 @@ pre{
 .openFileUpload:hover {
   text-decoration: underline
 }
+
+.download-file:hover{
+  color:#7b3449b3
+}

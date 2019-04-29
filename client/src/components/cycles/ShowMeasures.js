@@ -131,13 +131,7 @@ class ShowMeasures extends Component {
                       onChange={e =>
                         this.setState({ newMeasure: e.target.value })
                       }
-                      className={classnames("mt-1 ml-1 mr-1", {
-                        "is-invalid": this.state.errors.Measure_Name
-                      })}
                     />
-                    <FormControl.Feedback type="invalid">
-                      {this.state.errors.Measure_Name}
-                    </FormControl.Feedback>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>Type of the measure</Form.Label>

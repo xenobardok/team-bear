@@ -55,6 +55,9 @@ export const createMeasure = (
         type: GET_ERRORS,
         payload: err.response.data
       });
+      if (err.response.data.Measure_Name) {
+        toastr.error("Error!", err.response.data.Measure_Name);
+      }
     });
 };
 
