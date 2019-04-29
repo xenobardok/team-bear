@@ -13,7 +13,8 @@ import {
   Form,
   Container,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  Collapse
 } from "react-bootstrap";
 import "./Test.css";
 // import classnames from "classnames";
@@ -24,15 +25,19 @@ import { toastr } from "react-redux-toastr";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-library.add(faCheckCircle);
+import {
+  faCheckCircle,
+  faChevronDown
+} from "@fortawesome/free-solid-svg-icons";
+library.add(faCheckCircle, faChevronDown);
 
 class ViewTest extends Component {
   constructor(props) {
     super(props);
     this.state = {
       gradeEdit: false,
-      SubmitGrade: false
+      SubmitGrade: false,
+      openFileUpload: false
     };
   }
 
@@ -77,7 +82,11 @@ class ViewTest extends Component {
   gradeStudentTestMeasure = (studentID, Score) => {
     let { testMeasureId } = this.props.match.params;
     console.log(testMeasureId, studentID, Score);
-    this.props.gradeStudentTestMeasure(testMeasureId, studentID, Score);
+    if (Score) {
+      this.props.gradeStudentTestMeasure(testMeasureId, studentID, Score);
+    } else {
+      this.props.gradeStudentTestMeasure(testMeasureId, studentID, "0");
+    }
   };
   render() {
     let { test, loading } = this.props.evaluations;
@@ -143,7 +152,21 @@ class ViewTest extends Component {
               </tbody>
             </Table>
             <hr class="hr-text" data-content="OR" />
-            <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
+            <p
+              onClick={() =>
+                this.setState({ openFileUpload: !this.state.openFileUpload })
+              }
+              aria-controls="example-collapse-text"
+              aria-expanded={this.state.openFileUpload}
+              class="text-center openFileUpload"
+            >
+              Upload a file instead <FontAwesomeIcon icon="chevron-down" />
+            </p>
+            <Collapse in={this.state.openFileUpload}>
+              <div id="example-collapse-text">
+                <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
+              </div>
+            </Collapse>
           </Container>
         );
       } else {
@@ -158,18 +181,19 @@ const EditableSingleGrade = props => {
   let [grade, updateGrade] = useState(props.Grade);
   let onChangeHandler = e => {
     let value = e.target.value;
-    updateGrade(Number(value));
-    if (e.target.value) {
-      console.log(value);
-      setTimeout(function() {
-        props.gradeStudentTestMeasure(props.Student_ID, value);
-      }, 1000);
-    } else {
-      console.log(value);
-      setTimeout(function() {
-        props.gradeStudentTestMeasure(props.Student_ID, "0");
-      }, 1000);
-    }
+    updateGrade(value);
+    console.log(value);
+    setTimeout(function() {
+      props.gradeStudentTestMeasure(props.Student_ID, value);
+    }, 1000);
+    // if (e.target.value) {
+
+    // } else {
+    //   console.log(value);
+    //   setTimeout(function() {
+    //     props.gradeStudentTestMeasure(props.Student_ID, "0");
+    //   }, 1000);
+    // }
   };
   return (
     <Form>

@@ -12,7 +12,7 @@ const validateLoginInput = require("../../validation/login");
 validateAddEvaluatorInput = require("../../validation/evaluator");
 const isEmpty = require("../../validation/isEmpty");
 
-const validator = require("Validator");
+const validator = require("validator");
 
 // @route   GET api/users/test
 // @desc    Tests users route

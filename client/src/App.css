@@ -740,3 +740,12 @@ pre{
 .warning-less-than-target {
   background-color: #cc93a373;
 }
+
+.openFileUpload{
+  color: #7b3449;
+  cursor: pointer
+}
+
+.openFileUpload:hover {
+  text-decoration: underline
+}
