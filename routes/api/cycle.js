@@ -2484,7 +2484,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Measure_ID = db.escape(req.params.measureID);
+    const Measure_ID = db.escape(req.params.MeasureID);
     const Outcome_ID = req.params.outcomeID;
     const Cycle_ID = req.params.cycleID;
 
@@ -2506,6 +2506,7 @@ router.post(
         Outcome_ID +
         " AND Cycle_ID=" +
         Cycle_ID;
+
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
@@ -2528,7 +2529,7 @@ router.post(
                   "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Student_ID=" +
-                  db.escape(Student_ID);
+                  Student_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) {
@@ -2557,9 +2558,28 @@ router.post(
                         });
                       } else {
                         calculateMeasure(Rubric_Measure_ID);
-                        return res.status(200).json({
-                          Student_Name: req.params.Student_Name,
-                          Student_ID: req.params.StudentID
+                        sql =
+                          "SELECT * FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                          Rubric_Measure_ID;
+
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding the Evaluatee"
+                            });
+                          } else {
+                            Students = [];
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
+
+                            return res.status(200).json(Students);
+                          }
                         });
                       }
                     });
@@ -2582,7 +2602,7 @@ router.post(
                   "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
                   Test_Measure_ID +
                   " AND Student_ID=" +
-                  db.escape(Student_ID);
+                  Student_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) {
@@ -2602,7 +2622,9 @@ router.post(
                       "UPDATE TEST_STUDENTS SET Student_Name=" +
                       Student_Name +
                       " WHERE Test_Student_ID=" +
-                      Test_Student_ID;
+                      Test_Student_ID +
+                      " AND Test_Measure_ID=" +
+                      Test_Measure_ID;
 
                     db.query(sql, (err, result) => {
                       if (err) {
@@ -2611,9 +2633,29 @@ router.post(
                         });
                       } else {
                         calculateTestMeasure(Test_Measure_ID);
-                        return res.status(200).json({
-                          Student_Name: req.params.Student_Name,
-                          Student_ID: req.params.StudentID
+
+                        sql =
+                          "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                          Test_Measure_ID;
+
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding the Evaluatee"
+                            });
+                          } else {
+                            Students = [];
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
+
+                            return res.status(200).json(Students);
+                          }
                         });
                       }
                     });
@@ -2692,9 +2734,9 @@ router.post(
                     let output = [];
                     fileRows.forEach(function(element) {
                       newStudents.push(
-                        new Array(Rubric_Measure_ID, element[0], element[1], 0)
+                        new Array(Rubric_Measure_ID, element[1], element[0], 0)
                       );
-                      newCWID.push(element[0]);
+                      newCWID.push(element[1]);
                     });
 
                     newStudents.shift();
@@ -2779,9 +2821,9 @@ router.post(
                     let output = [];
                     fileRows.forEach(function(element) {
                       newStudents.push(
-                        new Array(Test_Measure_ID, element[0], element[1], 0)
+                        new Array(Test_Measure_ID, element[1], element[0], 0)
                       );
-                      newCWID.push(element[0]);
+                      newCWID.push(element[1]);
                     });
 
                     newStudents.shift();
@@ -2838,6 +2880,7 @@ router.post(
                                     };
                                     output.push(student);
                                   });
+
                                   return res.status(200).json(output);
                                 });
                               }

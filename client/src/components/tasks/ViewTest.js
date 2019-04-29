@@ -25,6 +25,8 @@ import { toastr } from "react-redux-toastr";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from "sweetalert2";
+import SampleFile from "./students.csv";
+
 import {
   faCheckCircle,
   faChevronDown
@@ -162,8 +164,12 @@ class ViewTest extends Component {
             >
               Upload a file instead <FontAwesomeIcon icon="chevron-down" />
             </p>
-            <Collapse in={this.state.openFileUpload}>
+            <Collapse in={this.state.openFileUpload} className=" text-center">
               <div id="example-collapse-text">
+                <a href={SampleFile} className="download-file">
+                  Download a sample file
+                </a>
+                <br />
                 <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
               </div>
             </Collapse>

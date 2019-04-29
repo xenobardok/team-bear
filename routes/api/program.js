@@ -916,7 +916,7 @@ router.put(
       db.escape(email);
 
     if (!validator.isLength(req.body.Password, { min: 6, max: 20 })) {
-      errors.Name = "Password must be 6-20 characters long";
+      errors.error = "Password must be 6-20 characters long";
       return res.status(400).json(errors);
     }
     db.query(sql, (err, result) => {
@@ -925,7 +925,7 @@ router.put(
         if (result.length < 1) {
           return res
             .status(400)
-            .json({ User: "You do not have enough privileges" });
+            .json({ error: "You do not have enough privileges" });
         } else {
           sql = "SELECT * FROM Evaluators WHERE Email  = " + Evaluator_Email;
 
@@ -933,7 +933,7 @@ router.put(
             if (err) return res.status(400).json(err);
             else {
               if (result.length < 1) {
-                errors.Email = "User not found";
+                errors.error = "User not found";
               } else {
                 sql =
                   "UPDATE Evaluators SET Password=PASSWORD(" +
@@ -946,7 +946,7 @@ router.put(
                   else {
                     return res
                       .status(200)
-                      .json({ Email: "Password successfully updated" });
+                      .json({ error: "Password successfully updated" });
                   }
                 });
               }

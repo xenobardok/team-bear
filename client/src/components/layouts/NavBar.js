@@ -9,6 +9,7 @@ import {
   changePassword
 } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
+import { changeUserPassword } from "../../actions/programActions";
 import NameDropdown from "./NameDropdown";
 import EditProfile from "./EditProfile";
 class NavBar extends Component {
@@ -78,6 +79,8 @@ class NavBar extends Component {
           lastname={user.lastname}
           changeName={this.props.changeName}
           changePassword={this.props.changePassword}
+          isSuperUser={user.isSuperUser}
+          changeUserPassword={this.props.changeUserPassword}
         />
       </>
     );
@@ -95,5 +98,11 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser, clearCurrentProfile, changeName, changePassword }
+  {
+    logoutUser,
+    clearCurrentProfile,
+    changeName,
+    changePassword,
+    changeUserPassword
+  }
 )(NavBar);
