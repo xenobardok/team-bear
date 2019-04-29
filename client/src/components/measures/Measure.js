@@ -26,7 +26,8 @@ import {
   addStudent,
   removeStudent,
   addStudentsFromCSV,
-  removeEvaluatorMeasure
+  removeEvaluatorMeasure,
+  changeName
 } from "../../actions/measureActions";
 import { getRubrics } from "../../actions/rubricsActions";
 import Spinner from "../../common/Spinner";
@@ -373,6 +374,9 @@ class Measure extends Component {
                           Is_Submitted={
                             this.props.measures.singleMeasure.Is_Submitted
                           }
+                          changeName={this.props.changeName}
+                          id={this.props.match.params.id}
+                          outcomeID={this.props.match.params.outcomeID}
                         />
                       ))
                     ) : (
@@ -570,6 +574,7 @@ export default connect(
     addStudent,
     removeStudent,
     addStudentsFromCSV,
-    removeEvaluatorMeasure
+    removeEvaluatorMeasure,
+    changeName
   }
 )(Measure);

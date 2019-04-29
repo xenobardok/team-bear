@@ -308,3 +308,24 @@ export const deleteMeasure = (cycleID, outcomeID, measureID) => dispatch => {
       }
     });
 };
+
+export const changeName = (
+  cycleID,
+  outcomeID,
+  measureID,
+  StudentID,
+  studentName
+) => dispatch => {
+  axios
+    .post(
+      `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/changeName/${StudentID}`,
+      { Student_Name: studentName }
+    )
+    .then(res => {
+      toastr.success("Name changed successfully");
+    })
+    .catch(err => {
+      toastr.error("Error");
+      console.log(err.response.data);
+    });
+};

@@ -6,7 +6,7 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
-
+import { toastr } from "react-redux-toastr";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -35,6 +35,22 @@ class EditableStudentList extends Component {
     });
   };
 
+  changeName = () => {
+    if (this.state.Student_Name) {
+      this.props.changeName(
+        this.props.id,
+        this.props.outcomeID,
+        this.props.Measure_ID,
+        this.state.Student_ID,
+        this.state.Student_Name
+      );
+      this.setState({
+        edit: false
+      });
+    } else {
+      toastr.warning("Student Name cannot be empty");
+    }
+  };
   cancelStudent = e => {
     this.setState({
       edit: !this.state.edit,
@@ -123,13 +139,14 @@ class EditableStudentList extends Component {
               aria-describedby="basic-addon2"
               value={Student_ID}
               onChange={this.onChangeHandler}
+              disabled
             />
             <InputGroup.Append>
               <OverlayTrigger
                 placement="top"
                 overlay={<Tooltip>Save Changes</Tooltip>}
               >
-                <Button variant="primary">
+                <Button variant="primary" onClick={this.changeName}>
                   <FontAwesomeIcon icon="check-circle" />
                 </Button>
               </OverlayTrigger>
