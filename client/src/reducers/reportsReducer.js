@@ -15,6 +15,7 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case REPORT_LOADING:
+      console.log("report loading");
       return {
         ...state,
         loading: true
@@ -22,26 +23,26 @@ export default function(state = initialState, action) {
     case GENERATE_MEASURE_REPORT:
       return {
         ...state,
-        loading: false,
-        report: action.payload
+        report: action.payload,
+        loading: false
       };
     case GENERATE_OUTCOME_REPORT:
       return {
         ...state,
-        loading: false,
-        report: action.payload
+        report: action.payload,
+        loading: false
       };
     case GENERATE_CYCLE_REPORT:
       return {
         ...state,
-        loading: false,
-        report: action.payload
+        report: action.payload,
+        loading: false
       };
     case GET_SUBMITTED_CYCLES:
       return {
         ...state,
-        loading: false,
-        cycles: action.payload
+        cycles: action.payload,
+        loading: false
       };
     default:
       return state;
