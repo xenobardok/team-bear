@@ -2484,7 +2484,7 @@ router.post(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
-    const Measure_ID = db.escape(req.params.measureID);
+    const Measure_ID = db.escape(req.params.MeasureID);
     const Outcome_ID = req.params.outcomeID;
     const Cycle_ID = req.params.cycleID;
 
@@ -2506,6 +2506,7 @@ router.post(
         Outcome_ID +
         " AND Cycle_ID=" +
         Cycle_ID;
+
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
@@ -2528,7 +2529,7 @@ router.post(
                   "SELECT * FROM RUBRIC_STUDENTS WHERE RUBRIC_Measure_ID=" +
                   Rubric_Measure_ID +
                   " AND Student_ID=" +
-                  db.escape(Student_ID);
+                  Student_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) {
@@ -2561,26 +2562,25 @@ router.post(
                           "SELECT * FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
                           Rubric_Measure_ID;
 
-                        db,
-                          query(sql, (result, err) => {
-                            if (err) {
-                              return res.status(400).json({
-                                error:
-                                  "There was some problem adding the Evaluatee"
-                              });
-                            } else {
-                              Students = [];
-                              result.forEach(row => {
-                                student = {
-                                  Student_ID: row.Student_ID,
-                                  Student_Name: row.Student_Name
-                                };
-                                Students.push(student);
-                              });
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding the Evaluatee"
+                            });
+                          } else {
+                            Students = [];
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
 
-                              return res.status(200).json(Students);
-                            }
-                          });
+                            return res.status(200).json(Students);
+                          }
+                        });
                       }
                     });
                   }
@@ -2602,7 +2602,7 @@ router.post(
                   "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
                   Test_Measure_ID +
                   " AND Student_ID=" +
-                  db.escape(Student_ID);
+                  Student_ID;
 
                 db.query(sql, (err, result) => {
                   if (err) {
@@ -2638,26 +2638,25 @@ router.post(
                           "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
                           Test_Measure_ID;
 
-                        db,
-                          query(sql, (result, err) => {
-                            if (err) {
-                              return res.status(400).json({
-                                error:
-                                  "There was some problem adding  the Evaluatee"
-                              });
-                            } else {
-                              Students = [];
-                              result.forEach(row => {
-                                student = {
-                                  Student_ID: row.Student_ID,
-                                  Student_Name: row.Student_Name
-                                };
-                                Students.push(student);
-                              });
+                        db.query(sql, (err, result) => {
+                          if (err) {
+                            return res.status(400).json({
+                              error:
+                                "There was some problem adding the Evaluatee"
+                            });
+                          } else {
+                            Students = [];
+                            result.forEach(row => {
+                              student = {
+                                Student_ID: row.Student_ID,
+                                Student_Name: row.Student_Name
+                              };
+                              Students.push(student);
+                            });
 
-                              return res.status(200).json(Students);
-                            }
-                          });
+                            return res.status(200).json(Students);
+                          }
+                        });
                       }
                     });
                   }
