@@ -260,12 +260,13 @@ export const removeEvaluatorMeasure = (
         data: { Evaluator_Email: Evaluator_Email }
       }
     )
-    .then(res =>
+    .then(res => {
       dispatch({
         type: REMOVE_EVALUATOR_MEASURE,
         payload: res.data
-      })
-    )
+      });
+      Swal.fire("Removed!", "The evaluator has been removed.", "success");
+    })
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

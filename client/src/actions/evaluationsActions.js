@@ -7,7 +7,9 @@ import {
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
   LIST_ASSIGNED_TESTS,
   VIEW_MEASURE_TEST,
-  GET_ERRORS
+  GET_ERRORS,
+  SUBMIT_RUBRIC_TASK,
+  SUBMIT_TEST_TASK
 } from "./types";
 import { toastr } from "react-redux-toastr";
 import Swal from "sweetalert2";
@@ -177,13 +179,17 @@ export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
 export const submitRubricTask = rubricMeasureID => dispatch => {
   axios
     .post(`/api/evaluations/rubricMeasure/${rubricMeasureID}/submit`)
-    .then(res =>
+    .then(res => {
       Swal.fire(
         "Task Submitted!",
         "Program coordinator has been notified of your work!",
         "success"
-      )
-    )
+      );
+      dispatch({
+        type: SUBMIT_RUBRIC_TASK,
+        payload: { hasSubmitted: "true" }
+      });
+    })
     .catch(err => {
       Swal.fire({
         type: "error",
@@ -196,13 +202,17 @@ export const submitRubricTask = rubricMeasureID => dispatch => {
 export const submitTestTask = testMeasureID => dispatch => {
   axios
     .post(`/api/evaluations/testMeasure/${testMeasureID}/submit`)
-    .then(res =>
+    .then(res => {
       Swal.fire(
         "Task Submitted!",
         "Program coordinator has been notified of your work!",
         "success"
-      )
-    )
+      );
+      dispatch({
+        type: SUBMIT_TEST_TASK,
+        payload: { hasSubmitted: "true" }
+      });
+    })
     .catch(err => {
       Swal.fire({
         type: "error",

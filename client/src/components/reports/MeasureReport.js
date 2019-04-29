@@ -64,6 +64,7 @@ class MeasureReport extends Component {
                 <RubricStudent
                   data={report.data}
                   Class_Name={report.Class_Name}
+                  Target={report.Target}
                 />
                 <tr>
                   <td colSpan={report.header.length + 2}>&nbsp;</td>

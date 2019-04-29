@@ -25,7 +25,7 @@ class OutcomeReport extends Component {
           <h5 className="text-center">{report.Outcome_Name}</h5>
           <br />
           <h3 className="font-weight-bold">Evaluations Instruments:</h3>
-          <h5 />
+          <h5>{report.Class_Factors ? report.Class_Factors : "None"}</h5>
           <br />
           <h3 className="font-weight-bold">Measures of Performance:</h3>
           {report.Measures ? (

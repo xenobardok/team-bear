@@ -5,7 +5,9 @@ import {
   VIEW_STUDENT_GRADE_RUBRIC_MEASURE,
   GRADE_STUDENT_RUBRIC_MEASURE,
   LIST_ASSIGNED_TESTS,
-  VIEW_MEASURE_TEST
+  VIEW_MEASURE_TEST,
+  SUBMIT_RUBRIC_TASK,
+  SUBMIT_TEST_TASK
 } from "../actions/types";
 
 const initialState = {
@@ -58,6 +60,24 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         test: action.payload
+      };
+    case SUBMIT_RUBRIC_TASK:
+      return {
+        ...state,
+        loading: false,
+        rubric: {
+          ...state.rubric,
+          ...action.payload
+        }
+      };
+    case SUBMIT_TEST_TASK:
+      return {
+        ...state,
+        loading: false,
+        test: {
+          ...state.test,
+          ...action.payload
+        }
       };
     default:
       return state;

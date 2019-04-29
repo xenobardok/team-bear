@@ -731,3 +731,12 @@ pre{
   background-color: #7b3449;
   border-color: #7b3449;
 }
+
+.less-than-target {
+  background-color: #cc93a373;
+    color: #7b3449;
+}
+
+.warning-less-than-target {
+  background-color: #cc93a373;
+}

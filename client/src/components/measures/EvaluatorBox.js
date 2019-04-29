@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import isEmpty from "../../validation/isEmpty";
 import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
+import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -22,12 +23,25 @@ class EvaluatorBox extends Component {
   };
 
   removeEvaluatorMeasureButton = () => {
-    this.props.removeEvaluatorMeasure(
-      this.props.cycleID,
-      this.props.outcomeID,
-      this.props.Measure_ID,
-      this.props.Evaluator_Email
-    );
+    Swal.fire({
+      title: "Are you sure?",
+      text: "The evalutor's scores will be removed until he's added back!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, remove it!"
+    }).then(result => {
+      if (result.value) {
+        this.props.removeEvaluatorMeasure(
+          this.props.cycleID,
+          this.props.outcomeID,
+          this.props.Measure_ID,
+          this.props.Evaluator_Email
+        );
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
   };
   render() {
     let { Evaluator_Name, Evaluator_Email } = this.props;

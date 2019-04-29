@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-library.add(faEllipsisV);
+import { faEllipsisV, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+library.add(faEllipsisV, faChevronDown);
 
 class CustomToggle extends React.Component {
   constructor(props, context) {
@@ -36,6 +36,8 @@ export default function NameDropdown(props) {
         {/* <FontAwesomeIcon icon="ellipsis-v" /> */}
         <span>
           {props.firstname} {props.lastname}
+          &nbsp;&nbsp;&nbsp;
+          <FontAwesomeIcon icon="chevron-down" />
         </span>
       </Dropdown.Toggle>
 

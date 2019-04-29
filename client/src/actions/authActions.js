@@ -91,12 +91,13 @@ export const changeName = (fname, lname) => dispatch => {
   axios
     .put("/api/users/changeName", { Fname: fname, Lname: lname })
     .then(res => {
-      dispatch({
-        type: CHANGE_NAME,
-        payload: res.data
-      });
-      console.log(res.data);
-      toastr.success("Success!", "Name changed successfully");
+      // dispatch({
+      //   type: CHANGE_NAME,
+      //   payload: res.data
+      // });
+      dispatch(logoutUser());
+      // console.log(res.data);
+      toastr.success("Success!", "Please re-login!");
     })
     .catch(err => {
       if (err.response.data.Name) {
