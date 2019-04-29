@@ -213,3 +213,14 @@ export const deleteProgram = deptID => dispatch => {
       }
     });
 };
+
+export const changeUserPassword = (email, password) => dispatch => {
+  axios
+    .put("/api/program/user/reset", { Email: email, Password: password })
+    .then(res => toastr.success("Success", "Password changed successfully!"))
+    .catch(err => {
+      if (err.response.data.error) {
+        toastr.error("Error!", err.response.data.error);
+      }
+    });
+};
