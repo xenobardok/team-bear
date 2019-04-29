@@ -2557,10 +2557,30 @@ router.post(
                         });
                       } else {
                         calculateMeasure(Rubric_Measure_ID);
-                        return res.status(200).json({
-                          Student_Name: req.params.Student_Name,
-                          Student_ID: req.params.StudentID
-                        });
+                        sql =
+                          "SELECT * FROM RUBRIC_STUDENTS WHERE Rubric_Measure_ID=" +
+                          Rubric_Measure_ID;
+
+                        db,
+                          query(sql, (result, err) => {
+                            if (err) {
+                              return res.status(400).json({
+                                error:
+                                  "There was some problem adding the Evaluatee"
+                              });
+                            } else {
+                              Students = [];
+                              result.forEach(row => {
+                                student = {
+                                  Student_ID: row.Student_ID,
+                                  Student_Name: row.Student_Name
+                                };
+                                Students.push(student);
+                              });
+
+                              return res.status(200).json(Students);
+                            }
+                          });
                       }
                     });
                   }
@@ -2602,7 +2622,9 @@ router.post(
                       "UPDATE TEST_STUDENTS SET Student_Name=" +
                       Student_Name +
                       " WHERE Test_Student_ID=" +
-                      Test_Student_ID;
+                      Test_Student_ID +
+                      " AND Test_Measure_ID=" +
+                      Test_Measure_ID;
 
                     db.query(sql, (err, result) => {
                       if (err) {
@@ -2611,10 +2633,31 @@ router.post(
                         });
                       } else {
                         calculateTestMeasure(Test_Measure_ID);
-                        return res.status(200).json({
-                          Student_Name: req.params.Student_Name,
-                          Student_ID: req.params.StudentID
-                        });
+
+                        sql =
+                          "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
+                          Test_Measure_ID;
+
+                        db,
+                          query(sql, (result, err) => {
+                            if (err) {
+                              return res.status(400).json({
+                                error:
+                                  "There was some problem adding  the Evaluatee"
+                              });
+                            } else {
+                              Students = [];
+                              result.forEach(row => {
+                                student = {
+                                  Student_ID: row.Student_ID,
+                                  Student_Name: row.Student_Name
+                                };
+                                Students.push(student);
+                              });
+
+                              return res.status(200).json(Students);
+                            }
+                          });
                       }
                     });
                   }
