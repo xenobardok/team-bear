@@ -3,32 +3,47 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { logoutUser } from "../../actions/authActions";
+import {
+  logoutUser,
+  changeName,
+  changePassword
+} from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
-
+import NameDropdown from "./NameDropdown";
+import EditProfile from "./EditProfile";
 class NavBar extends Component {
-  onLogoutClick(e) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalShow: false
+    };
+  }
+  onLogoutClick = e => {
     e.preventDefault();
     this.props.clearCurrentProfile();
     this.props.logoutUser();
-  }
+  };
+
+  showModal = e => {
+    this.setState({
+      modalShow: true
+    });
+  };
 
   render() {
     const { isAuthenticated, user } = this.props.auth;
 
     const authLinks = (
       <Nav>
-        <Navbar.Text>Hi, {user.firstname}</Navbar.Text>
-        <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
-          Logout?
-        </Nav.Link>
+        <Navbar.Text>
+          <NameDropdown
+            firstname={user.firstname}
+            lastname={user.lastname}
+            logoutUser={this.onLogoutClick}
+            showModal={this.showModal}
+          />
+        </Navbar.Text>
       </Nav>
-      // <Nav>
-      //   <Nav.Link>Hi, {user.firstname}</Nav.Link>
-      //   <Nav.Link href="#" onClick={this.onLogoutClick.bind(this)}>
-      //     Logout?
-      //   </Nav.Link>
-      // </Nav>
     );
 
     const guestLinks = (
@@ -41,20 +56,30 @@ class NavBar extends Component {
         </Link>
       </Nav>
     );
-
+    let modalClose = () => this.setState({ modalShow: false });
     return (
-      <Navbar>
-        <Container>
-          <Link to="/dashboard" style={{ paddingLeft: "55px" }}>
-            <Navbar.Brand>ULM Evaluations</Navbar.Brand>
-          </Link>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="mr-auto" />
-            {isAuthenticated ? authLinks : guestLinks}
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      <>
+        <Navbar>
+          <Container>
+            <Link to="/dashboard" style={{ paddingLeft: "55px" }}>
+              <Navbar.Brand>ULM Evaluations</Navbar.Brand>
+            </Link>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto" />
+              {isAuthenticated ? authLinks : guestLinks}
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+        <EditProfile
+          onHide={modalClose}
+          show={this.state.modalShow}
+          firstname={user.firstname}
+          lastname={user.lastname}
+          changeName={this.props.changeName}
+          changePassword={this.props.changePassword}
+        />
+      </>
     );
   }
 }
@@ -70,5 +95,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser, clearCurrentProfile }
+  { logoutUser, clearCurrentProfile, changeName, changePassword }
 )(NavBar);

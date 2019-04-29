@@ -42,12 +42,17 @@ export const createProgram = (deptID, deptName) => dispatch => {
   axios
     .post("/api/program/create", { deptID: deptID, deptName: deptName })
     .then(res => dispatch(getProgramsWithoutLoading()))
-    .catch(err =>
+    .catch(err => {
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
-      })
-    );
+      });
+      if (err.response.data.Dept_ID) {
+        toastr.error("Error!", err.response.data.Dept_ID);
+      } else {
+        toastr.error("Error!", "Please view the error logs!");
+      }
+    });
 };
 
 // Loading Profile
@@ -187,7 +192,7 @@ export const deleteProgram = deptID => dispatch => {
     .then(res => {
       console.log(res.data);
 
-      Swal.fire("Deleted!", `${deptID} has been deleted.`, "success");
+      Swal.fire("Deleted!", `Program has been deleted.`, "success");
       dispatch({
         type: DELETE_PROGRAM,
         payload: res.data.admin

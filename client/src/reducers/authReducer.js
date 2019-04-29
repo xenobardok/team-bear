@@ -1,7 +1,8 @@
 import {
   SET_CURRENT_USER,
   RECENT_CYCLE,
-  REGISTER_USER
+  REGISTER_USER,
+  CHANGE_NAME
 } from "../actions/types";
 import isEmpty from "../validation/isEmpty";
 
@@ -29,6 +30,14 @@ export default function(state = initialState, action) {
         ...state,
         user: {
           registered: !isEmpty(action.payload)
+        }
+      };
+    case CHANGE_NAME:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...action.payload
         }
       };
     default:

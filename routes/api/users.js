@@ -577,7 +577,9 @@ router.put(
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {
-          res.status(200).json({ Email: "Name successfully updated" });
+          res
+            .status(200)
+            .json({ firstname: req.body.Fname, lastname: req.body.Lname });
         }
       });
     }

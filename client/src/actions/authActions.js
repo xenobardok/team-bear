@@ -5,7 +5,8 @@ import {
   SET_CURRENT_USER,
   GET_ERRORS,
   RECENT_CYCLE,
-  REGISTER_USER
+  REGISTER_USER,
+  CHANGE_NAME
 } from "./types";
 import { toastr } from "react-redux-toastr";
 // Login - Get User token
@@ -84,4 +85,39 @@ export const registerUser = (newUser, history) => dispatch => {
         payload: err.response.data
       })
     );
+};
+
+export const changeName = (fname, lname) => dispatch => {
+  axios
+    .put("/api/users/changeName", { Fname: fname, Lname: lname })
+    .then(res => {
+      dispatch({
+        type: CHANGE_NAME,
+        payload: res.data
+      });
+      console.log(res.data);
+      toastr.success("Success!", "Name changed successfully");
+    })
+    .catch(err => {
+      if (err.response.data.Name) {
+        toastr.error("Name change error!", err.response.data.Name);
+      }
+      // console.log(err.response.data);
+    });
+};
+
+export const changePassword = (oldPassword, newPassword) => dispatch => {
+  axios
+    .put("/api/users/changePassword", {
+      oldPassword: oldPassword,
+      Password: newPassword
+    })
+    .then(res => toastr.success("Success!", res.data.Email))
+    .catch(err => {
+      if (err.response.data.Password) {
+        toastr.error("Error!", err.response.data.Password);
+      } else {
+        toastr.error("Error!", "Password not changed");
+      }
+    });
 };

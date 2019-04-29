@@ -717,3 +717,17 @@ pre{
 .export-btn {
   float: right!important;
 }
+
+.navbar-name {
+  padding: 0px 15px!important;
+  display: -webkit-flex;
+  display: flex;
+  color: white!important;
+}
+
+.list-group-item.active {
+  z-index: 2;
+  color: #fff;
+  background-color: #7b3449;
+  border-color: #7b3449;
+}
