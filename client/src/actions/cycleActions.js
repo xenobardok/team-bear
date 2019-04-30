@@ -112,10 +112,11 @@ export const createCycle = cycleName => dispatch => {
 
 export const migrateCycle = (Cycle_Name, migrateCycleID) => dispatch => {
   console.log(Cycle_Name, migrateCycleID);
+  dispatch(setCycleLoading());
   axios
     .post(`/api/migrate/cycle/${migrateCycleID}`, { Cycle_Name: Cycle_Name })
     .then(res => {
-      dispatch(getCyclesWithoutLoading());
+      dispatch(getCycles());
       toastr.success(
         "New Cycle Created!",
         "Cycle migration completed successfully!"
