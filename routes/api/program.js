@@ -79,6 +79,7 @@ router.post(
   "/create",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("Yes");
     const email = req.user.email;
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
@@ -128,6 +129,7 @@ router.post(
                   ")";
 
                 db.query(sql, (err, result) => {
+                  console.log(sql);
                   if (err) return res.status(400).json(err);
                   else {
                     newDept = {

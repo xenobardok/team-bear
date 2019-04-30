@@ -683,10 +683,7 @@ router.post(
                     let regStudent = new Map();
 
                     result.forEach(row => {
-                      regStudent.set(
-                        db.escape(row.Student_ID),
-                        row.Test_Student_ID
-                      );
+                      regStudent.set(row.Student_ID, row.Test_Student_ID);
                     });
 
                     sql =
@@ -768,11 +765,8 @@ router.post(
                         if (!isEmpty(errors)) {
                           return res.status(400).json(errors);
                         } else {
-                          sql = addStudentsSql + updateStudentsSql;
-
                           if (addStudentsSql != "") {
                             db.query(addStudentsSql, (err, result) => {
-                              // console.log(err);
                               if (err) {
                                 errors.students =
                                   "There was some problem adding the evaluatees. Please check your csv file and try again.";
