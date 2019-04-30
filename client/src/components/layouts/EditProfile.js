@@ -6,10 +6,15 @@ export default function EditProfile(props) {
   const [firstname, changeFirstname] = useState(props.firstname);
   const [lastname, changeLastname] = useState(props.lastname);
   const [oldPassword, changeOldPassword] = useState("");
+  const [email, changeEmail] = useState("");
   const [newPassword, changenewPassword] = useState("");
   const [newPasswordAgain, changeNewPasswordAgain] = useState("");
   const [errors, changeErrors] = useState({ firstname: "", lastname: "" });
 
+  let changeUserPassword = () => {
+    props.changeUserPassword(email, newPassword);
+    props.onHide();
+  };
   let nameSubmitHandler = () => {
     let tempErrors;
     if (isEmpty(firstname)) {
@@ -128,6 +133,11 @@ export default function EditProfile(props) {
                 <ListGroup.Item action href="#password">
                   Edit Password
                 </ListGroup.Item>
+                {props.isSuperUser === "true" ? (
+                  <ListGroup.Item action href="#userpassword">
+                    Edit User Password
+                  </ListGroup.Item>
+                ) : null}
               </ListGroup>
             </Col>
             <Col sm={8}>
@@ -230,6 +240,48 @@ export default function EditProfile(props) {
                     </Button>
                   </Form.Group>
                 </Tab.Pane>
+
+                {props.isSuperUser === "true" ? (
+                  <Tab.Pane eventKey="#userpassword">
+                    <Form.Group>
+                      <Form.Label>Type User Email</Form.Label>
+                      <Form.Control
+                        placeholder="User Email"
+                        type="email"
+                        value={email}
+                        name="email"
+                        onChange={e => changeEmail(e.target.value)}
+                        className={classnames("", {
+                          "is-invalid": errors.email
+                        })}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.email}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>Type new password</Form.Label>
+                      <Form.Control
+                        placeholder="New Password"
+                        type="password"
+                        value={newPassword}
+                        name="newPassword"
+                        onChange={e => changenewPassword(e.target.value)}
+                        className={classnames("", {
+                          "is-invalid": errors.newPassword
+                        })}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.newPassword}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="text-center">
+                      <Button variant="primary" onClick={changeUserPassword}>
+                        Change Password
+                      </Button>
+                    </Form.Group>
+                  </Tab.Pane>
+                ) : null}
               </Tab.Content>
             </Col>
           </Row>

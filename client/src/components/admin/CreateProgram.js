@@ -9,8 +9,6 @@ function CreateProgram(props) {
 
   const submitHander = e => {
     e.preventDefault();
-    console.log(DeptID, DeptName);
-    props.createProgram(DeptID, DeptName);
 
     let errors;
     if (isEmpty(DeptID)) {
