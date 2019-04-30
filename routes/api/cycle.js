@@ -2866,13 +2866,15 @@ router.post(
                                   "There was some problem adding the evaluatees. Please check your csv file and try again.";
                                 return res.status(400).json(errors);
                               } else {
-                                calculateMeasure(Test_Measure_ID);
+                                calculateTestMeasure(Test_Measure_ID);
                                 sql =
                                   "SELECT Student_ID, Student_Name FROM TEST_STUDENTS WHERE Test_Measure_ID= " +
                                   Test_Measure_ID;
 
                                 db.query(sql, (err, result) => {
-                                  if (err) res.status(400).json(err);
+                                  if (err) {
+                                    res.status(400).json(err);
+                                  }
                                   result.forEach(row => {
                                     student = {
                                       Student_ID: row.Student_ID,
