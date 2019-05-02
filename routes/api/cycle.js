@@ -872,7 +872,7 @@ router.post(
                                 Rubric_Measure_ID: Rubric_Measure_ID,
                                 Is_Submitted: "pending"
                               };
-                              updateOutcome(outcomeID);
+
                               return res.status(200).json(Rubric_Measure);
                             }
                           });
@@ -898,7 +898,7 @@ router.post(
                                 Test_Measure_ID: Test_Measure_ID,
                                 Is_Submitted: "pending"
                               };
-                              updateOutcome(outcomeID);
+
                               return res.status(200).json(Test_Measure);
                             }
                           });
