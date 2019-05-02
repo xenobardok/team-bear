@@ -28,22 +28,29 @@ class Stats extends Component {
           style={{ flexGrow: "1" }}
         />
       );
-    } else {
+    } else if (Is_Success === "false") {
       label = (
-        <Badge variant="warning">
+        <Badge variant="danger">
           <span style={{ fontWeight: "500" }}>Failing</span>
         </Badge>
       );
-
-      progressInstance = (
-        <ProgressBar
-          variant="danger"
-          now={now}
-          label={`${now}%`}
-          style={{ flexGrow: "1" }}
-        />
+    } else if (Is_Success === "pending") {
+      label = (
+        <Badge variant="warning">
+          <span style={{ fontWeight: "500" }}>Pending</span>
+        </Badge>
       );
     }
+
+    progressInstance = (
+      <ProgressBar
+        variant="danger"
+        now={now}
+        label={`${now}%`}
+        style={{ flexGrow: "1" }}
+      />
+    );
+
     return (
       <section>
         <h5>Status: {label}</h5>
