@@ -238,7 +238,7 @@ class CreateRubric extends Component {
           </Form.Group>
           <Form.Group as={Row} controlId="formHorizontalRows">
             <Form.Label column sm={4}>
-              No. of Rows:
+              Criteria:
             </Form.Label>
             <Col sm={8}>
               <Form.Control
@@ -259,7 +259,7 @@ class CreateRubric extends Component {
           </Form.Group>
           <Form.Group as={Row} controlId="formHorizontalCols">
             <Form.Label column sm={4}>
-              No. of Columns:
+              Qualifiers:
             </Form.Label>
             <Col sm={8}>
               <Form.Control
