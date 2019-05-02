@@ -25,9 +25,12 @@ import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
-library.add(faCheckCircle);
+library.add(faCheckCircle, faExclamationCircle);
 
 let scalesRow, dataRow;
 
@@ -377,6 +380,28 @@ class ViewRubric extends Component {
                           action
                           onClick={this.studentClickHandler.bind(this, student)}
                         >
+                          {student.Is_Submitted ? (
+                            <OverlayTrigger
+                              placement="left"
+                              overlay={<Tooltip>Student Graded</Tooltip>}
+                            >
+                              <FontAwesomeIcon
+                                icon="check-circle"
+                                className="marked-as-complete"
+                              />
+                            </OverlayTrigger>
+                          ) : (
+                            <OverlayTrigger
+                              placement="left"
+                              overlay={<Tooltip>Student Pending</Tooltip>}
+                            >
+                              <FontAwesomeIcon
+                                icon="exclamation-circle"
+                                className="marked-as-complete status pending"
+                              />
+                            </OverlayTrigger>
+                          )}
+                          &nbsp;&nbsp;
                           {student.Student_Name} : {student.Student_ID}
                         </ListGroup.Item>
                       ))}
