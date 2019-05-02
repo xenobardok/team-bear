@@ -48,6 +48,14 @@ class Stats extends Component {
           <span style={{ fontWeight: "500" }}>Pending</span>
         </Badge>
       );
+      progressInstance = (
+        <ProgressBar
+          variant="danger"
+          now={now}
+          label={`${now}%`}
+          style={{ flexGrow: "1" }}
+        />
+      );
     }
 
     return (

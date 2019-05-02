@@ -332,7 +332,7 @@ export default class DefineMeasure extends Component {
           <h5>
             Measure Definition{" "}
             {!complete ? (
-              <Badge variant="warning">
+              <Badge variant="info">
                 <span style={{ fontWeight: "400" }}>Incomplete</span>
               </Badge>
             ) : null}
