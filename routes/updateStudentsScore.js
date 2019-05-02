@@ -4,6 +4,7 @@ const db = require("../config/connection");
 const passport = require("passport");
 const secret = require("../config/secret");
 const calculateMeasure = require("./calculateMeasure");
+const updateOutcome = require("./updateOutcome");
 
 var async = require("async");
 
