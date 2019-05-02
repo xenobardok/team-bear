@@ -829,7 +829,7 @@ router.post(
                 db.query(sql, (err, result) => {
                   if (err) res.send(err);
                   else {
-                    let isSuccess = db.escape("false");
+                    let isSuccess = db.escape("pending");
                     let isCompleted = db.escape("false");
 
                     sql =
