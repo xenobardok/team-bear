@@ -81,6 +81,7 @@ let calculateTestMeasure = Test_Measure_ID => {
                     Measure_Success +
                     " WHERE Measure_ID=" +
                     Measure_ID;
+
                   db.query(sql, (err, result) => {
                     updateOutcome(Measure_ID);
                   });

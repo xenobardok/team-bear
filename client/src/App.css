@@ -759,3 +759,7 @@ pre{
 .download-file:hover{
   color:#7b3449b3
 }
+
+.red-hover:hover {
+color: #271017;
+}
