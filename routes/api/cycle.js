@@ -760,7 +760,7 @@ router.get(
                         Measure_Success: row.isSuccess,
                         Is_Submitted: Is_Submitted
                       };
-                      updateOutcome(row.Measure_ID);
+
                       i++;
                       Outcome.data.push(measure);
                     });
@@ -872,7 +872,7 @@ router.post(
                                 Rubric_Measure_ID: Rubric_Measure_ID,
                                 Is_Submitted: "pending"
                               };
-                              // updateOutcome(outcomeID);
+                              updateOutcome(outcomeID);
                               return res.status(200).json(Rubric_Measure);
                             }
                           });
@@ -898,6 +898,7 @@ router.post(
                                 Test_Measure_ID: Test_Measure_ID,
                                 Is_Submitted: "pending"
                               };
+                              updateOutcome(outcomeID);
                               return res.status(200).json(Test_Measure);
                             }
                           });
@@ -1165,8 +1166,6 @@ router.get(
                       Measure.Is_Success = result[0].Is_Success;
                       Measure.Class_Name = result[0].Class_Name;
 
-                      calculateMeasure(Rubric_Measure_ID);
-
                       sql =
                         "SELECT Count(DISTINCT(Student_ID)) AS Total FROM team_bear.RUBRIC NATURAL JOIN RUBRIC_ROW NATURAL JOIN RUBRIC_STUDENTS NATURAL JOIN STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_MEASURE_EVALUATOR WHERE Rubric_Measure_ID=" +
                         Rubric_Measure_ID +
@@ -1304,7 +1303,6 @@ router.get(
                       Measure.Test_Name = result[0].Exam_Name;
                       Measure.Test_Type = result[0].Test_Type;
 
-                      calculateTestMeasure(Test_Measure_ID);
                       sql =
                         "SELECT DISTINCT(COUNT(*)) AS Total FROM STUDENTS_TEST_GRADE G NATURAL JOIN TEST_STUDENTS  S NATURAL JOIN TEST_MEASURE_EVALUATOR  WHERE G.Test_Measure_ID=" +
                         Test_Measure_ID;
