@@ -38,7 +38,6 @@ let updateOutcome = Measure_ID => {
           if (result[0].Success > 0) {
             isSuccess = "pending";
           }
-          console.log(result);
           sql =
             "UPDATE OUTCOMES SET Outcome_Success=" +
             db.escape(isSuccess) +
