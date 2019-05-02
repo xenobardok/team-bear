@@ -15,12 +15,13 @@ import {
   faPlus,
   faEdit,
   faCheckCircle,
-  faTimesCircle
+  faTimesCircle,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
 // import ThreeDotOM from "./ThreeDotOM";
 import ThreeDotCycle from "./ThreeDotCycle";
-library.add(faPlus, faEdit, faCheckCircle, faTimesCircle);
+library.add(faPlus, faEdit, faCheckCircle, faTimesCircle, faExclamationCircle);
 
 class EditableOutcomeList extends Component {
   constructor(props) {
@@ -181,7 +182,8 @@ class EditableOutcomeList extends Component {
                     className="status success"
                   />
                 </OverlayTrigger>
-              ) : (
+              ) : null}
+              {this.props.value.Outcome_Success === "false" ? (
                 <OverlayTrigger
                   placement="top"
                   overlay={<Tooltip>Status: Failing</Tooltip>}
@@ -191,7 +193,19 @@ class EditableOutcomeList extends Component {
                     className="status fail"
                   />
                 </OverlayTrigger>
-              )}
+              ) : null}
+
+              {this.props.value.Outcome_Success === "pending" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Pending</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="exclamation-circle"
+                    className="status pending"
+                  />
+                </OverlayTrigger>
+              ) : null}
             </div>
             <Link
               to={`/dashboard/cycles/${this.props.cycleID}/outcome/${

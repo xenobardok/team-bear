@@ -54,10 +54,11 @@ let calculateMeasure = Rubric_Measure_ID => {
                 Measure_Success = db.escape("true");
               }
 
-              //sql to update the percent of success and isSuccess for a Rubric Measure
-              if (Threshold == 0) {
-                Measure_Success = db.escape("false");
+              if (Total_Students == 0) {
+                Measure_Success = db.escape("pending");
               }
+
+              //sql to update the percent of success and isSuccess for a Rubric Measure
 
               sql =
                 "UPDATE RUBRIC_MEASURES SET Score=" +

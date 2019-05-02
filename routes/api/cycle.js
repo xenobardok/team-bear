@@ -59,11 +59,11 @@ router.get(
   }
 );
 
-// @route   GET api/cycle/active
-// @desc    Gets the lists of all active rubrics
+// @route   GET api/cycle/all
+// @desc    Gets the lists of all  rubrics
 // @access  Private
 router.get(
-  "/active",
+  "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
@@ -73,7 +73,7 @@ router.get(
     let sql =
       "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = " +
       dept +
-      " AND isSubmitted='false' order by Dept_ID DESC";
+      "  order by Dept_ID DESC";
     db.query(sql, (err, result) => {
       var cycles = [];
       if (err) return res.send(err);
@@ -536,7 +536,7 @@ router.post(
                         res.status(200).json(
                           (outcome = {
                             Outcome_ID: Outcome_ID,
-                            Is_Submitted: "false"
+                            Is_Submitted: "pending"
                           })
                         );
                       }
@@ -829,7 +829,7 @@ router.post(
                 db.query(sql, (err, result) => {
                   if (err) res.send(err);
                   else {
-                    let isSuccess = db.escape("false");
+                    let isSuccess = db.escape("pending");
                     let isCompleted = db.escape("false");
 
                     sql =
@@ -870,7 +870,7 @@ router.post(
                               Rubric_Measure = {
                                 Measure_ID: Measure_ID,
                                 Rubric_Measure_ID: Rubric_Measure_ID,
-                                Is_Submitted: "false"
+                                Is_Submitted: "pending"
                               };
                               // updateOutcome(outcomeID);
                               return res.status(200).json(Rubric_Measure);
@@ -896,7 +896,7 @@ router.post(
                               Test_Measure = {
                                 Measure_ID: Measure_ID,
                                 Test_Measure_ID: Test_Measure_ID,
-                                Is_Submitted: "false"
+                                Is_Submitted: "pending"
                               };
                               return res.status(200).json(Test_Measure);
                             }

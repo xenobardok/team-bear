@@ -790,8 +790,6 @@ router.post(
                                     }
                                   });
                                 } else {
-                                  console.log(result);
-
                                   sql =
                                     "SELECT * FROM STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
                                     Test_Measure_ID;

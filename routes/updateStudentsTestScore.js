@@ -96,6 +96,10 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
                     Measure_Success = db.escape("true");
                   }
 
+                  if (Total_Students == 0) {
+                    Measure_Success = db.escape("pending");
+                  }
+
                   //sql to update the percent of success and isSuccess for a Test Measure
 
                   sql =
@@ -107,7 +111,22 @@ async function updateStudentsTestScore(Test_Measure_ID, callback) {
                     Test_Measure_ID;
 
                   db.query(sql, (err, result) => {
-                    callback();
+                    sql =
+                      "SELECT Measure_ID FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+                      Test_Measure_ID;
+                    db.query(sql, (err, result) => {
+                      let Measure_ID = result[0].Measure_ID;
+
+                      sql =
+                        "UPDATE MEASURES SET isSuccess=" +
+                        Measure_Success +
+                        " WHERE Measure_ID=" +
+                        Measure_ID;
+                      db.query(sql, (err, result) => {
+                        updateOutcome(Measure_ID);
+                        callback();
+                      });
+                    });
                   });
                 }
               });

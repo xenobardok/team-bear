@@ -476,6 +476,10 @@ section#evaluators .singleEvaluator:hover{
   color: #dc3545;
 }
 
+.status.pending  {
+  color: #daa137;
+}
+
 .program .trash:hover{
   cursor: pointer;
   color: #dc3545

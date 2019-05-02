@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import {
   getCycles,
+  getAllCycles,
   deleteCycle,
   updateCycleName,
   submitCycle
@@ -45,6 +46,7 @@ class Cycles extends Component {
 
   componentDidMount() {
     this.props.getCycles();
+    this.props.getAllCycles();
   }
   render() {
     let modalClose = () => this.setState({ modalShow: false });
@@ -109,6 +111,7 @@ class Cycles extends Component {
 }
 Cycles.propTypes = {
   getCycles: PropTypes.func.isRequired,
+  getAllCycles: PropTypes.func.isRequired,
   updateCycleName: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -121,5 +124,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getCycles, deleteCycle, updateCycleName, submitCycle }
+  { getCycles, getAllCycles, deleteCycle, updateCycleName, submitCycle }
 )(Cycles);

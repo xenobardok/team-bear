@@ -12,12 +12,16 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faEdit,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 // import ThreeDotOM from "./ThreeDotOM";
 import ThreeDotCycle from "./ThreeDotCycle";
 
 import classnames from "classnames";
-library.add(faPlus, faEdit);
+library.add(faPlus, faEdit, faExclamationCircle);
 
 class EditableMeasureList extends Component {
   constructor(props) {
@@ -133,7 +137,8 @@ class EditableMeasureList extends Component {
                     className="status success"
                   />
                 </OverlayTrigger>
-              ) : (
+              ) : null}
+              {this.props.value.Measure_Success === "false" ? (
                 <OverlayTrigger
                   placement="top"
                   overlay={<Tooltip>Status: Failing</Tooltip>}
@@ -143,7 +148,18 @@ class EditableMeasureList extends Component {
                     className="status fail"
                   />
                 </OverlayTrigger>
-              )}
+              ) : null}
+              {this.props.value.Measure_Success === "pending" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Pending</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="exclamation-circle"
+                    className="status pending"
+                  />
+                </OverlayTrigger>
+              ) : null}
             </div>
             <Link
               to={
