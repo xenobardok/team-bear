@@ -8,7 +8,7 @@ export default function SampleRubric(props) {
     for (let i = 0; i < props.Rows_Num; i++) {
       let children = [];
       //Inner loop to create children
-      for (let j = 0; j < props.Column_Num; j++) {
+      for (let j = 0; j <= props.Column_Num; j++) {
         if (j === 0) {
           children.push(
             <td className="borderedCell text-center measureTitle" key={i + j}>
