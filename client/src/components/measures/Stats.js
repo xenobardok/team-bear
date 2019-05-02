@@ -34,6 +34,14 @@ class Stats extends Component {
           <span style={{ fontWeight: "500" }}>Failing</span>
         </Badge>
       );
+      progressInstance = (
+        <ProgressBar
+          variant="danger"
+          now={now}
+          label={`${now}%`}
+          style={{ flexGrow: "1" }}
+        />
+      );
     } else if (Is_Success === "pending") {
       label = (
         <Badge variant="warning">
@@ -41,15 +49,6 @@ class Stats extends Component {
         </Badge>
       );
     }
-
-    progressInstance = (
-      <ProgressBar
-        variant="danger"
-        now={now}
-        label={`${now}%`}
-        style={{ flexGrow: "1" }}
-      />
-    );
 
     return (
       <section>
