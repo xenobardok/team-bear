@@ -304,7 +304,7 @@ duplicateTestMeasure = (
       let Target = result[0].Target;
       let Threshold = result[0].Threshold;
       let Score = 0;
-      let Is_Success = "false";
+      let Is_Success = "pending";
       let Test_Type = result[0].Test_Type;
 
       sql =
