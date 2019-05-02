@@ -161,10 +161,10 @@ class CreateCycle extends Component {
                       "is-invalid": this.state.errors.Migrate_Cycle_ID
                     })}
                   >
-                    {!isEmpty(this.props.cycles.allCycles) ? (
+                    {!isEmpty(this.props.cycles.everyCycles) ? (
                       <>
                         <option value="default">Select a cycle</option>
-                        {this.props.cycles.allCycles.map(cycle => (
+                        {this.props.cycles.everyCycles.map(cycle => (
                           <option value={cycle.Cycle_ID}>
                             {cycle.Cycle_Name}
                           </option>

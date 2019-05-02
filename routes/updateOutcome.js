@@ -31,13 +31,22 @@ let updateOutcome = Measure_ID => {
         }
 
         sql =
-          "UPDATE OUTCOMES SET Outcome_Success=" +
-          db.escape(isSuccess) +
-          " WHERE Outcome_ID=" +
+          "SELECT COUNT(*) FROM MEASURES WHERE isSuccess='Pending' AND Outcome_ID=" +
           Outcome_ID;
 
         db.query(sql, (err, result) => {
-          // console.log(result);
+          if (result.length > 0) {
+            isSuccess = "pending";
+          }
+          sql =
+            "UPDATE OUTCOMES SET Outcome_Success=" +
+            db.escape(isSuccess) +
+            " WHERE Outcome_ID=" +
+            Outcome_ID;
+
+          db.query(sql, (err, result) => {
+            // console.log(result);
+          });
         });
       });
     });

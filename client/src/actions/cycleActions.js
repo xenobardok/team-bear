@@ -5,6 +5,7 @@ import {
   GET_SINGLE_CYCLE,
   GET_ERRORS,
   CREATE_CYCLE,
+  GET_EVERY_CYCLES,
   GET_SUBMITTED_CYCLES
 } from "./types";
 import { toastr } from "react-redux-toastr";
@@ -15,6 +16,16 @@ export const getCycles = () => dispatch => {
   axios.get("/api/cycle").then(res =>
     dispatch({
       type: GET_CYCLES,
+      payload: res.data
+    })
+  );
+};
+
+export const getAllCycles = () => dispatch => {
+  dispatch(setCycleLoading());
+  axios.get("/api/cycle/all").then(res =>
+    dispatch({
+      type: GET_EVERY_CYCLES,
       payload: res.data
     })
   );

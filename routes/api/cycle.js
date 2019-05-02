@@ -59,11 +59,11 @@ router.get(
   }
 );
 
-// @route   GET api/cycle/active
-// @desc    Gets the lists of all active rubrics
+// @route   GET api/cycle/all
+// @desc    Gets the lists of all  rubrics
 // @access  Private
 router.get(
-  "/active",
+  "/all",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const email = req.user.email;
@@ -73,7 +73,7 @@ router.get(
     let sql =
       "SELECT * FROM ASSESSMENT_CYCLE WHERE Dept_ID = " +
       dept +
-      " AND isSubmitted='false' order by Dept_ID DESC";
+      "  order by Dept_ID DESC";
     db.query(sql, (err, result) => {
       var cycles = [];
       if (err) return res.send(err);
