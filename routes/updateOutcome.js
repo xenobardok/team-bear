@@ -31,13 +31,14 @@ let updateOutcome = Measure_ID => {
         }
 
         sql =
-          "SELECT COUNT(*) FROM MEASURES WHERE isSuccess='Pending' AND Outcome_ID=" +
+          "SELECT COUNT(*) AS Success FROM MEASURES WHERE isSuccess='Pending' AND Outcome_ID=" +
           Outcome_ID;
 
         db.query(sql, (err, result) => {
-          if (result.length > 0) {
+          if (result[0].Success > 0) {
             isSuccess = "pending";
           }
+          console.log(result);
           sql =
             "UPDATE OUTCOMES SET Outcome_Success=" +
             db.escape(isSuccess) +
