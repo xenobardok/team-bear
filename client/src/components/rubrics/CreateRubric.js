@@ -57,6 +57,10 @@ class CreateRubric extends Component {
         {
           label: "",
           value: 2
+        },
+        {
+          label: "",
+          value: 3
         }
       ],
       errors: {},
@@ -103,9 +107,9 @@ class CreateRubric extends Component {
     });
 
     if (e.target.name === "Column_Num") {
-      console.log("Changing array limit");
+      console.log("Changing array limit to " + e.target.value);
       const scaleArray = [];
-      for (var i = 0; i < e.target.value - 1; i++) {
+      for (var i = 0; i < e.target.value; i++) {
         scaleArray.push({
           label: "",
           value: i + 1
@@ -157,7 +161,7 @@ class CreateRubric extends Component {
     const rubric = {
       Rubric_Name: this.state.Rubric_Name,
       Rows_Num: this.state.Rows_Num,
-      Column_Num: this.state.Column_Num,
+      Column_Num: String(Number(this.state.Column_Num) + 1),
       Scale: this.state.Scale,
       isWeighted: this.state.weighted
     };
@@ -166,7 +170,7 @@ class CreateRubric extends Component {
   }
   render() {
     let scaleRows = [];
-    for (var i = 0; i < this.state.Column_Num - 1; i++) {
+    for (var i = 0; i < this.state.Column_Num; i++) {
       scaleRows.push(
         <Scales
           name={"Scale[" + i + "]"}
@@ -238,7 +242,7 @@ class CreateRubric extends Component {
           </Form.Group>
           <Form.Group as={Row} controlId="formHorizontalRows">
             <Form.Label column sm={4}>
-              No. of Rows:
+              Criteria:
             </Form.Label>
             <Col sm={8}>
               <Form.Control
@@ -259,7 +263,7 @@ class CreateRubric extends Component {
           </Form.Group>
           <Form.Group as={Row} controlId="formHorizontalCols">
             <Form.Label column sm={4}>
-              No. of Columns:
+              Qualifiers:
             </Form.Label>
             <Col sm={8}>
               <Form.Control

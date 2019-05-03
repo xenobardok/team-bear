@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import isEmpty from "../../validation/isEmpty";
 import {
   Form,
@@ -8,7 +9,8 @@ import {
   Tooltip,
   OverlayTrigger,
   Row,
-  Col
+  Col,
+  Alert
 } from "react-bootstrap";
 import { toastr } from "react-redux-toastr";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -284,7 +286,11 @@ export default class DefineMeasure extends Component {
       ));
     }
 
-    if (this.props.Measure_Type) {
+    if (
+      (this.props.Measure_Type === "rubric" &&
+        this.props.allRubrics.length > 0) ||
+      this.props.Measure_Type === "test"
+    ) {
       measureDefination = (
         <Form>
           {this.state.isEditing ? (
@@ -546,6 +552,16 @@ export default class DefineMeasure extends Component {
             )}
           </div>
         </Form>
+      );
+    } else {
+      measureDefination = (
+        <Alert variant="warning">
+          You do not have any rubrics yet! Please create a rubric first!
+          <br />
+          <Link to="/dashboard/rubrics/create" className="red-hover">
+            Create a new rubric
+          </Link>
+        </Alert>
       );
     }
     return <section>{measureDefination}</section>;

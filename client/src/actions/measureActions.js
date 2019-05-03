@@ -174,8 +174,6 @@ export const addStudent = (
   measureID,
   student
 ) => dispatch => {
-  console.log(measureID);
-  console.log(student);
   axios
     .post(
       `/api/cycle/${cycleID}/outcome/${outcomeID}/measure/${measureID}/addStudent`,
