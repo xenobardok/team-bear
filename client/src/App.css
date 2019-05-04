@@ -480,6 +480,10 @@ section#evaluators .singleEvaluator:hover{
 
 .status.pending  {
   color: #daa137;
+  background: white;
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
 }
 
 .program .trash:hover{
@@ -721,6 +725,10 @@ pre{
   transition: 0.5s all;
   color: green;
   cursor: pointer;
+  background: white;
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
 }
 
 #page-wrap .card.report {

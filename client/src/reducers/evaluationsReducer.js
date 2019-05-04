@@ -45,9 +45,20 @@ export default function(state = initialState, action) {
         loading: false
       };
     case GRADE_STUDENT_RUBRIC_MEASURE:
+      let studentIndex = state.rubric.Students.findIndex(
+        student => student.Student_ID === action.payload
+      );
+      let newStudentArray;
+      state.rubric.Students[studentIndex].hasGraded = true;
+      console.log(state.rubric.Students);
+      // return 1;
       return {
         ...state,
-        loading: false
+        loading: false,
+        rubric: {
+          ...state.rubric,
+          Students: state.rubric.Students
+        }
       };
     case LIST_ASSIGNED_TESTS:
       return {

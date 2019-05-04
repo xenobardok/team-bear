@@ -304,7 +304,7 @@ class ViewRubric extends Component {
             }}
           >
             <h2>
-              {rubric.hasSubmitted === "false" ? (
+              {/* {rubric.hasSubmitted === "false" ? (
                 <OverlayTrigger
                   placement="top"
                   overlay={<Tooltip>Mark As Complete</Tooltip>}
@@ -326,7 +326,7 @@ class ViewRubric extends Component {
                     onClick={this.markAsComplete}
                   />
                 </OverlayTrigger>
-              )}
+              )} */}
               {rubric.Rubric_Name}
             </h2>
             <h5>
@@ -367,7 +367,7 @@ class ViewRubric extends Component {
                   <Card.Body
                     style={{
                       padding: "0px",
-                      maxHeight: "680px",
+                      maxHeight: "600px",
                       overflowY: "scroll"
                     }}
                   >
@@ -421,6 +421,27 @@ class ViewRubric extends Component {
                     ) : (
                       <Button variant="primary" size="lg" block disabled>
                         Submit Grade
+                      </Button>
+                    )}
+                  </Card.Footer>
+                  <Card.Footer>
+                    {rubric.hasSubmitted === "false" ? (
+                      <Button
+                        variant="success"
+                        size="lg"
+                        block
+                        onClick={this.markAsComplete}
+                      >
+                        Mark Evaluations Complete
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="success"
+                        size="lg"
+                        block
+                        onClick={this.markAsComplete}
+                      >
+                        Remark Evaluations Complete
                       </Button>
                     )}
                   </Card.Footer>
