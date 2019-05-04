@@ -41,12 +41,12 @@ class Evaluators extends Component {
       evaluatorsList = <Spinner />;
     } else {
       evaluatorsList = evaluators.map((value, index) => (
-        <ListGroup variant="flush" key={value.Email} className="edit-post">
+        <ListGroup key={value.Email} className="edit-post">
           {value.isActive === "true" ? (
             <>
-              <ListGroup.Item key={value.Email} style={{ flexGrow: "1" }}>
-                {value.Name}
-              </ListGroup.Item>
+              <div style={{ flexGrow: "1" }}>
+                <ListGroup.Item key={value.Email}>{value.Name}</ListGroup.Item>
+              </div>
               <OverlayTrigger placement="top" overlay={<Tooltip>Edit</Tooltip>}>
                 <div
                   style={{
@@ -101,7 +101,9 @@ class Evaluators extends Component {
       <>
         <Card className="text-center">
           <Card.Header>List of Evaluators</Card.Header>
-          <Card.Body style={{ padding: "0px" }}>{evaluatorsList}</Card.Body>
+          <Card.Body style={{ padding: "0px" }}>
+            <ListGroup variant="flush">{evaluatorsList}</ListGroup>
+          </Card.Body>
           <Card.Footer
             onClick={() => this.setState({ modalShow: true })}
             style={{ cursor: "pointer" }}

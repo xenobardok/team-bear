@@ -56,7 +56,6 @@ export default function(state = initialState, action) {
         loading: false
       };
     case ADD_STUDENT:
-      console.log(action.payload);
       return {
         ...state,
         studentsLoading: false,

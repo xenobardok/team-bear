@@ -194,7 +194,9 @@ class Measure extends Component {
     let { id, outcomeID, measureID } = this.props.match.params;
     this.props.addStudent(id, outcomeID, measureID, student);
     this.setState({
-      addStudentBox: !this.state.addStudentBox
+      addStudentBox: !this.state.addStudentBox,
+      Student_Name: "",
+      Student_ID: ""
     });
   };
 

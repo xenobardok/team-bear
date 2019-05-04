@@ -150,74 +150,95 @@ router.get(
             });
 
             sql =
-              "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+              "SELECT DISTINCT Rubric_Student_ID  FROM STUDENTS_RUBRIC_ROWS_GRADE NATURAL JOIN RUBRIC_STUDENTS  WHERE  Rubric_Measure_ID=" +
               Rubric_Measure_ID +
-              " ORDER BY Student_Name";
+              " AND Evaluator_Email=" +
+              email;
 
             db.query(sql, (err, result) => {
-              if (err) return res.status(400).json(err);
+              if (err) return res.status(404).json(err);
               else {
+                let gradedStudents = new Set();
+
                 result.forEach(student => {
-                  let astudent = {
-                    Student_ID: student.Student_ID,
-                    Student_Name: student.Student_Name
-                  };
-                  Rubric.Students.push(astudent);
+                  gradedStudents.add(student.Rubric_Student_ID);
                 });
+                sql =
+                  "SELECT * FROM RUBRIC_STUDENTS NATURAL JOIN RUBRIC_MEASURES WHERE Rubric_Measure_ID=" +
+                  Rubric_Measure_ID +
+                  " ORDER BY Student_Name";
 
-                var newSql =
-                  "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
-                  Rubric.Rubric_ID +
-                  " ORDER BY Sort_Index";
-
-                db.query(newSql, (err, result) => {
-                  if (err) throw err;
+                db.query(sql, (err, result) => {
+                  if (err) return res.status(400).json(err);
                   else {
-                    //let done = false;
-                    let rowIndex = 0;
-                    const totalRows = result.length;
-                    result.forEach(row => {
-                      var Rubric_Row_ID = row.Rubric_Row_ID;
-                      var Sort_Index = row.Sort_Index;
-                      var Rubric_Row_Weight = row.Rubric_Row_Weight;
-                      var Measure_Factor = row.Measure_Factor;
-                      var Column_values = [];
-                      var newSql2 =
-                        "SELECT * FROM COLUMNS WHERE Rubric_Row_ID =" +
-                        Rubric_Row_ID +
-                        " ORDER BY Column_No";
+                    result.forEach(student => {
+                      hasGraded = false;
+                      if (gradedStudents.has(student.Rubric_Student_ID)) {
+                        hasGraded = true;
+                      }
+                      let astudent = {
+                        Student_ID: student.Student_ID,
+                        Student_Name: student.Student_Name,
+                        hasGraded: hasGraded
+                      };
+                      Rubric.Students.push(astudent);
+                    });
 
-                      db.query(newSql2, (err, result) => {
-                        if (err) return res.status(404).json(err);
-                        else {
-                          let columnIndex = 0;
-                          const totalColumn = result.length;
-                          result.forEach(row => {
-                            var eachColumn = {
-                              Column_ID: row.Columns_ID,
-                              Column_No: row.Column_No,
-                              value: row.Value
-                            };
-                            columnIndex++;
-                            Column_values.push(eachColumn);
+                    var newSql =
+                      "SELECT * FROM RUBRIC_ROW WHERE Rubric_ID =" +
+                      Rubric.Rubric_ID +
+                      " ORDER BY Sort_Index";
+
+                    db.query(newSql, (err, result) => {
+                      if (err) res.status(400).json(err);
+                      else {
+                        //let done = false;
+                        let rowIndex = 0;
+                        const totalRows = result.length;
+                        result.forEach(row => {
+                          var Rubric_Row_ID = row.Rubric_Row_ID;
+                          var Sort_Index = row.Sort_Index;
+                          var Rubric_Row_Weight = row.Rubric_Row_Weight;
+                          var Measure_Factor = row.Measure_Factor;
+                          var Column_values = [];
+                          var newSql2 =
+                            "SELECT * FROM COLUMNS WHERE Rubric_Row_ID =" +
+                            Rubric_Row_ID +
+                            " ORDER BY Column_No";
+
+                          db.query(newSql2, (err, result) => {
+                            if (err) return res.status(404).json(err);
+                            else {
+                              let columnIndex = 0;
+                              const totalColumn = result.length;
+                              result.forEach(row => {
+                                var eachColumn = {
+                                  Column_ID: row.Columns_ID,
+                                  Column_No: row.Column_No,
+                                  value: row.Value
+                                };
+                                columnIndex++;
+                                Column_values.push(eachColumn);
+                              });
+
+                              var eachRow = {
+                                Rubric_Row_ID: Rubric_Row_ID,
+                                Measure_Factor: Measure_Factor,
+                                Column_values: Column_values,
+                                Rubric_Row_Weight: Rubric_Row_Weight
+                              };
+                              Rubric.data.push(eachRow);
+                              rowIndex++;
+                              if (
+                                rowIndex == totalRows &&
+                                columnIndex == totalColumn
+                              ) {
+                                return res.json(Rubric);
+                              }
+                            }
                           });
-
-                          var eachRow = {
-                            Rubric_Row_ID: Rubric_Row_ID,
-                            Measure_Factor: Measure_Factor,
-                            Column_values: Column_values,
-                            Rubric_Row_Weight: Rubric_Row_Weight
-                          };
-                          Rubric.data.push(eachRow);
-                          rowIndex++;
-                          if (
-                            rowIndex == totalRows &&
-                            columnIndex == totalColumn
-                          ) {
-                            return res.json(Rubric);
-                          }
-                        }
-                      });
+                        });
+                      }
                     });
                   }
                 });
@@ -252,46 +273,68 @@ router.get(
     // console.log(sql);
     db.query(sql, (err, result) => {
       var Test = {};
-      if (err) throw err;
+      if (err) return res.status(400).json(err);
       else {
         if (result.length < 1) {
           return res.status(404).json({ error: "Test Not Found" });
+        } else {
+          Test.Test_Name = result[0].Exam_Name;
+          Test.StudentsData = [];
+          Test.Test_Type = result[0].Test_Type;
+          Test.hasSubmitted = result[0].Did_Submit;
+
+          sql =
+            "SELECT DISTINCT Test_Student_ID FROM STUDENTS_TEST_GRADE WHERE Test_Measure_ID=" +
+            Test_Measure_ID +
+            " AND Evaluator_Email=" +
+            email;
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            else {
+              let gradedStudents = new Set();
+
+              result.forEach(student => {
+                gradedStudents.add(student.Test_Student_ID);
+              });
+
+              sql =
+                "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
+                Test_Measure_ID +
+                " ORDER BY S.Student_Name ";
+
+              // console.log(sql);
+
+              db.query(sql, (err, result) => {
+                if (err) return res.status(400).json(err);
+                else {
+                  result.forEach(student => {
+                    let Student_ID = student.Student_ID;
+                    let Student_Name = student.Student_Name;
+                    let Grade = student.Score;
+
+                    if (Grade == null) {
+                      Grade = 0;
+                    }
+                    hasGraded = false;
+
+                    if (gradedStudents.has(student.Test_Student_ID)) {
+                      hasGraded = true;
+                    }
+                    let astudent = {
+                      Student_ID: Student_ID,
+                      Student_Name: Student_Name,
+                      Grade: Grade,
+                      hasGraded: hasGraded
+                    };
+                    Test.StudentsData.push(astudent);
+                  });
+
+                  res.status(200).json(Test);
+                }
+              });
+            }
+          });
         }
-        Test.Test_Name = result[0].Exam_Name;
-        Test.StudentsData = [];
-        Test.Test_Type = result[0].Test_Type;
-        Test.hasSubmitted = result[0].Did_Submit;
-
-        sql =
-          "SELECT * FROM TEST_STUDENTS S JOIN TEST_MEASURES M ON S.Test_Measure_ID=M.Test_Measure_ID LEFT OUTER JOIN STUDENTS_TEST_GRADE G ON S.Test_Student_ID=G.Test_Student_ID WHERE M.Test_Measure_ID=" +
-          Test_Measure_ID +
-          " ORDER BY S.Student_Name ";
-
-        // console.log(sql);
-
-        db.query(sql, (err, result) => {
-          if (err) return res.status(400).json(err);
-          else {
-            result.forEach(student => {
-              let Student_ID = student.Student_ID;
-              let Student_Name = student.Student_Name;
-              let Grade = student.Score;
-
-              if (Grade == null) {
-                Grade = 0;
-              }
-
-              let astudent = {
-                Student_ID: Student_ID,
-                Student_Name: Student_Name,
-                Grade: Grade
-              };
-              Test.StudentsData.push(astudent);
-            });
-
-            res.status(200).json(Test);
-          }
-        });
       }
     });
   }

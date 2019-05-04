@@ -20,14 +20,18 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
+import classnames from "classnames";
 import { toastr } from "react-redux-toastr";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faExclamationCircle
+} from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
-library.add(faCheckCircle);
+library.add(faCheckCircle, faExclamationCircle);
 
 let scalesRow, dataRow;
 
@@ -185,16 +189,15 @@ class ViewRubric extends Component {
 
   onSubmitGradeHandler = e => {
     let { rubricMeasureId } = this.props.match.params;
-    console.log(
-      rubricMeasureId,
-      this.state.Student_ID,
-      this.state.Student_Grades
-    );
-    this.props.gradeStudentRubricMeasure(
-      rubricMeasureId,
-      this.state.Student_ID,
-      this.state.Student_Grades
-    );
+    if (this.state.Student_Grades.includes(0)) {
+      toastr.info("Cannot give a zero grade");
+    } else {
+      this.props.gradeStudentRubricMeasure(
+        rubricMeasureId,
+        this.state.Student_ID,
+        this.state.Student_Grades
+      );
+    }
   };
 
   boxClickHandler = (index, rowIndex, e) => {
@@ -350,9 +353,7 @@ class ViewRubric extends Component {
                       {rubric.isWeighted === "true" ? (
                         <>
                           <th className="grade centerAlign borderedCell">WS</th>
-                          <th className="grade centerAlign borderedCell">
-                            Percentage
-                          </th>
+                          <th className="grade centerAlign borderedCell">%</th>
                         </>
                       ) : null}
                     </tr>
@@ -376,7 +377,32 @@ class ViewRubric extends Component {
                           key={student.Student_ID}
                           action
                           onClick={this.studentClickHandler.bind(this, student)}
+                          className={classnames("", {
+                            active: this.state.Student_ID === student.Student_ID
+                          })}
                         >
+                          {student.hasGraded ? (
+                            <OverlayTrigger
+                              placement="left"
+                              overlay={<Tooltip>Student Graded</Tooltip>}
+                            >
+                              <FontAwesomeIcon
+                                icon="check-circle"
+                                className="marked-as-complete"
+                              />
+                            </OverlayTrigger>
+                          ) : (
+                            <OverlayTrigger
+                              placement="left"
+                              overlay={<Tooltip>Student Pending</Tooltip>}
+                            >
+                              <FontAwesomeIcon
+                                icon="exclamation-circle"
+                                className="marked-as-complete status pending"
+                              />
+                            </OverlayTrigger>
+                          )}
+                          &nbsp;&nbsp;
                           {student.Student_Name} : {student.Student_ID}
                         </ListGroup.Item>
                       ))}
