@@ -12,6 +12,7 @@
     "dateformat": "^3.0.3",
     "express": "^4.16.4",
     "fast-csv": "^2.4.1",
+    "forever": "^1.0.0",
     "jsonwebtoken": "^8.5.0",
     "multer": "^1.4.1",
     "mysql": "^2.16.0",
@@ -36,7 +37,7 @@
   "scripts": {
     "client-install": "npm install --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon server.js",
+    "start": "npx forever start server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run start\" \"npm run client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
