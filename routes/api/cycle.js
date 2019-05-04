@@ -536,7 +536,7 @@ router.post(
                         res.status(200).json(
                           (outcome = {
                             Outcome_ID: Outcome_ID,
-                            Is_Submitted: "pending"
+                            Is_Submitted: "notStarted"
                           })
                         );
                       }
@@ -829,7 +829,7 @@ router.post(
                 db.query(sql, (err, result) => {
                   if (err) res.send(err);
                   else {
-                    let isSuccess = db.escape("pending");
+                    let isSuccess = db.escape("notStarted");
                     let isCompleted = db.escape("false");
 
                     sql =
@@ -870,7 +870,7 @@ router.post(
                               Rubric_Measure = {
                                 Measure_ID: Measure_ID,
                                 Rubric_Measure_ID: Rubric_Measure_ID,
-                                Is_Submitted: "pending"
+                                Is_Submitted: "notStarted"
                               };
 
                               return res.status(200).json(Rubric_Measure);
@@ -896,7 +896,7 @@ router.post(
                               Test_Measure = {
                                 Measure_ID: Measure_ID,
                                 Test_Measure_ID: Test_Measure_ID,
-                                Is_Submitted: "pending"
+                                Is_Submitted: "notStarted"
                               };
 
                               return res.status(200).json(Test_Measure);
