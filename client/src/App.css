@@ -478,6 +478,10 @@ section#evaluators .singleEvaluator:hover{
   color: #dc3545;
 }
 
+.status.not-assigned {
+  color: #17a2b8;
+}
+
 .status.pending  {
   color: #daa137;
   background: white;
