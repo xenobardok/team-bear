@@ -51,7 +51,16 @@ export default function(state = initialState, action) {
         ...state,
         singleMeasure: {
           ...state.singleMeasure,
-          Evaluators: [...state.singleMeasure.Evaluators, action.payload]
+          Evaluators: [...state.singleMeasure.Evaluators, action.payload],
+          Unevaluated: [
+            ...state.singleMeasure.Unevaluated,
+            {
+              Evaluator_Name: action.payload.Evaluator_Name,
+              Student_List: state.singleMeasure.Students.map(
+                a => a.Student_Name
+              )
+            }
+          ]
         },
         loading: false
       };

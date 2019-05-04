@@ -4,8 +4,13 @@ import { Form, Tooltip, OverlayTrigger } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimesCircle, faCheck } from "@fortawesome/free-solid-svg-icons";
-library.add(faTimesCircle, faCheck);
+import {
+  faTimesCircle,
+  faCheck,
+  faUserCheck,
+  faUserTimes
+} from "@fortawesome/free-solid-svg-icons";
+library.add(faTimesCircle, faCheck, faUserCheck, faUserTimes);
 
 class EvaluatorBox extends Component {
   constructor(props) {
@@ -53,18 +58,49 @@ class EvaluatorBox extends Component {
       content = (
         <div className="singleEvaluator">
           {this.props.Is_Submitted === "true" ? null : (
-            <FontAwesomeIcon
-              icon="times-circle"
-              className="crossIcon"
-              onClick={this.removeEvaluatorMeasureButton}
-            />
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Remove Evaluator</Tooltip>}
+            >
+              <FontAwesomeIcon
+                icon="times-circle"
+                className="crossIcon"
+                onClick={this.removeEvaluatorMeasureButton}
+              />
+            </OverlayTrigger>
           )}
 
           <div
             style={{ paddingRight: "30px" }}
             onClick={this.evaluatorBoxClickHandler}
           >
-            <div>{Evaluator_Name}</div>
+            <div>
+              {Evaluator_Name}
+              &nbsp;&nbsp;
+              {this.props.hasSubmitted === "true" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Evaluation Submitted</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="user-check"
+                    className="completed-evaluation"
+                    // onClick={this.removeEvaluatorMeasureButton}
+                  />
+                </OverlayTrigger>
+              ) : (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Pending Evaluation</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="user-times"
+                    className="pending-evaluation"
+                    // onClick={this.removeEvaluatorMeasureButton}
+                  />
+                </OverlayTrigger>
+              )}
+            </div>
             <div>{Evaluator_Email}</div>
           </div>
         </div>

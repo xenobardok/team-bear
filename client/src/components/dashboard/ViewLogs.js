@@ -6,7 +6,7 @@ import { getLogs } from "../../actions/logsActions";
 import "../../App.css";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
-
+import { Link } from "react-router-dom";
 class ViewLogs extends Component {
   componentDidMount() {
     this.props.getLogs();
@@ -14,7 +14,8 @@ class ViewLogs extends Component {
 
   render() {
     let { logs, loading } = this.props.logs;
-    let logsFilter;
+    let logsFilter,
+      viewMore = null;
     if (loading) {
       logsFilter = <Spinner />;
     } else if (isEmpty(logs)) {
@@ -29,8 +30,15 @@ class ViewLogs extends Component {
         logsFilter = logs
           .slice(0, logSize)
           .map((log, index) => <LogView {...log} key={log.Time + index} />);
+        viewMore = (
+          <Link to="/dashboard/logs">
+            <div className="log text-center logs-link">
+              View all 50 latest logs
+            </div>
+          </Link>
+        );
       } else {
-        let logSize = 25;
+        let logSize = 50;
         logsFilter = logs
           .slice(0, logSize)
           .map((log, index) => <LogView {...log} key={log.Time + index} />);
@@ -42,6 +50,7 @@ class ViewLogs extends Component {
         <Container>
           <h5>Recent Activity Log</h5>
           <div>{logsFilter}</div>
+          {viewMore}
         </Container>
       </Jumbotron>
     );
