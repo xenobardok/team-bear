@@ -334,6 +334,7 @@ table.report th, table.report td{
 
 #page-wrap .list-group-item {
   text-align: left;
+  border-radius: 5px;
 }
 
 .createCycle, .createProgram {
@@ -388,6 +389,7 @@ table.report th, table.report td{
 .edit-post{
   justify-content: flex-start;
   flex-direction: row;
+  border: 1px solid #d8d8d8;
 }
 
 .flex-grow{
@@ -583,7 +585,8 @@ a:hover {
   font-weight: bold;
   font-size: 18px !important;
   vertical-align: middle !important;
-  width: 100px !important;
+  max-width: 100px !important;
+  min-width: 80px!important;
   padding: 40px 3px;
   /* font-size: 30px !important; */
 }
@@ -594,6 +597,11 @@ a:hover {
 
 .students {
   max-width: 400px!important; 
+}
+
+.students .list-group-item.active{
+  background-color: #a7405e;
+  border-color: #a7405e;
 }
 
 .jumbotron {

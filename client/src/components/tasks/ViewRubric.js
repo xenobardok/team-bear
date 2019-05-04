@@ -20,6 +20,7 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
+import classnames from "classnames";
 import { toastr } from "react-redux-toastr";
 import Spinner from "../../common/Spinner";
 import isEmpty from "../../validation/isEmpty";
@@ -188,16 +189,15 @@ class ViewRubric extends Component {
 
   onSubmitGradeHandler = e => {
     let { rubricMeasureId } = this.props.match.params;
-    console.log(
-      rubricMeasureId,
-      this.state.Student_ID,
-      this.state.Student_Grades
-    );
-    this.props.gradeStudentRubricMeasure(
-      rubricMeasureId,
-      this.state.Student_ID,
-      this.state.Student_Grades
-    );
+    if (this.state.Student_Grades.includes(0)) {
+      toastr.info("Cannot give a zero grade");
+    } else {
+      this.props.gradeStudentRubricMeasure(
+        rubricMeasureId,
+        this.state.Student_ID,
+        this.state.Student_Grades
+      );
+    }
   };
 
   boxClickHandler = (index, rowIndex, e) => {
@@ -353,9 +353,7 @@ class ViewRubric extends Component {
                       {rubric.isWeighted === "true" ? (
                         <>
                           <th className="grade centerAlign borderedCell">WS</th>
-                          <th className="grade centerAlign borderedCell">
-                            Percentage
-                          </th>
+                          <th className="grade centerAlign borderedCell">%</th>
                         </>
                       ) : null}
                     </tr>
@@ -379,8 +377,11 @@ class ViewRubric extends Component {
                           key={student.Student_ID}
                           action
                           onClick={this.studentClickHandler.bind(this, student)}
+                          className={classnames("", {
+                            active: this.state.Student_ID === student.Student_ID
+                          })}
                         >
-                          {student.Is_Submitted ? (
+                          {student.hasGraded ? (
                             <OverlayTrigger
                               placement="left"
                               overlay={<Tooltip>Student Graded</Tooltip>}
