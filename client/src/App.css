@@ -433,7 +433,7 @@ table.report th, table.report td{
 .evaluators .singleEvaluator {
   justify-content: left;
   height: auto;
-  border: 1px solid #9e9898;
+  border: 2px solid #e7dade;
   padding: 10px 10px 10px 10px;
   border-radius: 5px;
   margin: 0px 10px 10px 0px;
@@ -770,4 +770,19 @@ pre{
 
 .red-hover:hover {
 color: #271017;
+}
+
+.pending-evaluation {
+  color: #daa137;
+  float: right;
+}
+
+.completed-evaluation {
+  color: green;
+  float: right;
+}
+
+.logs-link:hover {
+  background-color: #7b3449;
+  color: white!important;
 }
