@@ -304,11 +304,11 @@ duplicateTestMeasure = (
       let Target = result[0].Target;
       let Threshold = result[0].Threshold;
       let Score = 0;
-      let Is_Success = "pending";
+
       let Test_Type = result[0].Test_Type;
 
       sql =
-        "INSERT INTO TEST_MEASURES (Exam_Name,Measure_ID,Target,Threshold,Score,Is_Success,Test_Type) VALUES(" +
+        "INSERT INTO TEST_MEASURES (Exam_Name,Measure_ID,Target,Threshold,Score,Test_Type) VALUES(" +
         db.escape(Exam_Name) +
         "," +
         New_Measure_ID +
@@ -318,8 +318,6 @@ duplicateTestMeasure = (
         Threshold +
         "," +
         Score +
-        "," +
-        db.escape(Is_Success) +
         "," +
         db.escape(Test_Type) +
         ")";
@@ -369,11 +367,10 @@ duplicateRubricMeasure = (
       let Target = result[0].Target;
       let Threshold = result[0].Threshold;
       let Score = 0;
-      let Is_Success = "false";
       let Old_Rubric_ID = result[0].Rubric_ID;
 
       sql =
-        "INSERT INTO RUBRIC_MEASURES (Class_Name,Measure_ID,Target,Threshold,Score,Is_Success) VALUES(" +
+        "INSERT INTO RUBRIC_MEASURES (Class_Name,Measure_ID,Target,Threshold,Score) VALUES(" +
         db.escape(Class_Name) +
         "," +
         New_Measure_ID +
@@ -383,8 +380,6 @@ duplicateRubricMeasure = (
         Threshold +
         "," +
         Score +
-        "," +
-        db.escape(Is_Success) +
         ")";
 
       db.query(sql, (err, result) => {
