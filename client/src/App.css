@@ -478,8 +478,16 @@ section#evaluators .singleEvaluator:hover{
   color: #dc3545;
 }
 
+.status.not-assigned {
+  color: #17a2b8;
+}
+
 .status.pending  {
   color: #daa137;
+  background: white;
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
 }
 
 .program .trash:hover{
@@ -721,6 +729,10 @@ pre{
   transition: 0.5s all;
   color: green;
   cursor: pointer;
+  background: white;
+    border-radius: 50%;
+    height: 1em;
+    width: 1em;
 }
 
 #page-wrap .card.report {

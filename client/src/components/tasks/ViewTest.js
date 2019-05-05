@@ -14,7 +14,8 @@ import {
   Container,
   OverlayTrigger,
   Tooltip,
-  Collapse
+  Collapse,
+  Button
 } from "react-bootstrap";
 import "./Test.css";
 // import classnames from "classnames";
@@ -99,9 +100,9 @@ class ViewTest extends Component {
       // Check if logged in user has rubrics to view
       if (test) {
         displayTest = (
-          <Container>
+          <Container style={{ marginBottom: "50px" }}>
             <h2>
-              {test.hasSubmitted === "false" ? (
+              {/* {test.hasSubmitted === "false" ? (
                 <OverlayTrigger
                   placement="top"
                   overlay={<Tooltip>Mark As Complete</Tooltip>}
@@ -123,7 +124,7 @@ class ViewTest extends Component {
                     onClick={this.markAsComplete}
                   />
                 </OverlayTrigger>
-              )}
+              )} */}
 
               {test.Test_Name}
             </h2>
@@ -154,25 +155,49 @@ class ViewTest extends Component {
               </tbody>
             </Table>
             <hr class="hr-text" data-content="OR" />
-            <p
-              onClick={() =>
-                this.setState({ openFileUpload: !this.state.openFileUpload })
-              }
-              aria-controls="example-collapse-text"
-              aria-expanded={this.state.openFileUpload}
-              class="text-center openFileUpload"
-            >
-              Upload a file instead <FontAwesomeIcon icon="chevron-down" />
-            </p>
-            <Collapse in={this.state.openFileUpload} className=" text-center">
-              <div id="example-collapse-text">
-                <a href={SampleFile} className="download-file">
-                  Download a sample file
-                </a>
-                <br />
-                <UploadFileButton fileUploadHandler={this.fileUploadHandler} />
-              </div>
-            </Collapse>
+            <div style={{ height: "200px" }}>
+              <p
+                onClick={() =>
+                  this.setState({ openFileUpload: !this.state.openFileUpload })
+                }
+                aria-controls="example-collapse-text"
+                aria-expanded={this.state.openFileUpload}
+                class="text-center openFileUpload"
+              >
+                Upload a file instead <FontAwesomeIcon icon="chevron-down" />
+              </p>
+              <Collapse in={this.state.openFileUpload} className=" text-center">
+                <div id="example-collapse-text">
+                  <a href={SampleFile} className="download-file">
+                    Download a sample file
+                  </a>
+                  <br />
+                  <UploadFileButton
+                    fileUploadHandler={this.fileUploadHandler}
+                  />
+                </div>
+              </Collapse>
+            </div>
+            <div className="text-center">
+              {test.hasSubmitted === "false" ? (
+                <Button
+                  variant="success"
+                  size="lg"
+                  onClick={this.markAsComplete}
+                  className="mx-auto"
+                >
+                  Mark Evaluations Complete
+                </Button>
+              ) : (
+                <Button
+                  variant="success"
+                  size="lg"
+                  onClick={this.markAsComplete}
+                >
+                  Remark Evaluations Complete
+                </Button>
+              )}
+            </div>
           </Container>
         );
       } else {

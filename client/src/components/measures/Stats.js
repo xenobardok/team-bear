@@ -56,8 +56,21 @@ class Stats extends Component {
           style={{ flexGrow: "1" }}
         />
       );
+    } else if (Is_Success === "notStarted") {
+      label = (
+        <Badge variant="info">
+          <span style={{ fontWeight: "500" }}>Not Started</span>
+        </Badge>
+      );
+      progressInstance = (
+        <ProgressBar
+          variant="danger"
+          now={now}
+          label={`${now}%`}
+          style={{ flexGrow: "1" }}
+        />
+      );
     }
-
     return (
       <section>
         <h5>Status: {label}</h5>

@@ -160,6 +160,17 @@ class EditableMeasureList extends Component {
                   />
                 </OverlayTrigger>
               ) : null}
+              {this.props.value.Measure_Success === "notStarted" ? (
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>Status: Not Assigned</Tooltip>}
+                >
+                  <FontAwesomeIcon
+                    icon="question-circle"
+                    className="status not-assigned"
+                  />
+                </OverlayTrigger>
+              ) : null}
             </div>
             <Link
               to={
