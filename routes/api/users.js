@@ -216,7 +216,7 @@ router.delete(
                             if (err) return res.status(400).json(err);
                             if (result.length > 0) {
                               sql =
-                                "UPDATE Evaluators SET isDeleted='true',isActive='false' WHERE Email=" +
+                                "UPDATE Evaluators SET isDeleted='true',isActive='false', Password=Null WHERE Email=" +
                                 removeEmail;
 
                               db.query(sql, (err, result) => {
