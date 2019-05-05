@@ -106,4 +106,132 @@ router.post(
   }
 );
 
+// @route   POST api/faq/faqID
+// @desc    update the faqID
+// @access  Private
+
+router.put(
+  "/:faqID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = req.user.dept;
+    const errors = {};
+    const FAQ_ID = req.params.faqID;
+
+    let sql =
+      "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
+      db.escape(email);
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        return res.status(400).json(err);
+      } else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ User: "You do not have enough privileges" });
+        } else {
+          sql = "SELECT * FROM FAQ WHERE FAQ_ID=" + FAQ_ID;
+
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            else {
+              if (result.length < 1) {
+                errors.FAQ_ID = "Faq not found";
+                res.status(400).json(errors);
+              } else {
+                let Question = req.body.Question;
+                let Answer = req.body.Answer;
+
+                if (isEmpty(Question)) {
+                  errors.Question = "Question cannot be empty";
+                  res.status(400).json(errors);
+                } else if (isEmpty(Answer)) {
+                  errors.Answer = "Answer cannot be empty";
+                  res.status(400).json(errors);
+                } else {
+                  sql =
+                    "UPDATE FAQ SET Question=" +
+                    db.escape(Question) +
+                    ", Answer=" +
+                    db.escape(Answer) +
+                    " WHERE FAQ_ID=" +
+                    FAQ_ID;
+
+                  db.query(sql, (err, result) => {
+                    if (err) {
+                      return res.status(400).json(err);
+                    } else {
+                      aFaq = {
+                        FAQ_ID: FAQ_ID,
+                        Question: Question,
+                        Answer: Answer
+                      };
+                      res.status(200).json(aFaq);
+                    }
+                  });
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+);
+
+// @route   DELETE api/faq/faqID
+// @desc    update the faqID
+// @access  Private
+
+router.delete(
+  "/:faqID",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const email = req.user.email;
+    const type = req.user.type;
+    const dept = req.user.dept;
+    const errors = {};
+    const FAQ_ID = req.params.faqID;
+
+    let sql =
+      "SELECT * FROM Evaluators WHERE isSuperUSer= 'true' AND Email=" +
+      db.escape(email);
+
+    db.query(sql, (err, result) => {
+      if (err) {
+        return res.status(400).json(err);
+      } else {
+        if (result.length < 1) {
+          return res
+            .status(400)
+            .json({ User: "You do not have enough privileges" });
+        } else {
+          sql = "SELECT * FROM FAQ WHERE FAQ_ID=" + FAQ_ID;
+          db.query(sql, (err, result) => {
+            if (err) return res.status(400).json(err);
+            else {
+              if (result.length < 1) {
+                errors.FAQ_ID = "Faq not found";
+                res.status(400).json(errors);
+              } else {
+                sql = "DELETE FROM FAQ WHERE FAQ_ID=" + FAQ_ID;
+
+                db.query(sql, (err, result) => {
+                  if (err) {
+                    return res.status(400).json(err);
+                  } else {
+                    res.status(200).json({ Faq: "FAQ deleted" });
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+);
 module.exports = router;
