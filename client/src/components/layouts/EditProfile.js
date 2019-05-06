@@ -37,7 +37,7 @@ export default function EditProfile(props) {
         lastname: ""
       };
     }
-    console.log(tempErrors);
+    // console.log(tempErrors);
     changeErrors({
       ...errors,
       ...tempErrors

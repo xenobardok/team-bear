@@ -16,7 +16,6 @@ class MeasureReport extends Component {
   render() {
     let { report, loading } = this.props.reports;
     let tableContent;
-    console.log(loading);
     if (loading || isEmpty(report)) {
       tableContent = <Spinner />;
     } else {

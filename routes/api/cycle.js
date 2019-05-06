@@ -1559,7 +1559,6 @@ router.post(
     const Outcome_ID = req.params.outcomeID;
     const Cycle_ID = req.params.cycleID;
 
-    console.log(req.params);
     const errors = {};
     if (type == "Admin") {
       let sql =
@@ -1570,7 +1569,6 @@ router.post(
         " AND Cycle_ID=" +
         Cycle_ID;
 
-      console.log(sql);
       db.query(sql, (err, result) => {
         if (err) return res.status(400).json(err);
         else {

@@ -60,7 +60,7 @@ export const setRubricsButtonLoading = () => {
 };
 
 export const changeRubricWeight = (Rubric_ID, data) => dispatch => {
-  console.log(Rubric_ID, data);
+  // console.log(Rubric_ID, data);
   dispatch(setRubricsButtonLoading());
   axios
     .put(`/api/rubrics/${Rubric_ID}/weight`, data)
@@ -81,9 +81,9 @@ export const createRubric = rubric => dispatch => {
   axios
     .post("/api/rubrics/create", rubric)
     .then(res => {
-      console.log(
-        "Successfully created axios request. Dispatching result now!"
-      );
+      // console.log(
+      //   "Successfully created axios request. Dispatching result now!"
+      // );
       dispatch(getSingleRubric(res.data.Rubric_ID));
     })
     .catch(err => {
@@ -130,7 +130,7 @@ export const setDataValue = (id, value) => dispatch => {
 
 export const deleteRubric = rubricID => dispatch => {
   // dispatch(setProgramLoading());
-  console.log(rubricID);
+  // console.log(rubricID);
   axios
     .delete(`/api/rubrics/${rubricID}`)
     .then(res => {

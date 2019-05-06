@@ -68,7 +68,7 @@ export default class DefineMeasure extends Component {
     } = this.state;
 
     if (this.props.Measure_Type === "rubric") {
-      console.log(Number(Threshold), Threshold);
+      // console.log(Number(Threshold), Threshold);
       if (
         isEmpty(Threshold) ||
         isEmpty(Class_Name) ||
@@ -85,7 +85,7 @@ export default class DefineMeasure extends Component {
           Rubric_ID: rubric,
           Target: scale.toString()
         };
-        console.log(measureValue);
+        // console.log(measureValue);
         this.setState({
           isEditing: false
         });
@@ -106,7 +106,7 @@ export default class DefineMeasure extends Component {
           Test_Name: Test_Name,
           Test_Type: Test_Type
         };
-        console.log(measureValue);
+        // console.log(measureValue);
         this.setState({
           isEditing: false
         });
@@ -116,7 +116,7 @@ export default class DefineMeasure extends Component {
   };
 
   getScales = e => {
-    console.log(e.target.name, e.target.value);
+    // console.log(e.target.name, e.target.value);
     this.setState({ rubric: e.target.value });
     this.props.getSingleRubricScale(e.target.value);
   };
@@ -288,7 +288,7 @@ export default class DefineMeasure extends Component {
 
     if (
       (this.props.Measure_Type === "rubric" &&
-        this.props.allRubrics.length > 0) ||
+        !isEmpty(this.props.allRubrics)) ||
       this.props.Measure_Type === "test"
     ) {
       measureDefination = (

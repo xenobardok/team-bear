@@ -85,7 +85,7 @@ export const addProgramAdmin = (deptName, adminEmail) => dispatch => {
   axios
     .post(`/api/program/${deptName}/addAdmin`, { adminEmail: adminEmail })
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       dispatch({
         type: ADD_PROGRAM_ADMIN,
         payload: res.data.admin
@@ -114,7 +114,7 @@ export const removeProgramAdmin = (deptID, adminEmail) => dispatch => {
       data: { adminEmail: adminEmail }
     })
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       dispatch({
         type: ADD_PROGRAM_ADMIN,
         payload: res.data.admin
@@ -142,7 +142,7 @@ export const updateProgramName = (deptID, newDeptName) => dispatch => {
   axios
     .put(`/api/program/${deptID}/update/name`, { deptName: newDeptName })
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       dispatch({
         type: UPDATE_PROGRAM_NAME,
         payload: res.data
@@ -165,7 +165,7 @@ export const updateProgramID = (deptID, newDeptID) => dispatch => {
   axios
     .put(`/api/program/${deptID}/update/id`, { deptID: newDeptID })
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       dispatch({
         type: UPDATE_PROGRAM_ID,
         payload: res.data
@@ -190,7 +190,7 @@ export const deleteProgram = deptID => dispatch => {
   axios
     .delete(`/api/program/${deptID}`)
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
 
       Swal.fire("Deleted!", `Program has been deleted.`, "success");
       dispatch({

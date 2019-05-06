@@ -74,7 +74,6 @@ export default function(state = initialState, action) {
         }
       };
     case ADD_STUDENT_FROM_FILE:
-      console.log(action.payload);
       return {
         ...state,
         studentsLoading: false,
@@ -84,7 +83,6 @@ export default function(state = initialState, action) {
         }
       };
     case REMOVE_STUDENT:
-      console.log(...action.payload);
       return {
         ...state,
         singleMeasure: {

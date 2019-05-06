@@ -370,7 +370,6 @@ router.post(
                 "," +
                 db.escape(Temp_Code) +
                 ")";
-              console.log(sql);
               db.query(sql, (err, result) => {
                 if (err) {
                   errors.message = "There was some problem adding a new user.";
