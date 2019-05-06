@@ -13,7 +13,8 @@ import {
   faCircleNotch,
   faTable,
   faUsers,
-  faUserCog
+  faUserCog,
+  faQuestionCircle
 } from "@fortawesome/free-solid-svg-icons";
 library.add(
   faBars,
@@ -25,7 +26,8 @@ library.add(
   faCircleNotch,
   faTable,
   faUsers,
-  faUserCog
+  faUserCog,
+  faQuestionCircle
 );
 
 class SideBar extends Component {
@@ -91,6 +93,10 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="users" />
             &nbsp;&nbsp;Evaluators
           </Link>
+          <Link className="menu-item" to="/dashboard/faqs">
+            <FontAwesomeIcon icon="question-circle" />
+            &nbsp;&nbsp;FAQs
+          </Link>
         </Menu>
       );
     } else if (this.props.auth.user.type === "Evaluator") {
@@ -119,6 +125,10 @@ class SideBar extends Component {
           <Link className="menu-item" to="/dashboard/logs">
             <FontAwesomeIcon icon="envelope" />
             &nbsp;&nbsp;Notifications
+          </Link>
+          <Link className="menu-item" to="/dashboard/faqs">
+            <FontAwesomeIcon icon="question-circle" />
+            &nbsp;&nbsp;FAQs
           </Link>
         </Menu>
       );

@@ -599,9 +599,16 @@ a:hover {
   /* font-size: 30px !important; */
 }
 
-.grade-table{
+.create-new-faq {
+  text-align: center;
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+}
 
-} 
+.create-new-faq:hover{
+  background-color: #7b344a;
+  color: white;
+}
 
 .students {
   max-width: 400px!important; 

@@ -183,7 +183,7 @@ router.put(
 );
 
 // @route   DELETE api/faq/faqID
-// @desc    update the faqID
+// @desc    delete the faqID
 // @access  Private
 
 router.delete(

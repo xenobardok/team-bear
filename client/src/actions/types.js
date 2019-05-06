@@ -65,3 +65,7 @@ export const SUBMIT_RUBRIC_TASK = "SUBMIT_RUBRIC_TASK";
 export const SUBMIT_TEST_TASK = "SUBMIT_TEST_TASK";
 export const UPDATE_NAME_MEASURE = "UPDATE_NAME_MEASURE";
 export const GET_EVERY_CYCLES = "GET_EVERY_CYCLES";
+export const GET_FAQS = "GET_FAQS";
+export const CREATE_FAQS = "CREATE_FAQS";
+export const UPDATE_FAQS = "UPDATE_FAQS";
+export const DELETE_FAQS = "DELETE_FAQS";
