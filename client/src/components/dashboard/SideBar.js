@@ -14,8 +14,11 @@ import {
   faTable,
   faUsers,
   faUserCog,
-  faQuestionCircle
+  faQuestionCircle,
+  faBook
 } from "@fortawesome/free-solid-svg-icons";
+import UserManualAll from "./Capstone-User-Manual-All-Users.pdf";
+import UserManualEvaluator from "./USER MANUAL- Evaluator.pdf";
 library.add(
   faBars,
   faTimes,
@@ -27,7 +30,8 @@ library.add(
   faTable,
   faUsers,
   faUserCog,
-  faQuestionCircle
+  faQuestionCircle,
+  faBook
 );
 
 class SideBar extends Component {
@@ -97,6 +101,10 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="question-circle" />
             &nbsp;&nbsp;FAQs
           </Link>
+          <a href={UserManualAll} className="menu-item" target="_blank">
+            <FontAwesomeIcon icon="book" />
+            &nbsp;&nbsp;User Manual
+          </a>
         </Menu>
       );
     } else if (this.props.auth.user.type === "Evaluator") {
@@ -130,6 +138,10 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="question-circle" />
             &nbsp;&nbsp;FAQs
           </Link>
+          <a href={UserManualEvaluator} className="menu-item" target="_blank">
+            <FontAwesomeIcon icon="book" />
+            &nbsp;&nbsp;User Manual
+          </a>
         </Menu>
       );
     }
