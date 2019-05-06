@@ -47,7 +47,7 @@ class ShowCycle extends Component {
   }
 
   onClickHandler = e => {
-    console.log(e.target.name);
+    // console.log(e.target.name);
     this.props.history.push(
       "/dashboard/cycles/" +
         this.props.cycles.cycle.Cycle_ID +

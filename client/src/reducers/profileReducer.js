@@ -44,7 +44,6 @@ export default function(state = initialState, action) {
         evaluators: [...state.evaluators, action.payload]
       };
     case CANCEL_EVALUATOR_INVITE:
-      console.log(action.payload.Email);
       return {
         ...state,
         loading: false,

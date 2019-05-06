@@ -38,7 +38,7 @@ class Dashboard extends Component {
     }
 
     if (this.props.errors !== prevProps.errors) {
-      console.log(this.props.errors);
+      // console.log(this.props.errors);
       this.setState({ errors: this.props.errors });
     }
   };

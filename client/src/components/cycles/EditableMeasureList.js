@@ -74,7 +74,7 @@ class EditableMeasureList extends Component {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        console.log(id, outcomeID, measureID);
+        // console.log(id, outcomeID, measureID);
         this.props.deleteMeasure(id, outcomeID, measureID);
         this.editHandler();
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");

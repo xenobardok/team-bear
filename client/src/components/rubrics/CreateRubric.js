@@ -74,9 +74,7 @@ class CreateRubric extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.rubric) {
-      console.log(nextProps.rubric);
       this.props.history.push(
         "/dashboard/rubrics/" + nextProps.rubric.Rubric_ID
       );
@@ -107,7 +105,6 @@ class CreateRubric extends Component {
     });
 
     if (e.target.name === "Column_Num") {
-      console.log("Changing array limit to " + e.target.value);
       const scaleArray = [];
       for (var i = 0; i < e.target.value; i++) {
         scaleArray.push({
@@ -165,7 +162,6 @@ class CreateRubric extends Component {
       Scale: this.state.Scale,
       isWeighted: this.state.weighted
     };
-    console.log(rubric);
     this.props.createRubric(rubric);
   }
   render() {

@@ -58,7 +58,6 @@ class ViewTest extends Component {
     if (file) {
       const data = new FormData();
       data.append("StudentsGrade", file);
-      console.log(testMeasureId, file);
       this.props.studentFilefromCSV(testMeasureId, data);
     } else {
       toastr.error("Error occured", "Please upload a file first");
@@ -84,7 +83,6 @@ class ViewTest extends Component {
   };
   gradeStudentTestMeasure = (studentID, Score) => {
     let { testMeasureId } = this.props.match.params;
-    console.log(testMeasureId, studentID, Score);
     if (Score) {
       this.props.gradeStudentTestMeasure(testMeasureId, studentID, Score);
     } else {
@@ -213,7 +211,6 @@ const EditableSingleGrade = props => {
   let onChangeHandler = e => {
     let value = e.target.value;
     updateGrade(value);
-    console.log(value);
     setTimeout(function() {
       props.gradeStudentTestMeasure(props.Student_ID, value);
     }, 1000);

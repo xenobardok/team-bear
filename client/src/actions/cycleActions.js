@@ -95,13 +95,13 @@ export const setCycleLoading = () => {
 };
 
 export const createCycle = cycleName => dispatch => {
-  console.log(cycleName);
+  // console.log(cycleName);
   axios
     .post("/api/cycle/create", cycleName)
     .then(res => {
-      console.log(
-        "Successfully created axios request. Dispatching result now!"
-      );
+      // console.log(
+      //   "Successfully created axios request. Dispatching result now!"
+      // );
       // console.log(res.data.Cycle_ID);
       dispatch({
         type: CREATE_CYCLE,
@@ -143,7 +143,7 @@ export const migrateCycle = (Cycle_Name, migrateCycleID) => dispatch => {
 };
 
 export const submitCycle = CycleID => dispatch => {
-  console.log(CycleID);
+  // console.log(CycleID);
   axios
     .put(`/api/cycle/${CycleID}/submit`)
     .then(res => {
@@ -182,7 +182,7 @@ export const deleteCycle = cycleID => dispatch => {
           text: "The cycle contains outcomes. Please delete them first!"
         });
       }
-      console.log(err.response.data);
+      // console.log(err.response.data);
     });
 };
 
@@ -191,7 +191,7 @@ export const createNewOutcome = (
   Outcome_Name,
   curriculumMap
 ) => dispatch => {
-  console.log(id, Outcome_Name, curriculumMap);
+  // console.log(id, Outcome_Name, curriculumMap);
   axios
     .post(`/api/cycle/${id}/outcome/create`, {
       Outcome_Name: Outcome_Name,
@@ -235,7 +235,7 @@ export const deleteOutcome = (cycleID, outcomeID) => dispatch => {
   axios
     .delete(`/api/cycle/${cycleID}/outcome/${outcomeID}`)
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       Swal.fire("Deleted!", "Your outcome has been deleted.", "success");
       dispatch(getSingleCycle(cycleID));
     })

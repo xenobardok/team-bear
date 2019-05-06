@@ -15,7 +15,6 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case REPORT_LOADING:
-      console.log("report loading");
       return {
         ...state,
         loading: true

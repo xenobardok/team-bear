@@ -31,7 +31,7 @@ class Login extends Component {
     }
 
     if (nextProps.errors) {
-      console.log(nextProps.errors);
+      // console.log(nextProps.errors);
       this.setState({ errors: nextProps.errors });
     }
   }

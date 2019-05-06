@@ -39,7 +39,7 @@ export default function ThreeDotDropdown(props) {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        console.log(props.Department_ID);
+        // console.log(props.Department_ID);
         props.deleteProgram(props.Department_ID);
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");
       }

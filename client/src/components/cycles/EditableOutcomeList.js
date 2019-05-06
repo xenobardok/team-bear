@@ -109,7 +109,7 @@ class EditableOutcomeList extends Component {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        console.log(cycleID, value.Outcome_ID);
+        // console.log(cycleID, value.Outcome_ID);
         this.props.deleteOutcome(cycleID, value.Outcome_ID);
         this.editHandler();
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");

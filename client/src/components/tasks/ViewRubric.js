@@ -68,7 +68,6 @@ class ViewRubric extends Component {
         this.props.evaluations.rubric.data.length !==
         this.state.Student_Grades.length
       ) {
-        console.log("Adding empty array");
         let length = this.props.evaluations.rubric.data.length;
         let emptyArray = [];
         for (let i = 0; i < length; i++) {
@@ -115,7 +114,6 @@ class ViewRubric extends Component {
 
     if (!isEmpty(this.props.evaluations.rubric)) {
       if (this.props.evaluations.rubric !== prevProps.evaluations.rubric) {
-        console.log("creating new scales array");
         let newScale = [];
         this.props.evaluations.rubric.Scale.forEach(element => {
           newScale.push(element.value);

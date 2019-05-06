@@ -27,12 +27,12 @@ class Cycles extends Component {
 
     this.props.getCycles();
     this.props.getSingleCycle(this.props.cycles.activeCycle);
-    console.log(this.props.cycles);
+    // console.log(this.props.cycles);
   };
 
   onSelectChange = e => {
     this.props.getSingleCycle(e.target.value);
-    console.log(e.target.value);
+    // console.log(e.target.value);
     this.setState({
       selectedOption: e.target.value
     });

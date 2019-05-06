@@ -116,7 +116,7 @@ class Measure extends Component {
     }
 
     if (this.props.rubrics.rubric !== prevProps.rubrics.rubric) {
-      console.log(this.props.rubrics.rubric.Scale);
+      // console.log(this.props.rubrics.rubric.Scale);
       this.setState({
         rubricScales: this.props.rubrics.rubric.Scale
       });
@@ -138,14 +138,14 @@ class Measure extends Component {
 
   getSingleRubricScale = id => {
     let scales;
-    console.log(id);
+    // console.log(id);
     this.props.rubrics.allRubrics.map(rubric => {
       if (Number(rubric.Rubric_ID) === Number(id)) {
         scales = rubric.Scales;
       }
     });
 
-    console.log(scales);
+    // console.log(scales);
     this.setState({
       rubricScales: scales
     });
@@ -160,7 +160,7 @@ class Measure extends Component {
 
   addButtonEvaluator = email => {
     let { id, outcomeID, measureID } = this.props.match.params;
-    console.log(this.props.match.params.measureID, email);
+    // console.log(this.props.match.params.measureID, email);
     if (!isEmpty(email)) {
       this.props.assignEvaluatorToMeasure(id, outcomeID, measureID, email);
       this.setState({ newEvaluator: false });
@@ -492,7 +492,7 @@ class Measure extends Component {
                 </Alert>
               ) : (
                 <div>
-                  {console.log(this.state.unevaluatedStudents.students)}
+                  {/* {console.log(this.state.unevaluatedStudents.students)} */}
                   {this.state.unevaluatedStudents.students === undefined ? (
                     <p>
                       <OverlayTrigger

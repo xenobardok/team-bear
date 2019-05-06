@@ -19,7 +19,7 @@ export const createFaq = (question, answer) => dispatch => {
   axios
     .post("/api/faq/create", { Question: question, Answer: answer })
     .then(res => {
-      console.log(res);
+      //   console.log(res);
       dispatch(getFaqs());
       toastr.success("Success!", "New FAQ created");
     })
@@ -30,7 +30,7 @@ export const updateFaq = (faqID, question, answer) => dispatch => {
   axios
     .put(`/api/faq/${faqID}`, { Question: question, Answer: answer })
     .then(res => {
-      console.log(res);
+      //   console.log(res);
       dispatch(getFaqs());
       toastr.success("Success!", "FAQ Updated");
     })
@@ -41,7 +41,7 @@ export const deleteFaq = faqID => dispatch => {
   axios
     .delete(`/api/faq/${faqID}`)
     .then(res => {
-      console.log(res);
+      //   console.log(res);
       dispatch(getFaqs());
       Swal.fire("Deleted!", "This faq has been deleted.", "success");
     })

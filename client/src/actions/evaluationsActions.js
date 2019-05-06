@@ -85,7 +85,7 @@ export const gradeStudentRubricMeasure = (
   studentID,
   Score
 ) => dispatch => {
-  console.log(RubricMeasureID, studentID, Score);
+  // console.log(RubricMeasureID, studentID, Score);
   // dispatch(setRubricsLoading());
   axios
     .post(
@@ -97,8 +97,8 @@ export const gradeStudentRubricMeasure = (
         type: GRADE_STUDENT_RUBRIC_MEASURE,
         payload: studentID
       });
-      console.log(res.data);
-      console.log("Successful");
+      // console.log(res.data);
+      // console.log("Successful");
       toastr.success("Student Graded!");
     })
     .catch(err => {
@@ -106,7 +106,7 @@ export const gradeStudentRubricMeasure = (
         type: GET_ERRORS,
         payload: err.response.data
       });
-      console.log("error");
+      // console.log("error");
       toastr.error(err.response.data);
     });
 };
@@ -156,7 +156,7 @@ export const gradeStudentTestMeasure = (
 
 export const studentFilefromCSV = (Test_Measure_ID, file) => dispatch => {
   dispatch(setRubricsLoading());
-  console.log(Test_Measure_ID, file);
+  // console.log(Test_Measure_ID, file);
   axios
     .post(`/api/evaluations/testMeasure/${Test_Measure_ID}/fileUpload`, file, {
       headers: {
