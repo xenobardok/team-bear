@@ -41,7 +41,6 @@ export default class DefineMeasure extends Component {
       Threshold: Threshold,
       Rubric_Name: Rubric_Name,
       Target: Target,
-      allRubrics: allRubrics,
       rubricScales: rubricScales,
       Class_Name: Class_Name,
       isEditing: false,
@@ -447,7 +446,7 @@ export default class DefineMeasure extends Component {
                       <option value="" disabled>
                         Choose one:
                       </option>
-                      {allRubrics.map(entry => (
+                      {this.props.allRubrics.map(entry => (
                         <option value={entry.Rubric_ID} key={entry.Rubric_ID}>
                           {entry.Rubrics_Name}
                         </option>
