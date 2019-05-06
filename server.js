@@ -19,6 +19,7 @@ const reports = require("./routes/api/reports");
 const migrate = require("./routes/api/migrate");
 const program = require("./routes/api/program");
 const log = require("./routes/api/log");
+const faq = require("./routes/api/faq");
 
 //passport middleware
 app.use(passport.initialize());
@@ -38,6 +39,7 @@ app.use("/api/reports", reports);
 app.use("/api/migrate", migrate);
 app.use("/api/program", program);
 app.use("/api/log", log);
+app.use("/api/faq", faq);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

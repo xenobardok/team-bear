@@ -186,54 +186,85 @@ router.delete(
               return res.status(400).json(errors);
             } else {
               sql =
-                "SELECT *  FROM RUBRIC_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                "SELECT * FROM RUBRIC_MEASURE_EVALUATOR NATURAL JOIN RUBRIC_MEASURES NATURAL JOIN MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email= " +
                 removeEmail;
-
               db.query(sql, (err, result) => {
                 if (err) return res.status(400).json(err);
-                if (result.length > 0) {
-                  sql =
-                    "UPDATE Evaluators SET isDeleted='true',isActive='false' WHERE Email=" +
-                    removeEmail;
+                else {
+                  if (result.length > 0) {
+                    errors.email =
+                      "User is assigned to a rubric measure of an active cycle. Please remove him from the measure first";
+                    return res.status(400).json(errors);
+                  } else {
+                    sql =
+                      "SELECT * FROM TEST_MEASURE_EVALUATOR NATURAL JOIN TEST_MEASURES NATURAL JOIN MEASURES NATURAL JOIN OUTCOMES NATURAL JOIN ASSESSMENT_CYCLE WHERE isSubmitted='false' AND Evaluator_Email=" +
+                      removeEmail;
 
-                  db.query(sql, (err, result) => {
-                    if (err) return res.status(400).json(err);
+                    db.query(sql, (err, result) => {
+                      if (err) return res.status(400).json(err);
+                      else {
+                        if (result.length > 0) {
+                          errors.email =
+                            "User is assigned to a Test measure of an active cycle. Please remove him from the measure first";
+                          return res.status(400).json(errors);
+                        } else {
+                          sql =
+                            "SELECT *  FROM RUBRIC_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                            removeEmail;
 
-                    return res
-                      .status(200)
-                      .json({ Email: req.body.removeEmail });
-                  });
-                } else {
-                  sql =
-                    "SELECT *  FROM TEST_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
-                    removeEmail;
+                          db.query(sql, (err, result) => {
+                            if (err) return res.status(400).json(err);
+                            if (result.length > 0) {
+                              sql =
+                                "UPDATE Evaluators SET isDeleted='true',isActive='false', Password=Null WHERE Email=" +
+                                removeEmail;
 
-                  db.query(sql, (err, result) => {
-                    if (err) return res.status(400).json(err);
-                    if (result.length > 0) {
-                      sql =
-                        "UPDATE Evaluators SET isDeleted='true', isActive='false', Password=Null WHERE Email=" +
-                        removeEmail;
+                              db.query(sql, (err, result) => {
+                                if (err) return res.status(400).json(err);
 
-                      db.query(sql, (err, result) => {
-                        if (err) return res.status(400).json(err);
+                                return res
+                                  .status(200)
+                                  .json({ Email: req.body.removeEmail });
+                              });
+                            } else {
+                              sql =
+                                "SELECT *  FROM TEST_MEASURE_EVALUATOR WHERE Evaluator_Email=" +
+                                removeEmail;
 
-                        return res
-                          .status(200)
-                          .json({ Email: req.body.removeEmail });
-                      });
-                    } else {
-                      sql = "DELETE FROM Evaluators WHERE Email=" + removeEmail;
+                              db.query(sql, (err, result) => {
+                                if (err) return res.status(400).json(err);
+                                if (result.length > 0) {
+                                  sql =
+                                    "UPDATE Evaluators SET isDeleted='true', isActive='false', Password=Null WHERE Email=" +
+                                    removeEmail;
 
-                      db.query(sql, (err, result) => {
-                        if (err) return res.status(400).json(err);
+                                  db.query(sql, (err, result) => {
+                                    if (err) return res.status(400).json(err);
 
-                        return res
-                          .status(200)
-                          .json({ Email: req.body.removeEmail });
-                      });
-                    }
-                  });
+                                    return res
+                                      .status(200)
+                                      .json({ Email: req.body.removeEmail });
+                                  });
+                                } else {
+                                  sql =
+                                    "DELETE FROM Evaluators WHERE Email=" +
+                                    removeEmail;
+
+                                  db.query(sql, (err, result) => {
+                                    if (err) return res.status(400).json(err);
+
+                                    return res
+                                      .status(200)
+                                      .json({ Email: req.body.removeEmail });
+                                  });
+                                }
+                              });
+                            }
+                          });
+                        }
+                      }
+                    });
+                  }
                 }
               });
             }
@@ -597,26 +628,46 @@ router.put(
     const type = req.user.type;
     const dept = db.escape(req.user.dept);
 
+    let oldPassword = db.escape(req.body.oldPassword);
     let Password = db.escape(req.body.Password);
     let errors = {};
 
-    if (!validator.isLength(req.body.Password, { min: 6, max: 20 })) {
-      errors.Password = "Password must be 6-20 characters long";
-      return res.status(400).json(errors);
-    } else {
-      sql =
-        "UPDATE Evaluators SET Password=PASSWORD(" +
-        Password +
-        ") WHERE  Email=" +
-        db.escape(email);
+    sql =
+      "SELECT * FROM Evaluators WHERE Email=" +
+      db.escape(email) +
+      " AND Password= PASSWORD(" +
+      oldPassword +
+      ")";
 
-      db.query(sql, (err, result) => {
-        if (err) return res.status(400).json(err);
-        else {
-          res.status(200).json({ Email: "Password successfully updated" });
+    db.query(sql, (err, result) => {
+      if (err) return res.status(400).json(err);
+      else {
+        if (result.length < 1) {
+          errors.Password = "Old Password does not match.";
+          return res.status(400).json(errors);
+        } else {
+          if (!validator.isLength(req.body.Password, { min: 6, max: 20 })) {
+            errors.Password = "Password must be 6-20 characters long";
+            return res.status(400).json(errors);
+          } else {
+            sql =
+              "UPDATE Evaluators SET Password=PASSWORD(" +
+              Password +
+              ") WHERE  Email=" +
+              db.escape(email);
+
+            db.query(sql, (err, result) => {
+              if (err) return res.status(400).json(err);
+              else {
+                res
+                  .status(200)
+                  .json({ Email: "Password successfully updated" });
+              }
+            });
+          }
         }
-      });
-    }
+      }
+    });
   }
 );
 

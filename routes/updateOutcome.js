@@ -38,14 +38,24 @@ let updateOutcome = Measure_ID => {
           if (result[0].Success > 0) {
             isSuccess = "pending";
           }
+
           sql =
-            "UPDATE OUTCOMES SET Outcome_Success=" +
-            db.escape(isSuccess) +
-            " WHERE Outcome_ID=" +
+            "SELECT COUNT(*) AS Not_Started FROM MEASURES WHERE isSuccess='notStarted' AND Outcome_ID=" +
             Outcome_ID;
 
           db.query(sql, (err, result) => {
-            // console.log(result);
+            if (result[0].Not_Started > 0) {
+              isSuccess = "notStarted";
+            }
+            sql =
+              "UPDATE OUTCOMES SET Outcome_Success=" +
+              db.escape(isSuccess) +
+              " WHERE Outcome_ID=" +
+              Outcome_ID;
+
+            db.query(sql, (err, result) => {
+              // console.log(result);
+            });
           });
         });
       });

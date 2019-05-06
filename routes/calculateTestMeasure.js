@@ -57,33 +57,52 @@ let calculateTestMeasure = Test_Measure_ID => {
               }
 
               //sql to update the percent of success and isSuccess for a Test Measure
-
               sql =
-                "UPDATE TEST_MEASURES SET Score=" +
-                percent_success +
-                ", Is_Success=" +
-                Measure_Success +
-                " WHERE Test_Measure_ID=" +
+                "SELECT * FROM TEST_MEASURE_EVALUATOR WHERE Test_Measure_ID=" +
                 Test_Measure_ID;
 
-              // console.log(Total_Students);
-
-              // console.log(sql);
               db.query(sql, (err, result) => {
+                let No_Of_Evaluators = result.length;
+
                 sql =
-                  "SELECT Measure_ID FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+                  "SELECT * FROM TEST_STUDENTS WHERE Test_Measure_ID=" +
                   Test_Measure_ID;
+
                 db.query(sql, (err, result) => {
-                  let Measure_ID = result[0].Measure_ID;
+                  let No_Of_Students = result.length;
+
+                  if (No_Of_Evaluators == 0 || No_Of_Students == 0) {
+                    Measure_Success = db.escape("notStarted");
+                  }
 
                   sql =
-                    "UPDATE MEASURES SET isSuccess=" +
+                    "UPDATE TEST_MEASURES SET Score=" +
+                    percent_success +
+                    ", Is_Success=" +
                     Measure_Success +
-                    " WHERE Measure_ID=" +
-                    Measure_ID;
+                    " WHERE Test_Measure_ID=" +
+                    Test_Measure_ID;
 
+                  // console.log(Total_Students);
+
+                  // console.log(sql);
                   db.query(sql, (err, result) => {
-                    updateOutcome(Measure_ID);
+                    sql =
+                      "SELECT Measure_ID FROM TEST_MEASURES WHERE Test_Measure_ID=" +
+                      Test_Measure_ID;
+                    db.query(sql, (err, result) => {
+                      let Measure_ID = result[0].Measure_ID;
+
+                      sql =
+                        "UPDATE MEASURES SET isSuccess=" +
+                        Measure_Success +
+                        " WHERE Measure_ID=" +
+                        Measure_ID;
+
+                      db.query(sql, (err, result) => {
+                        updateOutcome(Measure_ID);
+                      });
+                    });
                   });
                 });
               });

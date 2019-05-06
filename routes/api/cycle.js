@@ -536,7 +536,7 @@ router.post(
                         res.status(200).json(
                           (outcome = {
                             Outcome_ID: Outcome_ID,
-                            Is_Submitted: "pending"
+                            Is_Submitted: "notStarted"
                           })
                         );
                       }
@@ -829,7 +829,7 @@ router.post(
                 db.query(sql, (err, result) => {
                   if (err) res.send(err);
                   else {
-                    let isSuccess = db.escape("pending");
+                    let isSuccess = db.escape("notStarted");
                     let isCompleted = db.escape("false");
 
                     sql =
@@ -870,7 +870,7 @@ router.post(
                               Rubric_Measure = {
                                 Measure_ID: Measure_ID,
                                 Rubric_Measure_ID: Rubric_Measure_ID,
-                                Is_Submitted: "pending"
+                                Is_Submitted: "notStarted"
                               };
 
                               return res.status(200).json(Rubric_Measure);
@@ -896,7 +896,7 @@ router.post(
                               Test_Measure = {
                                 Measure_ID: Measure_ID,
                                 Test_Measure_ID: Test_Measure_ID,
-                                Is_Submitted: "pending"
+                                Is_Submitted: "notStarted"
                               };
 
                               return res.status(200).json(Test_Measure);
@@ -1000,8 +1000,62 @@ router.delete(
                                     if (err) {
                                       return res.status(400).json(err);
                                     } else {
-                                      return res.status(200).json({
-                                        message: "Measure successfully deleted"
+                                      sql =
+                                        "SELECT COUNT(*) AS Total FROM MEASURES WHERE Outcome_ID=" +
+                                        Outcome_ID;
+
+                                      db.query(sql, (err, result) => {
+                                        let Total_Measures = result[0].Total;
+
+                                        sql =
+                                          "SELECT COUNT(*) AS Success FROM MEASURES WHERE Outcome_ID=" +
+                                          Outcome_ID +
+                                          " AND isSuccess='true'";
+                                        //   console.log(sql);
+                                        db.query(sql, (err, result) => {
+                                          let Success_Measures =
+                                            result[0].Success;
+
+                                          let isSuccess = "false";
+
+                                          if (
+                                            Total_Measures == Success_Measures
+                                          ) {
+                                            isSuccess = "true";
+                                          }
+
+                                          sql =
+                                            "SELECT COUNT(*) AS Success FROM MEASURES WHERE isSuccess='Pending' AND Outcome_ID=" +
+                                            Outcome_ID;
+
+                                          db.query(sql, (err, result) => {
+                                            if (result[0].Success > 0) {
+                                              isSuccess = "pending";
+                                            }
+
+                                            sql =
+                                              "SELECT COUNT(*) AS Not_Started FROM MEASURES WHERE isSuccess='notStarted' AND Outcome_ID=" +
+                                              Outcome_ID;
+
+                                            db.query(sql, (err, result) => {
+                                              if (result[0].Not_Started > 0) {
+                                                isSuccess = "notStarted";
+                                              }
+                                              sql =
+                                                "UPDATE OUTCOMES SET Outcome_Success=" +
+                                                db.escape(isSuccess) +
+                                                " WHERE Outcome_ID=" +
+                                                Outcome_ID;
+
+                                              db.query(sql, (err, result) => {
+                                                return res.status(200).json({
+                                                  message:
+                                                    "Measure successfully deleted"
+                                                });
+                                              });
+                                            });
+                                          });
+                                        });
                                       });
                                     }
                                   });
