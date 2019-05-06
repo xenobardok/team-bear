@@ -101,7 +101,12 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="question-circle" />
             &nbsp;&nbsp;FAQs
           </Link>
-          <a href={UserManualAll} className="menu-item" target="_blank">
+          <a
+            href={UserManualAll}
+            className="menu-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FontAwesomeIcon icon="book" />
             &nbsp;&nbsp;User Manual
           </a>
@@ -138,7 +143,12 @@ class SideBar extends Component {
             <FontAwesomeIcon icon="question-circle" />
             &nbsp;&nbsp;FAQs
           </Link>
-          <a href={UserManualEvaluator} className="menu-item" target="_blank">
+          <a
+            href={UserManualEvaluator}
+            className="menu-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FontAwesomeIcon icon="book" />
             &nbsp;&nbsp;User Manual
           </a>
